@@ -8,6 +8,7 @@ import { useAuth } from "../context/AppContext";
 import { useModules } from "../context/ModulesContext";
 import StockTabs, { StockTabId } from "../components/StockTabs";
 import StockForm from "../components/StockForm";
+import Modal from "../components/Modal";
 import StockTable from "../components/StockTable";
 import StockMovementsSection from "../components/StockMovementsSection";
 
@@ -15,8 +16,7 @@ interface HeaderProps {
     count: number;
     canEdit: boolean;
     tab: StockTabId;
-    showForm: boolean;
-    onToggleForm: () => void;
+    onOpenForm: () => void;
     label: (k: string) => string;
 }
 
@@ -31,8 +31,8 @@ function StockHeader(p: HeaderProps): JSX.Element {
                 <a className="btn-ghost" href="/api/stock/export/csv" style={{ textDecoration: "none" }}>{p.label("common.exportCsv")}</a>
                 <a className="btn-ghost" href="/api/stock/export/json" style={{ textDecoration: "none" }}>{p.label("common.exportJson")}</a>
                 {p.canEdit && p.tab === "inventory" && (
-                    <button className="btn" onClick={p.onToggleForm}>
-                        {p.showForm ? "Annuler" : "+ Nouvel article"}
+                    <button className="btn" onClick={p.onOpenForm}>
+                        {p.label("stock.newArticle")}
                     </button>
                 )}
             </div>
@@ -83,14 +83,18 @@ export default function Stock(): JSX.Element {
 
     return (
         <div>
-            <StockHeader count={items.length} canEdit={canEdit} tab={tab} showForm={showForm}
-                onToggleForm={() => setShowForm(!showForm)} label={t} />
+            <StockHeader count={items.length} canEdit={canEdit} tab={tab}
+                onOpenForm={() => setShowForm(true)} label={t} />
 
             <StockTabs active={tab} onChange={setTab} />
 
             {tab === "inventory" && (
                 <>
-                    {showForm && canEdit && <StockForm onCreated={() => { setShowForm(false); load(); }} />}
+                    {showForm && canEdit && (
+                        <Modal title={t("stock.newArticle")} onClose={() => setShowForm(false)} maxWidth="640px">
+                            <StockForm onCreated={() => { setShowForm(false); load(); }} />
+                        </Modal>
+                    )}
                     <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
                         <input className="input" placeholder={t("stock.searchArticle")} value={search}
                             onChange={(e) => setSearch(e.target.value)} style={{ maxWidth: "400px" }} />

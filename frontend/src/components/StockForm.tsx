@@ -35,7 +35,7 @@ export default function StockForm({ onCreated }: Props): JSX.Element {
     };
 
     return (
-        <form className="card" onSubmit={submit} style={{ marginBottom: "1.5rem", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "0.75rem" }}>
+        <form onSubmit={submit} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "0.75rem" }}>
             <input className="input" placeholder={t("common.nameRequired")} value={form.name} onChange={(e) => set("name", e.target.value)} required />
             <input className="input" placeholder={t("stock.referenceRequired")} value={form.reference} onChange={(e) => set("reference", e.target.value)} required />
             <input className="input" type="number" step="0.01" placeholder={t("stock.quantity")} value={form.quantity} onChange={(e) => set("quantity", e.target.value)} />
@@ -48,7 +48,7 @@ export default function StockForm({ onCreated }: Props): JSX.Element {
             <input className="input" placeholder={t("stock.location")} value={form.location} onChange={(e) => set("location", e.target.value)} />
             <input className="input" type="number" step="0.01" placeholder={t("stock.minThreshold")} value={form.minThreshold} onChange={(e) => set("minThreshold", e.target.value)} />
             <button className="btn" type="submit" disabled={busy} style={{ gridColumn: "1 / -1" }}>
-                {busy ? "Création..." : "Créer l'article"}
+                {busy ? t("common.creating") : t("stock.createArticle")}
             </button>
         </form>
     );

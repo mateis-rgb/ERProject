@@ -22,7 +22,8 @@
         "exportJson": "↓ JSON",
         "noResult": "Aucun résultat.",
         "details": "Détails",
-        "irreversible": "Irréversible."
+        "irreversible": "Irréversible.",
+        "creating": "Création..."
     },
     "login": {
         "tagline": "Régie de production — Projets & Stock",
@@ -223,7 +224,9 @@
         "noUpcoming": "Aucun à venir"
     },
     "projects": {
-        "search": "🔍 Rechercher un projet..."
+        "search": "🔍 Rechercher un projet...",
+        "newProject": "+ Nouveau projet",
+        "createProject": "Créer le projet"
     },
     "project": {
         "name": "Nom du projet",
@@ -283,7 +286,9 @@
         "ref": "Réf.",
         "qty": "Qté",
         "dispo": "Dispo",
-        "unavailable": "INDISPO"
+        "unavailable": "INDISPO",
+        "newArticle": "+ Nouvel article",
+        "createArticle": "Créer larticle"
     },
     "movement": {
         "in": "⬇️ Entrée",

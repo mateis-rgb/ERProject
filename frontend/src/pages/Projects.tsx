@@ -6,6 +6,7 @@ import { Project } from "../types";
 import { useAuth } from "../context/AppContext";
 import ProjectForm from "../components/ProjectForm";
 import ProjectTable from "../components/ProjectTable";
+import Modal from "../components/Modal";
 
 export default function Projects(): JSX.Element {
     const { t } = useTranslation();
@@ -39,13 +40,17 @@ export default function Projects(): JSX.Element {
                     <p className="page-subtitle">{projects.length} PROJET{projects.length > 1 ? "S" : ""} · PRODUCTION</p>
                 </div>
                 {canEdit && (
-                    <button className="btn" onClick={() => setShowForm(!showForm)}>
-                        {showForm ? "Annuler" : "+ Nouveau projet"}
+                    <button className="btn" onClick={() => setShowForm(true)}>
+                        {t("projects.newProject")}
                     </button>
                 )}
             </div>
             {error !== null && <p style={{ color: "var(--danger)", marginBottom: "1rem" }}>{error}</p>}
-            {showForm && canEdit && <ProjectForm onCreated={handleCreated} onError={setError} />}
+            {showForm && canEdit && (
+                <Modal title={t("projects.newProject")} onClose={() => setShowForm(false)} maxWidth="520px">
+                    <ProjectForm onCreated={handleCreated} onError={setError} />
+                </Modal>
+            )}
             <input
                 className="input"
                 placeholder={t("projects.search")}

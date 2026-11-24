@@ -22,7 +22,8 @@
         "exportJson": "↓ JSON",
         "noResult": "No result.",
         "details": "Details",
-        "irreversible": "Irreversible."
+        "irreversible": "Irreversible.",
+        "creating": "Creating..."
     },
     "login": {
         "tagline": "Production control room — Projects & Stock",
@@ -223,7 +224,9 @@
         "noUpcoming": "Nothing upcoming"
     },
     "projects": {
-        "search": "🔍 Search a project..."
+        "search": "🔍 Search a project...",
+        "newProject": "+ New project",
+        "createProject": "Create project"
     },
     "project": {
         "name": "Project name",
@@ -283,7 +286,9 @@
         "ref": "Ref.",
         "qty": "Qty",
         "dispo": "Avail.",
-        "unavailable": "OUT"
+        "unavailable": "OUT",
+        "newArticle": "+ New item",
+        "createArticle": "Create item"
     },
     "movement": {
         "in": "⬇️ In",

@@ -40,7 +40,7 @@ export default function ProjectForm({ onCreated, onError }: Props): JSX.Element 
     };
 
     return (
-        <form className="card" onSubmit={handleSubmit} style={{ marginBottom: "1.5rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
             <input className="input" placeholder={t("project.name")} value={name} onChange={(e) => setName(e.target.value)} required />
             <textarea className="input" placeholder={t("project.description")} value={description} onChange={(e) => setDescription(e.target.value)} rows={3} />
             <input className="input" placeholder={t("project.client")} value={client} onChange={(e) => setClient(e.target.value)} />
@@ -50,7 +50,7 @@ export default function ProjectForm({ onCreated, onError }: Props): JSX.Element 
                     {templates.map((tpl) => <option key={tpl.id} value={tpl.id}>{tpl.name}</option>)}
                 </select>
             )}
-            <button className="btn" type="submit" disabled={busy}>{busy ? "Création..." : "Créer le projet"}</button>
+            <button className="btn" type="submit" disabled={busy}>{busy ? t("common.creating") : t("projects.createProject")}</button>
         </form>
     );
 }
