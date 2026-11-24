@@ -4,6 +4,7 @@ import { z } from "zod";
 import {
     createStockItem, getStockItemById, listStockItems, updateStockItem,
     deleteStockItem, createMovement, listMovements, getLowStockItems, getStockValue,
+    getAvailabilityMap,
 } from "../services/stockService";
 import { validateBody, validateQuery } from "../middleware/validation";
 import { requireAuth, requireRole } from "../middleware/auth";
@@ -47,6 +48,17 @@ stockRouter.get("/low-stock", async (_req: Request, res: Response) => {
 stockRouter.get("/value", async (_req: Request, res: Response) => {
     const value = await getStockValue();
     res.json({ success: true, data: { totalValue: value } });
+});
+
+// Disponibilité de tous les articles à une date (pris sur un projet = indisponible,
+// sauf si rentré (RETURN) avant la fin du jalon) — doit rester avant /:id
+const availabilityQuerySchema = z.object({ date: z.string().optional() });
+
+stockRouter.get("/availability", validateQuery(availabilityQuerySchema), async (req: Request, res: Response) => {
+    const q = req.query as { date?: string };
+    const at = q.date !== undefined ? new Date(q.date) : new Date();
+    const entries = await getAvailabilityMap(at);
+    res.json({ success: true, data: entries });
 });
 
 // Export CSV

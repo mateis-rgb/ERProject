@@ -3,7 +3,7 @@ import { Router, Request, Response } from "express";
 import { z } from "zod";
 import {
     createMilestone, listMilestones, updateMilestone, deleteMilestone,
-    linkStockToMilestone, unlinkStockFromMilestone, getMilestoneStock, getAvailabilityAt,
+    linkStockToMilestone, unlinkStockFromMilestone, getMilestoneStock, getAvailability,
 } from "../services/milestoneService";
 import { validateBody, validateQuery } from "../middleware/validation";
 import { requireAuth, requireRole } from "../middleware/auth";
@@ -97,13 +97,20 @@ milestoneRouter.delete("/milestones/:id/stock/:stockItemId", requireRole("EDITOR
     res.json({ success: true, data: { message: "Réservation supprimée" } });
 });
 
-// Disponibilité d'un article à une date (stock - réservations jalons actifs)
-const availSchema = z.object({ date: dateSchema.optional() });
+// Disponibilité d'un article sur une plage [from, to] (défaut : maintenant)
+// Règle : pris sur un projet = indisponible, sauf si rentré (RETURN) avant la fin du jalon
+const availSchema = z.object({
+    date: dateSchema.optional(),
+    from: dateSchema.optional(),
+    to: dateSchema.optional(),
+});
 
 milestoneRouter.get("/stock/:stockItemId/availability", validateQuery(availSchema), async (req: Request, res: Response) => {
     const sid = req.params.stockItemId ?? "";
-    const q = req.query as { date?: string };
-    const date = q.date !== undefined ? new Date(q.date) : new Date();
-    const avail = await getAvailabilityAt(sid, date);
+    const q = req.query as { date?: string; from?: string; to?: string };
+    const now = new Date();
+    const from = q.from !== undefined ? new Date(q.from) : (q.date !== undefined ? new Date(q.date) : now);
+    const to = q.to !== undefined ? new Date(q.to) : from;
+    const avail = await getAvailability(sid, from, to);
     res.json({ success: true, data: avail });
 });

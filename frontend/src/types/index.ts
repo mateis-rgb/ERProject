@@ -127,10 +127,19 @@ export interface MilestoneStockLink {
 
 export interface Availability {
     stockItemId: string;
+    from?: string;
+    to?: string;
     totalQuantity: number;
     reserved: number;
     available: number;
-    reservations: Array<{ milestoneId: string; projectId: string; milestoneName: string; quantity: number }>;
+    reservations: Array<{ milestoneId: string | null; projectId: string; label: string; quantity: number }>;
+}
+
+export interface AvailabilityEntry {
+    stockItemId: string;
+    totalQuantity: number;
+    reserved: number;
+    available: number;
 }
 
 export type ApiResult<T> =

@@ -3,7 +3,7 @@ import { useTranslation } from "../i18n/I18nContext";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../services/api";
-import { StockItem } from "../types";
+import { StockItem, AvailabilityEntry } from "../types";
 import { useAuth } from "../context/AppContext";
 import { useModules } from "../context/ModulesContext";
 import StockTabs, { StockTabId } from "../components/StockTabs";
@@ -40,11 +40,27 @@ function StockHeader(p: HeaderProps): JSX.Element {
     );
 }
 
+// Dispo de tous les articles à aujourd'hui (pris sur un projet = indisponible)
+function useAvailability(): Record<string, AvailabilityEntry> {
+    const [avail, setAvail] = useState<Record<string, AvailabilityEntry>>({});
+    useEffect(() => {
+        api.get<AvailabilityEntry[]>("/api/stock/availability").then((r) => {
+            if (r.success) {
+                const map: Record<string, AvailabilityEntry> = {};
+                for (const a of r.data) map[a.stockItemId] = a;
+                setAvail(map);
+            }
+        });
+    }, []);
+    return avail;
+}
+
 export default function Stock(): JSX.Element {
     const { t } = useTranslation();
     const { user } = useAuth();
     const [tab, setTab] = useState<StockTabId>("inventory");
     const [items, setItems] = useState<StockItem[]>([]);
+    const avail = useAvailability();
     const [search, setSearch] = useState("");
     const [lowOnly, setLowOnly] = useState(false);
     const [showForm, setShowForm] = useState(false);
@@ -83,7 +99,7 @@ export default function Stock(): JSX.Element {
                             Stock faible
                         </label>
                     </div>
-                    <StockTable items={items} onChanged={load} canEdit={canEdit} />
+                    <StockTable items={items} avail={avail} onChanged={load} canEdit={canEdit} />
                 </>
             )}
             {tab === "movements" && <StockMovementsSection items={items} />}

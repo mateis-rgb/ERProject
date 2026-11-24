@@ -63,6 +63,13 @@ export interface ProjectStockDTO {
     milestoneId: string | null;
 }
 
+export interface AvailabilityEntry {
+    stockItemId: string;
+    totalQuantity: number;
+    reserved: number;
+    available: number;
+}
+
 export interface DashboardKPIs {
     totalProjects: number;
     activeProjects: number;

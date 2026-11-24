@@ -281,7 +281,9 @@
         "article": "Article",
         "affectation": "Affectation",
         "ref": "Réf.",
-        "qty": "Qté"
+        "qty": "Qté",
+        "dispo": "Dispo",
+        "unavailable": "INDISPO"
     },
     "movement": {
         "in": "⬇️ Entrée",

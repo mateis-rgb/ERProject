@@ -1,6 +1,7 @@
 // Service Jalons (Milestones) - CRUD + réservation stock via ProjectStock.milestoneId (Power of 10)
 import { getPrisma } from "../config/prisma";
-import { assert } from "../utils/power10";
+import { assert, MAX_ITERATIONS } from "../utils/power10";
+import { earliestReturnsByProject, sumReserved, toReservationLink } from "../utils/availability";
 
 export interface MilestoneDTO {
     id: string;
@@ -163,46 +164,56 @@ export async function getMilestoneStock(milestoneId: string): Promise<MilestoneS
     }));
 }
 
-// --- Disponibilité d'un article à une date donnée ---
-// dispo = stock actuel - réservations des jalons couvrant la date (via ProjectStock.milestoneId)
-export async function getAvailabilityAt(stockItemId: string, date: Date): Promise<{
+// --- Disponibilité d'un article sur une plage [from, to] ---
+// Règle : un article pris sur un projet est indisponible sur la période de réservation
+// (jalon, ou projet entier si milestoneId null). Un mouvement RETURN du même projet
+// avant la fin de la période tronque la réservation à la date du retour.
+export interface AvailabilityDTO {
     stockItemId: string;
+    from: Date;
+    to: Date;
     totalQuantity: number;
     reserved: number;
     available: number;
-    reservations: Array<{ milestoneId: string; projectId: string; milestoneName: string; quantity: number }>;
-}> {
-    assertId(stockItemId, "getAvailabilityAt");
+    reservations: Array<{ milestoneId: string | null; projectId: string; label: string; quantity: number }>;
+}
+
+export async function getAvailability(stockItemId: string, from: Date, to: Date): Promise<AvailabilityDTO> {
+    assertId(stockItemId, "getAvailability");
+    assert(from <= to, "getAvailability: from > to");
     const prisma = getPrisma();
     const item = await prisma.stockItem.findUnique({ where: { id: stockItemId } });
     if (item === null) throw new Error("Article introuvable");
 
     const links = await prisma.projectStock.findMany({
-        where: {
-            stockItemId,
-            milestoneId: { not: null },
-            milestone: { startDate: { lte: date }, endDate: { gte: date } },
+        where: { stockItemId, allocatedQuantity: { gt: 0 } },
+        include: {
+            milestone: { select: { name: true, startDate: true, endDate: true } },
+            project: { select: { name: true, startDate: true, endDate: true } },
         },
-        include: { milestone: { select: { id: true, name: true, projectId: true } } },
-        take: 100,
+        take: MAX_ITERATIONS,
+    });
+    const returns = await prisma.stockMovement.findMany({
+        where: { stockItemId, type: "RETURN" },
+        select: { projectId: true, date: true },
+        orderBy: { date: "asc" },
+        take: MAX_ITERATIONS,
     });
 
-    let reserved = 0;
-    const reservations = links.map((l) => {
-        reserved += l.allocatedQuantity;
-        return {
-            milestoneId: l.milestone?.id ?? "",
-            projectId: l.milestone?.projectId ?? "",
-            milestoneName: l.milestone?.name ?? "",
-            quantity: l.allocatedQuantity,
-        };
-    });
+    const returnByProject = earliestReturnsByProject(returns, MAX_ITERATIONS);
+    const { reserved, blocking } = sumReserved(
+        links.map(toReservationLink), returnByProject, from, to, MAX_ITERATIONS
+    );
 
     return {
         stockItemId,
+        from,
+        to,
         totalQuantity: item.quantity,
         reserved,
         available: Math.max(0, item.quantity - reserved),
-        reservations,
+        reservations: blocking.map((l) => ({
+            milestoneId: l.milestoneId, projectId: l.projectId, label: l.label, quantity: l.quantity,
+        })),
     };
 }

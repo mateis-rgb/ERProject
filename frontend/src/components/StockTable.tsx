@@ -1,15 +1,67 @@
 // Tableau du stock (Power of 10 R4)
 import { useTranslation } from "../i18n/I18nContext";
-import { StockItem } from "../types";
+import { StockItem, AvailabilityEntry } from "../types";
 import { api } from "../services/api";
 
 interface Props {
     items: StockItem[];
+    avail: Record<string, AvailabilityEntry>;
     canEdit: boolean;
     onChanged: () => void;
 }
 
-export default function StockTable({ items, canEdit, onChanged }: Props): JSX.Element {
+interface RowProps {
+    item: StockItem;
+    avail: AvailabilityEntry | undefined;
+    canEdit: boolean;
+    onDelete: (id: string) => void;
+}
+
+function StockRow({ item, avail: a, canEdit, onDelete }: RowProps): JSX.Element {
+    const { t } = useTranslation();
+    const isLow = item.quantity <= item.minThreshold;
+    const unavailable = a !== undefined && a.reserved > 0 && a.available <= 0;
+    return (
+        <tr style={isLow ? { backgroundColor: "rgba(239,68,68,0.1)" } : undefined}>
+            <td className="table-cell" style={{ fontWeight: 600 }}>{item.name}</td>
+            <td className="table-cell">{item.reference}</td>
+            <td className="table-cell">
+                <strong style={isLow ? { color: "var(--danger)" } : undefined}>
+                    {item.quantity} {item.unit}
+                </strong>
+            </td>
+            <td className="table-cell">
+                {a === undefined ? "—" : (
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem" }}>
+                        <strong style={unavailable ? { color: "var(--danger)" } : undefined}>
+                            {a.available}/{a.totalQuantity}
+                        </strong>
+                        {unavailable && (
+                            <span style={{
+                                border: "var(--border-w) solid var(--ink)", boxShadow: "var(--shadow-btn)",
+                                background: "var(--danger)", color: "#fff",
+                                padding: "0.1rem 0.45rem", fontSize: "0.68rem", fontWeight: 700, textTransform: "uppercase",
+                            }}>
+                                {t("stock.unavailable")}
+                            </span>
+                        )}
+                    </span>
+                )}
+            </td>
+            <td className="table-cell">{item.category || "—"}</td>
+            <td className="table-cell">{item.location || "—"}</td>
+            <td className="table-cell">{item.minThreshold}</td>
+            <td className="table-cell">{item.purchasePrice !== null ? `${item.purchasePrice} €` : "—"}</td>
+            {canEdit && (
+                <td className="table-cell">
+                    <button className="btn-danger" style={{ padding: "0.125rem 0.5rem", fontSize: "0.75rem" }} onClick={() => onDelete(item.id)}>✕</button>
+                </td>
+            )}
+        </tr>
+    );
+}
+
+export default function StockTable({ items, avail, canEdit, onChanged }: Props): JSX.Element {
     const { t } = useTranslation();
     const deleteItem = async (id: string): Promise<void> => {
         if (!confirm(t("stock.deleteConfirm"))) return;
@@ -25,6 +77,7 @@ export default function StockTable({ items, canEdit, onChanged }: Props): JSX.El
                         <th className="table-header">{t("drive.name")}</th>
                         <th className="table-header">{t("stock.ref")}</th>
                         <th className="table-header">{t("stock.qty")}</th>
+                        <th className="table-header">{t("stock.dispo")}</th>
                         <th className="table-header">{t("stock.category")}</th>
                         <th className="table-header">{t("stock.location")}</th>
                         <th className="table-header">Seuil</th>
@@ -33,31 +86,11 @@ export default function StockTable({ items, canEdit, onChanged }: Props): JSX.El
                     </tr>
                 </thead>
                 <tbody>
-                    {items.map((item) => {
-                        const isLow = item.quantity <= item.minThreshold;
-                        return (
-                            <tr key={item.id} style={isLow ? { backgroundColor: "rgba(239,68,68,0.1)" } : undefined}>
-                                <td className="table-cell" style={{ fontWeight: 600 }}>{item.name}</td>
-                                <td className="table-cell">{item.reference}</td>
-                                <td className="table-cell">
-                                    <strong style={isLow ? { color: "var(--danger)" } : undefined}>
-                                        {item.quantity} {item.unit}
-                                    </strong>
-                                </td>
-                                <td className="table-cell">{item.category || "—"}</td>
-                                <td className="table-cell">{item.location || "—"}</td>
-                                <td className="table-cell">{item.minThreshold}</td>
-                                <td className="table-cell">{item.purchasePrice !== null ? `${item.purchasePrice} €` : "—"}</td>
-                                {canEdit && (
-                                    <td className="table-cell">
-                                        <button className="btn-danger" style={{ padding: "0.125rem 0.5rem", fontSize: "0.75rem" }} onClick={() => deleteItem(item.id)}>✕</button>
-                                    </td>
-                                )}
-                            </tr>
-                        );
-                    })}
+                    {items.map((item) => (
+                        <StockRow key={item.id} item={item} avail={avail[item.id]} canEdit={canEdit} onDelete={(id) => void deleteItem(id)} />
+                    ))}
                     {items.length === 0 && (
-                        <tr><td className="table-cell" colSpan={8} style={{ textAlign: "center", color: "var(--muted)" }}>Aucun article</td></tr>
+                        <tr><td className="table-cell" colSpan={9} style={{ textAlign: "center", color: "var(--muted)" }}>Aucun article</td></tr>
                     )}
                 </tbody>
             </table>

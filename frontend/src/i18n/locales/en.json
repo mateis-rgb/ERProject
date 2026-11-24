@@ -281,7 +281,9 @@
         "article": "Item",
         "affectation": "Assignment",
         "ref": "Ref.",
-        "qty": "Qty"
+        "qty": "Qty",
+        "dispo": "Avail.",
+        "unavailable": "OUT"
     },
     "movement": {
         "in": "⬇️ In",

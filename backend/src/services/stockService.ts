@@ -1,7 +1,8 @@
 // Service Stock - Power of 10 : fonctions courtes, boucles bornées, assertions
 import { getPrisma } from "../config/prisma";
-import { assert, boundedForEach } from "../utils/power10";
-import { StockItemDTO, StockMovementDTO, ProjectStockDTO } from "../types";
+import { assert, boundedForEach, MAX_ITERATIONS } from "../utils/power10";
+import { earliestReturnsByProject, sumReserved, toReservationLink, ReservationLink } from "../utils/availability";
+import { StockItemDTO, StockMovementDTO, ProjectStockDTO, AvailabilityEntry } from "../types";
 import { MovementType } from "@prisma/client";
 import { logActivity } from "./activityService";
 import { emitGlobal } from "./socketService";
@@ -316,4 +317,52 @@ export async function getStockValue(): Promise<number> {
         }
     });
     return total;
+}
+
+// Disponibilité de tous les articles à une date donnée (règle availability.ts)
+export async function getAvailabilityMap(at: Date): Promise<AvailabilityEntry[]> {
+    const prisma = getPrisma();
+    const items = await prisma.stockItem.findMany({
+        select: { id: true, quantity: true },
+        take: MAX_ITERATIONS,
+    });
+    const links = await prisma.projectStock.findMany({
+        where: { allocatedQuantity: { gt: 0 } },
+        include: {
+            milestone: { select: { name: true, startDate: true, endDate: true } },
+            project: { select: { name: true, startDate: true, endDate: true } },
+        },
+        take: MAX_ITERATIONS,
+    });
+    const returns = await prisma.stockMovement.findMany({
+        where: { type: "RETURN" },
+        select: { stockItemId: true, projectId: true, date: true },
+        orderBy: { date: "asc" },
+        take: MAX_ITERATIONS,
+    });
+
+    const linksByItem = new Map<string, ReservationLink[]>();
+    for (const l of links.slice(0, MAX_ITERATIONS)) {
+        const list = linksByItem.get(l.stockItemId) ?? [];
+        list.push(toReservationLink(l));
+        linksByItem.set(l.stockItemId, list);
+    }
+    const returnsByItem = new Map<string, Array<{ projectId: string | null; date: Date }>>();
+    for (const r of returns.slice(0, MAX_ITERATIONS)) {
+        const list = returnsByItem.get(r.stockItemId) ?? [];
+        list.push({ projectId: r.projectId, date: r.date });
+        returnsByItem.set(r.stockItemId, list);
+    }
+
+    return items.slice(0, MAX_ITERATIONS).map((it) => {
+        const itemLinks = linksByItem.get(it.id) ?? [];
+        const itemReturns = returnsByItem.get(it.id) ?? [];
+        const { reserved } = sumReserved(itemLinks, earliestReturnsByProject(itemReturns, MAX_ITERATIONS), at, at, MAX_ITERATIONS);
+        return {
+            stockItemId: it.id,
+            totalQuantity: it.quantity,
+            reserved,
+            available: Math.max(0, it.quantity - reserved),
+        };
+    });
 }
