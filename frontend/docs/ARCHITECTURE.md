@@ -5,7 +5,7 @@
 ```
 main.tsx → providers (I18n > ErrorBoundary > Theme > Auth > Notifications > Modules)
               └── App.tsx → Layout (Sidebar fixe + TopBar + CommandPalette) → Routes
-                            └── pages/ → components/ → services/api.ts → backend
+                            └── pages/ → components/<domaine>/ → hooks/ → services/api.ts → backend
 ```
 
 ## Router (`App.tsx`)

@@ -30,7 +30,9 @@ frontend/
     ├── main.tsx            # providers (I18n, Theme, Auth, Notifications, Modules) + frontLogger
     ├── App.tsx             # router (routes /projects/:id/:tab, /settings/:tab, pages d'erreur)
     ├── pages/              # Dashboard, Projects, ProjectDetail, Stock, Settings, Login, Admin…
-    ├── components/         # composants < 60 lignes (Power of 10 R4)
+    ├── components/         # composants < 60 lignes (Power of 10 R4), par domaine :
+    │   │                   # layout/ ui/ auth/ dashboard/ projects/ gantt/ drive/ stock/ settings/ notifications/
+    ├── hooks/              # hooks réutilisables (use*.ts)
     ├── context/            # AppContext (auth+thème), NotificationContext (+WebSocket), ModulesContext, I18nContext
     ├── services/           # api.ts (client HTTP + auto-refresh 401), frontLogger.ts
     ├── i18n/locales/       # fr.json + en.json (système dynamique)
