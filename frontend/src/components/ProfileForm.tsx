@@ -1,3 +1,4 @@
+import { FiAlertTriangle } from "react-icons/fi";
 // Formulaire changement de nom / mot de passe (Power of 10 R4)
 import { useTranslation } from "../i18n/I18nContext";
 import { useState, FormEvent } from "react";
@@ -43,7 +44,7 @@ export default function ProfileForm({ onSaved }: Props): JSX.Element {
             {error !== null && (
                 <p style={{ color: "var(--danger)", border: "2px solid var(--danger)", padding: "0.4rem 0.6rem",
                     fontFamily: "var(--font-mono)", fontSize: "0.75rem", fontWeight: 700, margin: 0 }}>
-                    ⚠ {error}
+                    <FiAlertTriangle /> {error}
                 </p>
             )}
             <div>

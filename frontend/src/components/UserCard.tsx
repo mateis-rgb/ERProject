@@ -1,4 +1,4 @@
-// Carte utilisateur en bas de sidebar - clic → réglages/sécurité (Power of 10 R4)
+// Carte utilisateur en bas de sidebar - clic  réglages/sécurité (Power of 10 R4)
 import { useNavigate } from "react-router-dom";
 import { AuthUser } from "../types";
 import { useTranslation } from "../i18n/I18nContext";

@@ -1,3 +1,4 @@
+import { FiAlertTriangle, FiCheckCircle, FiClipboard, FiExternalLink, FiSettings, FiUpload, FiXCircle } from "react-icons/fi";
 // Section Mises à jour (settings/about) - check GitHub releases + procédure guidée (rien n'est exécuté auto) (Power of 10 R4)
 import { useEffect, useState } from "react";
 import { api } from "../services/api";
@@ -62,7 +63,7 @@ function StepRow({ n, step }: { n: number; step: Step }): JSX.Element {
                             }}>{c.cmd}</code>
                             <button className="btn-ghost" style={{ padding: "0.25rem 0.5rem", fontSize: "0.72rem", flexShrink: 0 }}
                                 onClick={() => copy(c.cmd)}>
-                                {copied === c.cmd ? "✅" : "📋"}
+                                {copied === c.cmd ? <FiCheckCircle /> : <FiClipboard />}
                             </button>
                         </div>
                     </div>
@@ -78,7 +79,7 @@ function UpdateModal({ info, steps, onClose }: { info: UpdateInfo; steps: Step[]
         <div className="modal-backdrop" onClick={onClose}>
             <div className="modal" style={{ maxWidth: "560px", maxHeight: "80vh", overflow: "auto" }} onClick={(e) => e.stopPropagation()}>
                 <h3 style={{ margin: "0 0 0.5rem", fontSize: "1rem", fontWeight: 700, textTransform: "uppercase" }}>
-                    ⬆ {t("update.modalTitle")} {info.latest ?? ""}
+                    <FiUpload /> {t("update.modalTitle")} {info.latest ?? ""}
                 </h3>
                 <p style={{ margin: "0 0 0.75rem", fontSize: "0.8rem", color: "var(--muted)" }}>{t("update.modalHint")}</p>
                 {info.changelog !== "" && (
@@ -102,17 +103,17 @@ function UpdateModal({ info, steps, onClose }: { info: UpdateInfo; steps: Step[]
 function UpdateStatus({ info, onUpdateNow }: { info: UpdateInfo; onUpdateNow: () => void }): JSX.Element {
     const { t } = useTranslation();
     if (!info.enabled) return <p style={{ color: "var(--muted)", fontSize: "0.85rem" }}>{t("update.disabled")}</p>;
-    if (info.error !== null) return <p style={{ color: "var(--danger)", fontSize: "0.85rem" }}>⚠️ {t("update.error")} : {info.error}</p>;
-    if (!info.available) return <p style={{ color: "var(--green)", fontSize: "0.85rem", fontWeight: 700 }}>✅ {t("update.upToDate")} (v{info.current})</p>;
+    if (info.error !== null) return <p style={{ color: "var(--danger)", fontSize: "0.85rem" }}><FiAlertTriangle /> {t("update.error")} : {info.error}</p>;
+    if (!info.available) return <p style={{ color: "var(--green)", fontSize: "0.85rem", fontWeight: 700 }}><FiCheckCircle /> {t("update.upToDate")} (v{info.current})</p>;
     return (
         <div>
             <p style={{ color: "var(--accent)", fontSize: "0.9rem", fontWeight: 700, margin: "0 0 0.5rem" }}>
-                ⬆ {t("update.available")} : {info.latest} (v{info.current} locale)
+                <FiUpload /> {t("update.available")} : {info.latest} (v{info.current} locale)
             </p>
             <button className="btn" onClick={onUpdateNow}>{t("update.updateNow")}</button>
             {info.url !== null && (
                 <a href={info.url} target="_blank" rel="noreferrer" style={{ marginLeft: "0.75rem", fontSize: "0.8rem", color: "var(--accent)" }}>
-                    {t("update.releaseNotes")} ↗
+                    {t("update.releaseNotes")} <FiExternalLink />
                 </a>
             )}
         </div>
@@ -159,10 +160,10 @@ function RepoModal({ initial, onSaved, onClose, label }: RepoModalProps): JSX.El
                 {verify !== null && (
                     <p style={{ margin: "0.75rem 0 0", fontSize: "0.82rem", fontWeight: 700, color: verify.ok ? "var(--green)" : "var(--danger)" }}>
                         {verify.ok
-                            ? `✅ ${verify.fullName ?? ""} — branche ${verify.defaultBranch ?? "?"}`
-                            : `❌ ${verify.error ?? "?"}`}
+                            ? <><FiCheckCircle /> {verify.fullName ?? ""} — branche {verify.defaultBranch ?? "?"}</>
+                            : <><FiXCircle /> {verify.error ?? "?"}</>}
                         {verify.ok && verify.url !== null && (
-                            <> · <a href={verify.url} target="_blank" rel="noreferrer" style={{ color: "var(--accent)" }}>GitHub ↗</a></>
+                            <> · <a href={verify.url} target="_blank" rel="noreferrer" style={{ color: "var(--accent)" }}>GitHub <FiExternalLink /></a></>
                         )}
                     </p>
                 )}
@@ -195,7 +196,7 @@ function RepoChip({ onChanged }: { onChanged: () => void }): JSX.Element {
             <button className="btn-ghost" title={t("update.repoChipHint")}
                 style={{ position: "absolute", top: "0.75rem", right: "0.75rem", padding: "0.2rem 0.6rem", fontSize: "0.72rem" }}
                 onClick={() => setOpen(true)}>
-                ⚙ {info !== null && info.configured !== "" ? info.configured : t("update.repoChip")}
+                <FiSettings /> {info !== null && info.configured !== "" ? info.configured : t("update.repoChip")}
             </button>
             {open && <RepoModal initial={info?.configured ?? ""} onSaved={handleSaved} onClose={() => setOpen(false)} label={t} />}
         </>

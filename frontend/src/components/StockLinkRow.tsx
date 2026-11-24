@@ -1,3 +1,4 @@
+import { FiX } from "react-icons/fi";
 // Ligne du tableau des liaisons stock (Power of 10 R4)
 import { useTranslation } from "../i18n/I18nContext";
 import { ProjectStockLink, Milestone } from "../types";
@@ -40,7 +41,7 @@ export default function StockLinkRow({ link, label, milestones, canEdit, onAffec
             <td className="table-cell">
                 {canEdit && (
                     <button className="btn-danger" style={{ padding: "0.1rem 0.4rem", boxShadow: "2px 2px 0 var(--danger)" }}
-                        onClick={() => onRemove(link.stockItemId)}>✕</button>
+                        onClick={() => onRemove(link.stockItemId)}><FiX /></button>
                 )}
             </td>
         </tr>

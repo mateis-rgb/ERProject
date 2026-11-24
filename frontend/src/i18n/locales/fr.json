@@ -18,15 +18,15 @@
         "saving": "Enregistrement...",
         "confirm": "Confirmer",
         "nameRequired": "Nom *",
-        "exportCsv": "↓ CSV",
-        "exportJson": "↓ JSON",
+        "exportCsv": "CSV",
+        "exportJson": "JSON",
         "noResult": "Aucun résultat.",
         "details": "Détails",
         "irreversible": "Irréversible.",
         "creating": "Création..."
     },
     "login": {
-        "tagline": "Régie de production — Projets & Stock",
+        "tagline": "Régie de production Projets & Stock",
         "title": "Connexion",
         "email": "Email",
         "password": "Mot de passe",
@@ -63,7 +63,7 @@
         "apply": "Appliquer à un projet",
         "applyGo": "Appliquer",
         "applied": "Modèle appliqué au projet (jalons, dossiers et collaborateurs créés).",
-        "chooseProject": "Choisir un projet…",
+        "chooseProject": "Choisir un projet",
         "deleteTitle": "Supprimer ce modèle ?",
         "deleteMsg": "Le modèle sera supprimé définitivement. Les projets déjà créés à partir de ce modèle ne sont pas affectés.",
         "empty": "Aucun modèle. Créez un modèle pour pré-structurer vos projets.",
@@ -81,7 +81,7 @@
     },
     "modules": {
         "title": "Modules",
-        "hint": "Activez ou désactivez les fonctionnalités de l'application. Préparation de la modularité — certains modules sont encore expérimentaux.",
+        "hint": "Activez ou désactivez les fonctionnalités de l'application. Préparation de la modularité certains modules sont encore expérimentaux.",
         "on": "Activé",
         "off": "Désactivé",
         "viewList": "Liste",
@@ -112,7 +112,7 @@
         }
     },
     "about": {
-        "description": "ERProjects est une application self-hosted de gestion de projets (production audiovisuelle) et de stock lié : planning Gantt avec jalons, drive documentaire avec quotas, gestion des utilisateurs et des accès, notifications temps réel.",
+        "description": "ERProjects est une application self-hosted de gestion de projets (production audiovisuelle) et de stock lié: planning Gantt avec jalons, drive documentaire avec quotas, gestion des utilisateurs et des accès, notifications temps réel.",
         "version": "Version courante",
         "authors": "Auteurs",
         "teamChip": "Équipe ERProjects",
@@ -134,9 +134,9 @@
     "update": {
         "title": "Mises à jour",
         "check": "Vérifier les mises à jour",
-        "checking": "Vérification…",
-        "hint": "Interroge les releases GitHub du dépôt configuré (Réglages → Application). Rien n'est exécuté automatiquement.",
-        "disabled": "Aucun dépôt configuré — renseignez owner/repo dans Réglages → Application.",
+        "checking": "Vérification",
+        "hint": "Interroge les releases GitHub du dépôt configuré (Réglages -> Application). Rien n'est exécuté automatiquement.",
+        "disabled": "Aucun dépôt configuré renseignez owner/repo dans Réglages -> Application.",
         "error": "Vérification impossible",
         "upToDate": "Application à jour",
         "available": "Mise à jour disponible",
@@ -144,24 +144,24 @@
         "releaseNotes": "Notes de release",
         "toastAvailable": "Mise à jour disponible",
         "modalTitle": "Procédure de mise à jour",
-        "modalHint": "Aucune commande n'est exécutée automatiquement : copiez chaque étape et exécutez-la dans votre terminal.",
+        "modalHint": "Aucune commande n'est exécutée automatiquement: copiez chaque étape et exécutez-la dans votre terminal.",
         "changelog": "Notes de version",
         "step1Title": "Sauvegarder la base de données",
         "step1Desc": "Avant toute mise à jour, exportez la base PostgreSQL.",
         "step1Cmd": "pg_dump \"$DATABASE_URL\" > erprojects-backup-$(date +%F).sql",
         "step2Title": "Récupérer la nouvelle version",
-        "step2Desc": "Selon votre déploiement (choisissez la bonne commande) : Docker Compose, ou git clone.",
+        "step2Desc": "Selon votre déploiement (choisissez la bonne commande): Docker Compose, ou git clone.",
         "step2CmdDocker": "docker compose pull && docker compose up -d",
         "step2CmdGit": "git pull && npm ci && npm run build",
-        "step2DockerLabel": "prod — Docker Compose",
-        "step2GitLabel": "dev — git clone",
+        "step2DockerLabel": "prod Docker Compose",
+        "step2GitLabel": "dev git clone",
         "repoChip": "Dépôt git",
         "repoChipHint": "Configurer le dépôt GitHub des mises à jour",
         "repoModalTitle": "Dépôt de mises à jour",
         "repoModalHint": "Format owner/repo (ex: mateis/erprojects). Le dépôt est vérifié via l/API GitHub à l/enregistrement.",
         "repoSave": "Enregistrer",
         "step3Title": "Vérifier le redémarrage",
-        "step3Desc": "L'API doit répondre ; les migrations Prisma sont appliquées au boot (sinon : npx prisma migrate deploy dans backend/).",
+        "step3Desc": "L'API doit répondre ; les migrations Prisma sont appliquées au boot (sinon: npx prisma migrate deploy dans backend/).",
         "step3Cmd": "curl -s http://localhost:3001/health",
         "step4Title": "Rafraîchir l'application",
         "step4Desc": "Rechargez cette page (Ctrl+Shift+R) pour charger le nouveau front."
@@ -204,7 +204,7 @@
         "migrateFrom": "Depuis",
         "migrateTo": "Vers",
         "migrateConfirm": "Migrer",
-        "migratingTitle": "Migration du stockage en cours…"
+        "migratingTitle": "Migration du stockage en cours"
     },
     "appearance": {
         "title": "Apparence",
@@ -225,7 +225,7 @@
         "noUpcoming": "Aucun à venir"
     },
     "projects": {
-        "search": "🔍 Rechercher un projet...",
+        "search": "Rechercher un projet...",
         "newProject": "+ Nouveau projet",
         "createProject": "Créer le projet"
     },
@@ -243,14 +243,14 @@
         "deleteMsg": "Suppression définitive du projet (et de ses jalons, liens stock, drive et temps passé)",
         "client": "Client",
         "type": "Type",
-        "budget": "Budget (€)",
+        "budget": "Budget ()",
         "startDate": "Début",
         "endDate": "Fin",
         "status": "Statut",
         "tags": "Tags (séparés par des virgules)",
         "tagsHint": "Séparer par des virgules",
         "tagsPlaceholder": "ex: pub, 4K, urgent",
-        "saved": "Projet enregistré ✅",
+        "saved": "Projet enregistré",
         "kpiMilestones": "Jalons",
         "kpiTime": "Temps passé",
         "searchCollaborator": "Rechercher un collaborateur...",
@@ -270,7 +270,7 @@
         "category": "Catégorie",
         "location": "Emplacement",
         "supplier": "Fournisseur",
-        "purchasePrice": "Prix d'achat (€)",
+        "purchasePrice": "Prix d'achat ()",
         "minThreshold": "Seuil min",
         "referenceRequired": "Référence *",
         "quantity": "Quantité",
@@ -295,9 +295,9 @@
         "editArticle": "Modifier larticle"
     },
     "movement": {
-        "in": "⬇️ Entrée",
-        "out": "⬆️ Sortie",
-        "return": "↩️ Retour",
+        "in": "Entrée",
+        "out": "Sortie",
+        "return": "Retour",
         "reasonPlaceholder": "Motif..."
     },
     "drive": {
@@ -306,7 +306,7 @@
         "newFolder": "+ Dossier",
         "empty": "Dossier vide.",
         "quotaUnlimited": "quota illimité",
-        "attachments": "📎 Pièces jointes",
+        "attachments": "Pièces jointes",
         "noFiles": "Aucune pièce jointe",
         "moveTo": "Déplacer vers",
         "modified": "Modifié",
@@ -375,7 +375,7 @@
         "nothingToChange": "Rien à modifier."
     },
     "quota": {
-        "label": "Quota (octets) — laisser vide pour illimité"
+        "label": "Quota (octets) laisser vide pour illimité"
     },
     "cmd": {
         "placeholder": "Rechercher un projet, un article, un user... (ou naviguer)"
@@ -389,7 +389,7 @@
         "404Body": "Cette page n'existe pas (ou plus)."
     },
     "activity": {
-        "title": "📋 Journal d'activité",
+        "title": "Journal d'activité",
         "none": "Aucune activité"
     }
 }

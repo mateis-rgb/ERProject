@@ -1,3 +1,4 @@
+import { FiEdit2, FiFileText, FiFolder, FiX } from "react-icons/fi";
 // Ligne du drive en grid - draggable, et cible de dépôt si c'est un dossier (Power of 10 R4)
 import { useTranslation } from "../i18n/I18nContext";
 import { Attachment } from "../types";
@@ -35,11 +36,11 @@ export default function DriveRow(props: Props): JSX.Element {
                 {item.isFolder ? (
                     <button className="btn-ghost" style={{ padding: "0.15rem 0.5rem", fontSize: "0.78rem" }}
                         onClick={() => onOpen(item)}>
-                        📁 {item.fileName}
+                        <FiFolder /> {item.fileName}
                     </button>
                 ) : (
                     <a href={`/api/attachments/download/${item.id}`} style={{ color: "var(--accent)", fontWeight: 700 }}>
-                        📄 {item.fileName}
+                        <FiFileText /> {item.fileName}
                     </a>
                 )}
             </div>
@@ -61,9 +62,9 @@ export default function DriveRow(props: Props): JSX.Element {
             {canEdit && (
                 <div style={driveRowCell}>
                     <button className="btn-ghost" style={{ padding: "0.1rem 0.4rem", fontSize: "0.72rem", marginRight: "0.3rem" }}
-                        onClick={() => onRename(item)}>✎</button>
+                        onClick={() => onRename(item)}><FiEdit2 /></button>
                     <button className="btn-danger" style={{ padding: "0.1rem 0.4rem", boxShadow: "2px 2px 0 var(--danger)" }}
-                        onClick={() => onRemove(item)}>✕</button>
+                        onClick={() => onRemove(item)}><FiX /></button>
                 </div>
             )}
         </div>

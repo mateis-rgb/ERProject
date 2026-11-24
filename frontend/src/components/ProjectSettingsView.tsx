@@ -1,3 +1,4 @@
+import { FiAlertTriangle } from "react-icons/fi";
 // Vue de l'onglet réglages projet (Power of 10 R4)
 import { useTranslation } from "../i18n/I18nContext";
 import { Project, AuthUser } from "../types";
@@ -34,7 +35,7 @@ export default function ProjectSettingsView(props: Props): JSX.Element {
                     <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                         <button className="btn" onClick={onSave}>{t("common.save")}</button>
                         {msg !== null && <span className="mono" style={{ color: "var(--ok, #3ddc68)", fontSize: "0.78rem" }}>{msg}</span>}
-                        {err !== null && <span className="mono" style={{ color: "var(--danger)", fontSize: "0.78rem" }}>⚠ {err}</span>}
+                        {err !== null && <span className="mono" style={{ color: "var(--danger)", fontSize: "0.78rem" }}><FiAlertTriangle /> {err}</span>}
                     </div>
                 )}
             </div>

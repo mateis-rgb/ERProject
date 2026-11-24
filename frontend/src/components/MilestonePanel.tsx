@@ -1,3 +1,4 @@
+import { FiArrowRight } from "react-icons/fi";
 // Panneau détail d'un jalon (Power of 10 R4)
 import { useState } from "react";
 import { Milestone, StockItem } from "../types";
@@ -29,7 +30,7 @@ export default function MilestonePanel({ milestone, milestones, projectId, stock
                 <h3 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 700, textTransform: "uppercase" }}>{milestone.name}</h3>
             </div>
             <p className="mono" style={{ fontSize: "0.75rem", color: "var(--muted)", margin: "0.5rem 0" }}>
-                {new Date(milestone.startDate).toLocaleDateString("fr-FR")} → {new Date(milestone.endDate).toLocaleDateString("fr-FR")}
+                {new Date(milestone.startDate).toLocaleDateString("fr-FR")} <FiArrowRight /> {new Date(milestone.endDate).toLocaleDateString("fr-FR")}
             </p>
             {milestone.description && <p style={{ fontSize: "0.85rem", color: "var(--muted)" }}>{milestone.description}</p>}
             <MilestoneStockList milestoneId={milestone.id} stockItems={stockItems} canEdit={canEdit} onChanged={onChanged} />

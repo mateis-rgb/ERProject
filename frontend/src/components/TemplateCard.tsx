@@ -1,3 +1,4 @@
+import { FiFlag, FiFolder, FiUsers } from "react-icons/fi";
 // Carte d'un modèle de projet - édition, application à un projet, suppression (Power of 10 R4)
 import { useState } from "react";
 import { api } from "../services/api";
@@ -81,7 +82,7 @@ export default function TemplateCard(props: Props): JSX.Element {
                     <strong style={{ fontSize: "1rem" }}>{tpl.name}</strong>
                     <p style={{ margin: "0.25rem 0 0", color: "var(--muted)", fontSize: "0.85rem" }}>{tpl.description}</p>
                     <p className="mono" style={{ margin: "0.4rem 0 0", fontSize: "0.7rem", color: "var(--muted)" }}>
-                        🚩 {tpl.milestones.length} · 📁 {tpl.folders.length} · 👥 {tpl.collaboratorIds.length}
+                        <FiFlag /> {tpl.milestones.length} · <FiFolder /> {tpl.folders.length} · <FiUsers /> {tpl.collaboratorIds.length}
                     </p>
                     {msg !== null && <p style={{ color: "var(--green)", fontSize: "0.8rem", margin: "0.3rem 0 0" }}>{msg}</p>}
                 </div>

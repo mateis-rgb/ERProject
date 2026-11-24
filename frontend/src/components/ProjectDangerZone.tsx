@@ -1,3 +1,4 @@
+import { FiAlertTriangle } from "react-icons/fi";
 // Zone danger des réglages projet - archiver / supprimer avec modales de confirmation (Power of 10 R4)
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -52,7 +53,7 @@ export default function ProjectDangerZone({ project, canEdit, isAdmin, onSaved }
                     <button className="btn-danger" onClick={() => setModal("delete")}>{t("project.delete")}</button>
                 )}
             </div>
-            {err !== null && <p style={{ color: "var(--danger)", fontSize: "0.8rem", marginTop: "0.6rem" }}>⚠ {err}</p>}
+            {err !== null && <p style={{ color: "var(--danger)", fontSize: "0.8rem", marginTop: "0.6rem" }}><FiAlertTriangle /> {err}</p>}
             {modal !== null && (
                 <ConfirmModal
                     title={modal === "delete" ? t("project.deleteTitle") : t("project.archiveTitle")}

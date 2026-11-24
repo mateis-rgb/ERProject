@@ -1,3 +1,4 @@
+import { FiAlertTriangle } from "react-icons/fi";
 // Onglet Accès (admin) - gestion users + audit (Power of 10 R4)
 import { useEffect, useState } from "react";
 import { api } from "../services/api";
@@ -33,7 +34,7 @@ export default function AccessTab(): JSX.Element {
             {error !== null && (
                 <p style={{ color: "var(--danger)", border: "2px solid var(--danger)", padding: "0.5rem 0.75rem",
                     fontFamily: "var(--font-mono)", fontSize: "0.8rem", fontWeight: 700, marginBottom: "1rem" }}>
-                    ⚠ {error}
+                    <FiAlertTriangle /> {error}
                 </p>
             )}
             {showForm && <UserForm onCreated={() => { setShowForm(false); load(); }} onError={setError} />}

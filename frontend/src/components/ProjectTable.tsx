@@ -1,3 +1,4 @@
+import { FiArrowRight } from "react-icons/fi";
 // Tableau des projets (Power of 10 R4)
 import { useTranslation } from "../i18n/I18nContext";
 import { Link } from "react-router-dom";
@@ -44,7 +45,7 @@ export default function ProjectTable({ projects }: Props): JSX.Element {
                             <td className="table-cell">{p.budget !== null ? `${p.budget} €` : "—"}</td>
                             <td className="table-cell">
                                 <Link to={`/projects/${p.id}`} style={{ color: "var(--accent)", textDecoration: "none" }}>
-                                    Voir →
+                                    Voir <FiArrowRight />
                                 </Link>
                             </td>
                         </tr>

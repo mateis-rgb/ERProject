@@ -1,8 +1,10 @@
 // Carte bento du dashboard (Power of 10 R4)
+import { ReactNode } from "react";
+
 interface Props {
     value: string | number;
     label: string;
-    icon: string;
+    icon: ReactNode;
     accent: string;
     warn?: boolean;
     live?: boolean;

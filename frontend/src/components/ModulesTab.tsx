@@ -1,18 +1,20 @@
+import { FiBarChart2, FiBell, FiFileText, FiFolder, FiGrid, FiList, FiPackage, FiLayers } from "react-icons/fi";
+import { ReactNode } from "react";
 // Onglet Modules des réglages (admin) - toggles de modules, persistés dans la config, vue liste ou tuiles (Power of 10 R4)
 import { useState } from "react";
 import { api } from "../services/api";
 import { useTranslation } from "../i18n/I18nContext";
 import { useModules } from "../context/ModulesContext";
 
-interface ModuleDef { id: string; nameKey: string; descKey: string; icon: string }
+interface ModuleDef { id: string; nameKey: string; descKey: string; icon: ReactNode }
 
 const MODULES: ModuleDef[] = [
-    { id: "gantt", nameKey: "modules.gantt.name", descKey: "modules.gantt.desc", icon: "📊" },
-    { id: "drive", nameKey: "modules.drive.name", descKey: "modules.drive.desc", icon: "📁" },
-    { id: "stock", nameKey: "modules.stock.name", descKey: "modules.stock.desc", icon: "📦" },
-    { id: "notifications", nameKey: "modules.notifications.name", descKey: "modules.notifications.desc", icon: "🔔" },
-    { id: "export_pdf", nameKey: "modules.export.name", descKey: "modules.export.desc", icon: "📄" },
-    { id: "templates", nameKey: "modules.templates.name", descKey: "modules.templates.desc", icon: "🧩" },
+    { id: "gantt", nameKey: "modules.gantt.name", descKey: "modules.gantt.desc", icon: <FiBarChart2 /> },
+    { id: "drive", nameKey: "modules.drive.name", descKey: "modules.drive.desc", icon: <FiFolder /> },
+    { id: "stock", nameKey: "modules.stock.name", descKey: "modules.stock.desc", icon: <FiPackage /> },
+    { id: "notifications", nameKey: "modules.notifications.name", descKey: "modules.notifications.desc", icon: <FiBell /> },
+    { id: "export_pdf", nameKey: "modules.export.name", descKey: "modules.export.desc", icon: <FiFileText /> },
+    { id: "templates", nameKey: "modules.templates.name", descKey: "modules.templates.desc", icon: <FiLayers /> },
 ];
 
 type ViewMode = "list" | "grid";
@@ -60,9 +62,9 @@ export default function ModulesTab(): JSX.Element {
                 <h2 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 700, textTransform: "uppercase" }}>{t("modules.title")}</h2>
                 <div style={{ display: "flex", gap: "0.4rem" }}>
                     <button className={view === "list" ? "btn" : "btn-ghost"} style={{ padding: "0.3rem 0.7rem", fontSize: "0.78rem" }}
-                        onClick={() => setView("list")}>☰ {t("modules.viewList")}</button>
+                        onClick={() => setView("list")}><FiList /> {t("modules.viewList")}</button>
                     <button className={view === "grid" ? "btn" : "btn-ghost"} style={{ padding: "0.3rem 0.7rem", fontSize: "0.78rem" }}
-                        onClick={() => setView("grid")}>▦ {t("modules.viewGrid")}</button>
+                        onClick={() => setView("grid")}><FiGrid /> {t("modules.viewGrid")}</button>
                 </div>
             </div>
             <p style={{ color: "var(--muted)", fontSize: "0.85rem", marginTop: 0, marginBottom: "1.25rem" }}>{t("modules.hint")}</p>

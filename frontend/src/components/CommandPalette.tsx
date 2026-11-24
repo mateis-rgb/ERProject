@@ -1,4 +1,4 @@
-// Command palette ⌘K/Ctrl+K avec recherche globale live (Power of 10 R4)
+// Command palette K/Ctrl+K avec recherche globale live (Power of 10 R4)
 import { useTranslation } from "../i18n/I18nContext";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";

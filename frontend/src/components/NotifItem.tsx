@@ -1,3 +1,4 @@
+import { FiX } from "react-icons/fi";
 // Item de notification (Power of 10 R4)
 import { AppNotification } from "../context/NotificationContext";
 
@@ -29,7 +30,7 @@ export default function NotifItem({ notif, onClick, onDismiss }: Props): JSX.Ele
                     fontSize: "0.7rem", lineHeight: 1.4, boxShadow: "2px 2px 0 var(--ink)",
                 }}
             >
-                ✕
+                <FiX />
             </button>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", paddingRight: "1.4rem" }}>
                 <span style={{ width: "10px", height: "10px", background: TYPE_COLORS[notif.type] ?? "var(--blue)",

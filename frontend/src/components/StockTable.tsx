@@ -1,3 +1,4 @@
+import { FiEdit2, FiX } from "react-icons/fi";
 // Tableau du stock (Power of 10 R4)
 import { useTranslation } from "../i18n/I18nContext";
 import { StockItem, AvailabilityEntry } from "../types";
@@ -58,8 +59,8 @@ function StockRow({ item, avail: a, canEdit, onDelete, onEdit }: RowProps): JSX.
                 <td className="table-cell">
                     <span style={{ display: "inline-flex", gap: "0.3rem" }}>
                         <button className="btn-ghost" style={{ padding: "0.125rem 0.5rem", fontSize: "0.75rem" }}
-                            title={t("stock.editArticle")} onClick={() => onEdit(item)}>✎</button>
-                        <button className="btn-danger" style={{ padding: "0.125rem 0.5rem", fontSize: "0.75rem" }} onClick={() => onDelete(item.id)}>✕</button>
+                            title={t("stock.editArticle")} onClick={() => onEdit(item)}><FiEdit2 /></button>
+                        <button className="btn-danger" style={{ padding: "0.125rem 0.5rem", fontSize: "0.75rem" }} onClick={() => onDelete(item.id)}><FiX /></button>
                     </span>
                 </td>
             )}

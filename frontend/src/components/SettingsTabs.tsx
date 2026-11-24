@@ -1,3 +1,4 @@
+import { FiLock } from "react-icons/fi";
 // Barre d'onglets de la page Réglages - routes /settings/:tab (Power of 10 R4)
 import { useTranslation } from "../i18n/I18nContext";
 import { useModules } from "../context/ModulesContext";
@@ -43,7 +44,7 @@ export default function SettingsTabs({ active, onChange, isAdmin }: Props): JSX.
                     onClick={() => onChange(t.id)}
                     style={{ fontSize: "0.8rem", display: "inline-flex", alignItems: "center", gap: "0.3rem" }}
                 >
-                    {t.adminOnly === true && <span aria-label="admin">🔒</span>}
+                    {t.adminOnly === true && <span aria-label="admin"><FiLock /></span>}
                     {tt(t.key)}
                 </button>
             ))}

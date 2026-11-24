@@ -1,3 +1,4 @@
+import { FiBell } from "react-icons/fi";
 // Cloche de notifications (Power of 10 R4)
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -28,7 +29,7 @@ export default function NotificationBell(): JSX.Element {
     return (
         <div ref={ref} style={{ position: "relative" }}>
             <button className="btn-ghost" onClick={() => setOpen(!open)} style={{ position: "relative", padding: "0.5rem 0.75rem" }}>
-                <span style={{ fontSize: "1rem" }}>◆</span>
+                <span style={{ fontSize: "1rem" }}><FiBell /></span>
                 {unreadCount > 0 && (
                     <span className="mono" style={{
                         position: "absolute", top: "-8px", right: "-8px",

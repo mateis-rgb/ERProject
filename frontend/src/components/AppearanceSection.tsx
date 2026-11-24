@@ -1,3 +1,4 @@
+import { FiArrowRight } from "react-icons/fi";
 // Onglet Apparence - palettes + thème clair/sombre/système (Power of 10 R4)
 import { useTheme } from "../context/AppContext";
 import { useTranslation } from "../i18n/I18nContext";
@@ -59,7 +60,7 @@ export default function AppearanceSection(): JSX.Element {
             </div>
             {theme === "system" && (
                 <p className="mono" style={{ marginTop: "0.75rem", fontSize: "0.72rem", color: "var(--muted)" }}>
-                    → {resolvedTheme === "dark" ? "sombre" : "clair"}
+                    <FiArrowRight /> {resolvedTheme === "dark" ? "sombre" : "clair"}
                 </p>
             )}
         </div>

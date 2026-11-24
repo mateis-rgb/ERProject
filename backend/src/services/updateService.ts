@@ -117,7 +117,7 @@ export async function notifyAdminsOnce(info: UpdateInfo): Promise<void> {
         {
             type: "update",
             title: `Mise à jour disponible : ${info.latest}`,
-            message: `Version locale ${info.current}. Procédure dans Réglages → À propos.`,
+            message: `Version locale ${info.current}. Procédure dans Réglages -> À propos.`,
             link: "/settings/about",
         },
     );

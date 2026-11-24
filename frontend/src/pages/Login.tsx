@@ -1,3 +1,4 @@
+import { FiAlertTriangle } from "react-icons/fi";
 // Page Login néo-brutaliste (Power of 10 R4)
 import { useTranslation } from "../i18n/I18nContext";
 import { useState } from "react";
@@ -42,7 +43,7 @@ export default function Login(): JSX.Element {
                 {error !== null && (
                     <p style={{ color: "var(--danger)", border: "2px solid var(--danger)", padding: "0.5rem 0.75rem",
                         fontFamily: "var(--font-mono)", fontSize: "0.8rem", fontWeight: 700, marginBottom: "1rem", background: "var(--surface-2)" }}>
-                        ⚠ {error}
+                        <FiAlertTriangle /> {error}
                     </p>
                 )}
                 <LoginForm busy={busy} onSubmit={handleLogin} />

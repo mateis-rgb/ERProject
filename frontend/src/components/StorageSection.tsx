@@ -101,7 +101,7 @@ function StorageView(p: ViewProps): JSX.Element {
             {p.confirmOpen && p.info !== null && (
                 <ConfirmModal
                     title={t("app.migrateTitle")}
-                    message={`${t("app.migrateBody")} ${t("app.migrateFrom")} : ${p.info.effective} → ${t("app.migrateTo")} : ${p.target}`}
+                    message={`${t("app.migrateBody")} ${t("app.migrateFrom")} : ${p.info.effective} -> ${t("app.migrateTo")} : ${p.target}`}
                     confirmLabel={t("app.migrateConfirm")}
                     busy={p.busy}
                     onConfirm={p.onConfirm}

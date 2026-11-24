@@ -1,3 +1,4 @@
+import { FiUpload } from "react-icons/fi";
 // Barre d'outils du drive - le bouton Upload EST l'input file (caché, multiple, upload direct) (Power of 10 R4)
 import { useTranslation } from "../i18n/I18nContext";
 
@@ -17,7 +18,7 @@ export default function DriveToolbar({ busy, onFiles, onNewFolder }: Props): JSX
     return (
         <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem", flexWrap: "wrap", alignItems: "center" }}>
             <label className="btn" style={{ cursor: busy ? "wait" : "pointer", margin: 0, userSelect: "none" }}>
-                {busy ? "..." : `⬆ ${t("drive.upload")}`}
+                {busy ? "..." : <><FiUpload /> {t("drive.upload")}</>}
                 <input type="file" multiple disabled={busy}
                     style={{ display: "none" }} onChange={onChange} />
             </label>

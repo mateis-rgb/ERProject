@@ -1,3 +1,4 @@
+import { FiAlertTriangle } from "react-icons/fi";
 // Modale de saisie des dates limites du projet (affichée si non définies) (Power of 10 R4)
 import { useState } from "react";
 import { api } from "../services/api";
@@ -58,7 +59,7 @@ export default function ProjectDatesModal({ projectId, initialStart, initialEnd,
                         <input className="input" type="date" value={end} onChange={(e) => setEnd(e.target.value)} />
                     </div>
                 </div>
-                {err !== null && <p style={{ color: "var(--danger)", fontSize: "0.8rem", fontFamily: "var(--font-mono)" }}>⚠ {err}</p>}
+                {err !== null && <p style={{ color: "var(--danger)", fontSize: "0.8rem", fontFamily: "var(--font-mono)" }}><FiAlertTriangle /> {err}</p>}
                 <button className="btn" style={{ width: "100%" }} onClick={save} disabled={busy}>
                     {busy ? t("common.saving") : t("common.save")}
                 </button>

@@ -18,15 +18,15 @@
         "saving": "Saving...",
         "confirm": "Confirm",
         "nameRequired": "Name *",
-        "exportCsv": "↓ CSV",
-        "exportJson": "↓ JSON",
+        "exportCsv": "CSV",
+        "exportJson": "JSON",
         "noResult": "No result.",
         "details": "Details",
         "irreversible": "Irreversible.",
         "creating": "Creating..."
     },
     "login": {
-        "tagline": "Production control room — Projects & Stock",
+        "tagline": "Production control room Projects & Stock",
         "title": "Sign in",
         "email": "Email",
         "password": "Password",
@@ -63,7 +63,7 @@
         "apply": "Apply to a project",
         "applyGo": "Apply",
         "applied": "Template applied to the project (milestones, folders and collaborators created).",
-        "chooseProject": "Choose a project…",
+        "chooseProject": "Choose a project",
         "deleteTitle": "Delete this template?",
         "deleteMsg": "The template will be permanently deleted. Projects already created from it are not affected.",
         "empty": "No template yet. Create one to pre-structure your projects.",
@@ -81,7 +81,7 @@
     },
     "modules": {
         "title": "Modules",
-        "hint": "Enable or disable application features. Groundwork for modularity — some modules are still experimental.",
+        "hint": "Enable or disable application features. Groundwork for modularity some modules are still experimental.",
         "on": "Enabled",
         "off": "Disabled",
         "viewList": "List",
@@ -134,9 +134,9 @@
     "update": {
         "title": "Updates",
         "check": "Check for updates",
-        "checking": "Checking…",
-        "hint": "Queries GitHub releases of the configured repo (Settings → App). Nothing is executed automatically.",
-        "disabled": "No repo configured — set owner/repo in Settings → App.",
+        "checking": "Checking",
+        "hint": "Queries GitHub releases of the configured repo (Settings -> App). Nothing is executed automatically.",
+        "disabled": "No repo configured set owner/repo in Settings -> App.",
         "error": "Check failed",
         "upToDate": "Application is up to date",
         "available": "Update available",
@@ -153,8 +153,8 @@
         "step2Desc": "Depending on your deployment (pick the right command): Docker Compose, or git clone.",
         "step2CmdDocker": "docker compose pull && docker compose up -d",
         "step2CmdGit": "git pull && npm ci && npm run build",
-        "step2DockerLabel": "prod — Docker Compose",
-        "step2GitLabel": "dev — git clone",
+        "step2DockerLabel": "prod Docker Compose",
+        "step2GitLabel": "dev git clone",
         "repoChip": "Git repo",
         "repoChipHint": "Configure the GitHub repository used for updates",
         "repoModalTitle": "Update repository",
@@ -204,7 +204,7 @@
         "migrateFrom": "From",
         "migrateTo": "To",
         "migrateConfirm": "Migrate",
-        "migratingTitle": "Storage migration in progress…"
+        "migratingTitle": "Storage migration in progress"
     },
     "appearance": {
         "title": "Appearance",
@@ -225,7 +225,7 @@
         "noUpcoming": "Nothing upcoming"
     },
     "projects": {
-        "search": "🔍 Search a project...",
+        "search": "Search a project...",
         "newProject": "+ New project",
         "createProject": "Create project"
     },
@@ -243,14 +243,14 @@
         "deleteMsg": "Permanent deletion of the project (and its milestones, stock links, drive and time entries)",
         "client": "Client",
         "type": "Type",
-        "budget": "Budget (€)",
+        "budget": "Budget ()",
         "startDate": "Start",
         "endDate": "End",
         "status": "Status",
         "tags": "Tags (comma separated)",
         "tagsHint": "Comma separated",
         "tagsPlaceholder": "e.g. ad, 4K, urgent",
-        "saved": "Project saved ✅",
+        "saved": "Project saved",
         "kpiMilestones": "Milestones",
         "kpiTime": "Time spent",
         "searchCollaborator": "Search a collaborator...",
@@ -270,7 +270,7 @@
         "category": "Category",
         "location": "Location",
         "supplier": "Supplier",
-        "purchasePrice": "Purchase price (€)",
+        "purchasePrice": "Purchase price ()",
         "minThreshold": "Min threshold",
         "referenceRequired": "Reference *",
         "quantity": "Quantity",
@@ -295,9 +295,9 @@
         "editArticle": "Edit item"
     },
     "movement": {
-        "in": "⬇️ In",
-        "out": "⬆️ Out",
-        "return": "↩️ Return",
+        "in": "In",
+        "out": "Out",
+        "return": "Return",
         "reasonPlaceholder": "Reason..."
     },
     "drive": {
@@ -306,7 +306,7 @@
         "newFolder": "+ Folder",
         "empty": "Empty folder.",
         "quotaUnlimited": "unlimited quota",
-        "attachments": "📎 Attachments",
+        "attachments": "Attachments",
         "noFiles": "No file",
         "moveTo": "Move to",
         "modified": "Modified",
@@ -375,7 +375,7 @@
         "nothingToChange": "Nothing to change."
     },
     "quota": {
-        "label": "Quota (bytes) — leave empty for unlimited"
+        "label": "Quota (bytes) leave empty for unlimited"
     },
     "cmd": {
         "placeholder": "Search a project, item, user... (or navigate)"
@@ -389,7 +389,7 @@
         "404Body": "This page does not exist (anymore)."
     },
     "activity": {
-        "title": "📋 Activity log",
+        "title": "Activity log",
         "none": "No activity"
     }
 }

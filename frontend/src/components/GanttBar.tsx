@@ -1,5 +1,6 @@
 // Barre de jalon dans le Gantt - drag + tirettes + tooltip + sous-jalons indentés (Power of 10 R4)
 import { useRef, useState } from "react";
+import { FiCornerDownRight } from "react-icons/fi";
 import { Milestone } from "../types";
 import MilestoneTooltip from "./MilestoneTooltip";
 import ResizeHandle from "./ResizeHandle";
@@ -64,7 +65,8 @@ export default function GanttBar(props: Props): JSX.Element {
                 style={barStyle(geom, milestone.color, isSel, busy, canEdit, depth)}
             >
                 <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>
-                    {depth > 0 ? `${"↳ ".repeat(Math.min(depth, 4))}${milestone.name}` : milestone.name}
+                    {depth > 0 && Array.from({ length: Math.min(depth, 4) }, (_, i) => <FiCornerDownRight key={i} style={{ flexShrink: 0 }} />)}
+                    {milestone.name}
                 </span>
                 {canEdit && (
                     <>

@@ -1,3 +1,4 @@
+import { FiFileText, FiX } from "react-icons/fi";
 // Section pièces jointes (upload + liste) (Power of 10 R4)
 import { useTranslation } from "../i18n/I18nContext";
 import { useState, useRef } from "react";
@@ -55,9 +56,9 @@ export default function AttachmentsSection({ projectId, attachments, onChanged }
                     {attachments.map((a) => (
                         <div key={a.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.875rem", padding: "0.375rem 0", borderBottom: "1px solid var(--surface-2)" }}>
                             <a href={`/api/attachments/download/${a.id}`} style={{ color: "var(--accent)", textDecoration: "none" }}>
-                                📄 {a.fileName} <span style={{ color: "var(--muted)" }}>({formatSize(a.fileSize)})</span>
+                                <FiFileText /> {a.fileName} <span style={{ color: "var(--muted)" }}>({formatSize(a.fileSize)})</span>
                             </a>
-                            <button className="btn-danger" style={{ padding: "0.125rem 0.5rem", fontSize: "0.75rem" }} onClick={() => remove(a.id)}>✕</button>
+                            <button className="btn-danger" style={{ padding: "0.125rem 0.5rem", fontSize: "0.75rem" }} onClick={() => remove(a.id)}><FiX /></button>
                         </div>
                     ))}
                 </div>

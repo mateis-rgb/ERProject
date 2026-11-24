@@ -1,3 +1,4 @@
+import { FiCommand } from "react-icons/fi";
 // TopBar néo-brutaliste + cloche notifications (sans chrono)
 import { useTranslation } from "../i18n/I18nContext";
 import { useModules } from "../context/ModulesContext";
@@ -21,7 +22,7 @@ export default function TopBar({ onOpenPalette }: Props): JSX.Element {
             <button className="btn-ghost" onClick={onOpenPalette}
                 style={{ display: "flex", alignItems: "center", gap: "0.75rem", minWidth: "220px", justifyContent: "space-between" }}>
                 <span style={{ color: "var(--muted)", fontSize: "0.85rem" }}>{t("common.search")}</span>
-                <span className="kbd">⌘K</span>
+                <span className="kbd"><FiCommand />K</span>
             </button>
         </header>
     );

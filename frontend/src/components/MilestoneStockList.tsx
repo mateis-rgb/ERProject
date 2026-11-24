@@ -1,3 +1,4 @@
+import { FiX } from "react-icons/fi";
 // Liste du stock réservé sur un jalon + formulaire d'ajout (Power of 10 R4)
 import { useTranslation } from "../i18n/I18nContext";
 import { useEffect, useState } from "react";
@@ -54,7 +55,7 @@ export default function MilestoneStockList({ milestoneId, stockItems, canEdit, o
                                 <span className="mono" style={{ fontWeight: 700 }}>{l.quantity}</span>
                                 {canEdit && (
                                     <button className="btn-danger" style={{ padding: "0.1rem 0.4rem", boxShadow: "2px 2px 0 var(--danger)" }}
-                                        onClick={() => removeStock(l.stockItemId)}>✕</button>
+                                        onClick={() => removeStock(l.stockItemId)}><FiX /></button>
                                 )}
                             </span>
                         </div>

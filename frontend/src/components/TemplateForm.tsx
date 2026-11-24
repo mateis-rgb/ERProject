@@ -1,3 +1,4 @@
+import { FiX } from "react-icons/fi";
 // Formulaire d'édition d'un modèle de projet (nom, jalons préfaits, arborescence, collaborateurs) (Power of 10 R4)
 import { useState } from "react";
 import { useTranslation } from "../i18n/I18nContext";
@@ -48,7 +49,7 @@ function MilestoneRow({ m, index, onChange, onRemove }: {
                     <input className="input" type="number" min="1" style={{ width: "70px", padding: "0.3rem 0.5rem" }}
                         value={m.durationDays} onChange={(e) => set("durationDays", parseInt(e.target.value, 10) || 1)} />
                 </div>
-                <button type="button" className="btn-danger" style={{ padding: "0.2rem 0.45rem", boxShadow: "2px 2px 0 var(--danger)" }} onClick={() => onRemove(index)}>✕</button>
+                <button type="button" className="btn-danger" style={{ padding: "0.2rem 0.45rem", boxShadow: "2px 2px 0 var(--danger)" }} onClick={() => onRemove(index)}><FiX /></button>
             </div>
         </div>
     );

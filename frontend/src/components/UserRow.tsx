@@ -1,3 +1,4 @@
+import { FiX } from "react-icons/fi";
 // Ligne utilisateur avec actions (Power of 10 R4)
 import { useTranslation } from "../i18n/I18nContext";
 import { useState } from "react";
@@ -63,7 +64,7 @@ export default function UserRow({ user, isSelf, onChanged }: Props): JSX.Element
                 </select>
             </td>
             <td className="table-cell">
-                {!isSelf && <button className="btn-danger" onClick={remove} disabled={busy}>✕</button>}
+                {!isSelf && <button className="btn-danger" onClick={remove} disabled={busy}><FiX /></button>}
             </td>
         </tr>
     );

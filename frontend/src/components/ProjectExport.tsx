@@ -1,3 +1,4 @@
+import { FiFileText } from "react-icons/fi";
 // Bloc d'export PDF de l'en-tête projet - mode complet / prévisionnel / définitif (Power of 10 R4)
 import { useState } from "react";
 import { useTranslation } from "../i18n/I18nContext";
@@ -23,7 +24,7 @@ export default function ProjectExport({ projectId }: { projectId: string }): JSX
                 {MODES.map((m) => <option key={m.v} value={m.v}>{t(m.key)}</option>)}
             </select>
             <button className="btn-ghost" style={{ whiteSpace: "nowrap" }} onClick={doExport} title={t("projectHeader.export.title")}>
-                📄 {t("projectHeader.export.button")}
+                <FiFileText /> {t("projectHeader.export.button")}
             </button>
         </div>
     );

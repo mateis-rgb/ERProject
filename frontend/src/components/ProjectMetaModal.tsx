@@ -1,3 +1,4 @@
+import { FiArrowRight, FiTag } from "react-icons/fi";
 // Modale de détail d'une "chip" de l'en-tête projet (collaborateurs, tags, jalons) (Power of 10 R4)
 import { Milestone, Project, ProjectCollaborator } from "../types";
 import { useTranslation } from "../i18n/I18nContext";
@@ -43,7 +44,7 @@ function TagList({ project }: { project: Project }): JSX.Element {
     if (project.tags.length === 0) return <p style={{ color: "var(--muted)" }}>{t("projectHeader.meta.empty")}</p>;
     return (
         <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
-            {project.tags.map((tg) => <span key={tg} className="badge" style={{ background: "var(--surface-2)" }}>🏷️ {tg}</span>)}
+            {project.tags.map((tg) => <span key={tg} className="badge" style={{ background: "var(--surface-2)" }}><FiTag /> {tg}</span>)}
         </div>
     );
 }
@@ -59,7 +60,7 @@ function MilestoneList({ milestones }: { milestones: Milestone[] }): JSX.Element
                         <span style={{ display: "inline-block", width: "10px", height: "10px", background: m.color, border: "1px solid var(--ink)", marginRight: "0.4rem" }} />
                         {m.name}
                     </span>
-                    <span className="mono" style={{ fontSize: "0.72rem", color: "var(--muted)" }}>{fmt(m.startDate)} → {fmt(m.endDate)}</span>
+                    <span className="mono" style={{ fontSize: "0.72rem", color: "var(--muted)" }}>{fmt(m.startDate)} <FiArrowRight /> {fmt(m.endDate)}</span>
                 </div>
             ))}
         </div>
