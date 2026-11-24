@@ -173,7 +173,7 @@ function RepoModal({ initial, onSaved, onClose, label }: RepoModalProps): JSX.El
     );
 }
 
-function RepoChip(): JSX.Element {
+function RepoChip({ onChanged }: { onChanged: () => void }): JSX.Element {
     const { t } = useTranslation();
     const [info, setInfo] = useState<RepoInfo | null>(null);
     const [open, setOpen] = useState(false);
@@ -184,6 +184,11 @@ function RepoChip(): JSX.Element {
         });
     }, []);
 
+    const handleSaved = (r: RepoInfo): void => {
+        setInfo(r);
+        onChanged(); // relance un check de mises à jour après changement de dépôt
+    };
+
     return (
         <>
             <button className="btn-ghost" title={t("update.repoChipHint")}
@@ -191,7 +196,7 @@ function RepoChip(): JSX.Element {
                 onClick={() => setOpen(true)}>
                 ⚙ {info !== null && info.configured !== "" ? info.configured : t("update.repoChip")}
             </button>
-            {open && <RepoModal initial={info?.configured ?? ""} onSaved={setInfo} onClose={() => setOpen(false)} label={t} />}
+            {open && <RepoModal initial={info?.configured ?? ""} onSaved={handleSaved} onClose={() => setOpen(false)} label={t} />}
         </>
     );
 }
@@ -228,7 +233,7 @@ export default function UpdateSection(): JSX.Element {
 
     return (
         <div className="card" style={{ position: "relative" }}>
-            <RepoChip />
+            <RepoChip onChanged={check} />
             <h3 style={{ margin: "0 0 0.75rem", fontSize: "1rem", fontWeight: 700, textTransform: "uppercase", paddingRight: "7rem" }}>{t("update.title")}</h3>
             <button className="btn" disabled={checking} onClick={check}>
                 {checking ? t("update.checking") : t("update.check")}

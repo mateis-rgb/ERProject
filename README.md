@@ -30,17 +30,26 @@ gestion-projets-stock/
 ├── .dev/                   # Roadmap + PROJECT_BRIEF (spécifications)
 ├── backend/                # API Node.js + Express + Prisma (TypeScript strict)
 │   ├── prisma/schema.prisma
-│   └── src/
-│       ├── config/         # env + client Prisma
-│       ├── services/       # logique métier (Power of 10)
-│       ├── routes/         # endpoints REST
-│       ├── middleware/     # auth session + validation Zod
-│       └── types/          # DTOs + schémas Zod
-├── frontend/               # React + Vite + TailwindCSS
-│   └── src/
-│       ├── pages/          # Dashboard, Projects, Stock, Movements, Settings
-│       ├── components/     # sous-composants < 60 lignes (Power of 10)
-│       └── context/        # Auth + Thème (palettes)
+│   ├── src/
+│   │   ├── config/         # env + client Prisma
+│   │   ├── services/       # logique métier (Power of 10)
+│   │   ├── routes/         # endpoints REST
+│   │   ├── middleware/     # auth session + validation Zod + modules
+│   │   └── types/          # DTOs + schémas Zod
+│   ├── README.md
+│   └── docs/               # API.md (routes) + ARCHITECTURE.md
+├── frontend/               # React + Vite + TS strict (design néo-brutaliste)
+│   ├── src/
+│   │   ├── pages/          # Dashboard, Projects, ProjectDetail, Stock, Settings…
+│   │   ├── components/     # sous-composants < 60 lignes (Power of 10)
+│   │   ├── context/        # Auth + Thème + Notifications + Modules + i18n
+│   │   └── services/       # api.ts (auto-refresh 401) + frontLogger
+│   ├── README.md
+│   └── docs/               # ARCHITECTURE.md + API_CLIENT.md
+├── scripts/                # setup-https.sh (certificats TLS locaux mkcert)
+│   └── docs/README.md
+├── docker/                 # doc déploiement (docker-compose.yml est à la racine)
+│   └── docs/README.md
 └── docker-compose.yml      # db (PostgreSQL) + backend + frontend (Nginx)
 ```
 
