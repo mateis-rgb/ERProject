@@ -4,7 +4,7 @@ import { useTranslation } from "../i18n/I18nContext";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AppContext";
-import LoginForm from "../components/LoginForm";
+import LoginForm from "../components/auth/LoginForm";
 
 export default function Login(): JSX.Element {
     const { login } = useAuth();

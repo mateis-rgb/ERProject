@@ -4,10 +4,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import { api } from "../services/api";
 import { Project, ProjectStockLink, StockItem, TimeEntry, ActivityLog, Attachment, Milestone } from "../types";
 import { useAuth } from "../context/AppContext";
-import ProjectTabs, { ProjectTabId, PROJECT_TAB_IDS, tabModule } from "../components/ProjectTabs";
+import ProjectTabs, { ProjectTabId, PROJECT_TAB_IDS, tabModule } from "../components/projects/ProjectTabs";
 import { useModules } from "../context/ModulesContext";
-import ProjectTabsContent from "../components/ProjectTabsContent";
-import ProjectHeader from "../components/ProjectHeader";
+import ProjectTabsContent from "../components/projects/ProjectTabsContent";
+import ProjectHeader from "../components/projects/ProjectHeader";
 
 export default function ProjectDetail(): JSX.Element {
     const { id, tab: tabParam } = useParams<{ id: string; tab?: string }>();

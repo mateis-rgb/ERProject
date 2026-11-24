@@ -4,7 +4,7 @@ import { useTranslation } from "../i18n/I18nContext";
 import { useEffect, useState } from "react";
 import { api } from "../services/api";
 import { DashboardKPIs } from "../types";
-import BentoCard from "../components/BentoCard";
+import BentoCard from "../components/ui/BentoCard";
 import { useModules } from "../context/ModulesContext";
 
 export default function Dashboard(): JSX.Element {

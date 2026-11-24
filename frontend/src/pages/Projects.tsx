@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { api } from "../services/api";
 import { Project } from "../types";
 import { useAuth } from "../context/AppContext";
-import ProjectForm from "../components/ProjectForm";
-import ProjectTable from "../components/ProjectTable";
-import Modal from "../components/Modal";
+import ProjectForm from "../components/projects/ProjectForm";
+import ProjectTable from "../components/projects/ProjectTable";
+import Modal from "../components/ui/Modal";
 
 export default function Projects(): JSX.Element {
     const { t } = useTranslation();

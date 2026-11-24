@@ -6,11 +6,11 @@ import { api } from "../services/api";
 import { StockItem, AvailabilityEntry } from "../types";
 import { useAuth } from "../context/AppContext";
 import { useModules } from "../context/ModulesContext";
-import StockTabs, { StockTabId } from "../components/StockTabs";
-import StockForm from "../components/StockForm";
-import Modal from "../components/Modal";
-import StockTable from "../components/StockTable";
-import StockMovementsSection from "../components/StockMovementsSection";
+import StockTabs, { StockTabId } from "../components/stock/StockTabs";
+import StockForm from "../components/stock/StockForm";
+import Modal from "../components/ui/Modal";
+import StockTable from "../components/stock/StockTable";
+import StockMovementsSection from "../components/stock/StockMovementsSection";
 
 interface HeaderProps {
     count: number;

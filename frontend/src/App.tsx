@@ -1,7 +1,7 @@
 // App - Router principal avec protection des routes
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./context/AppContext";
-import Layout from "./components/Layout";
+import Layout from "./components/layout/Layout";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Projects from "./pages/Projects";
@@ -10,7 +10,7 @@ import Stock from "./pages/Stock";
 import Movements from "./pages/Movements";
 import Settings from "./pages/Settings";
 import Admin from "./pages/Admin";
-import ErrorPage from "./components/ErrorPage";
+import ErrorPage from "./components/layout/ErrorPage";
 
 export default function App(): JSX.Element {
     const { user, loading } = useAuth();

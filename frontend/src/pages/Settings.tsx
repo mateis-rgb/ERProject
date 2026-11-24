@@ -5,16 +5,16 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AppContext";
 import { useModules } from "../context/ModulesContext";
 import { api } from "../services/api";
-import SettingsTabs, { TabId, SETTINGS_TAB_IDS } from "../components/SettingsTabs";
-import AppTab from "../components/AppTab";
-import AppearanceSection from "../components/AppearanceSection";
-import ConfigListsSection from "../components/ConfigListsSection";
-import AccessTab from "../components/AccessTab";
-import SecurityTab from "../components/SecurityTab";
-import TemplatesTab from "../components/TemplatesTab";
-import ModulesTab from "../components/ModulesTab";
-import AboutTab from "../components/AboutTab";
-import StatusTab from "../components/StatusTab";
+import SettingsTabs, { TabId, SETTINGS_TAB_IDS } from "../components/settings/SettingsTabs";
+import AppTab from "../components/settings/AppTab";
+import AppearanceSection from "../components/settings/AppearanceSection";
+import ConfigListsSection from "../components/settings/ConfigListsSection";
+import AccessTab from "../components/settings/AccessTab";
+import SecurityTab from "../components/settings/SecurityTab";
+import TemplatesTab from "../components/settings/TemplatesTab";
+import ModulesTab from "../components/settings/ModulesTab";
+import AboutTab from "../components/settings/AboutTab";
+import StatusTab from "../components/settings/StatusTab";
 
 export default function Settings(): JSX.Element {
     const { t } = useTranslation();
