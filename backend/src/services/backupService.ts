@@ -19,9 +19,10 @@ export function runBackup(): Promise<string> {
         const filePath = path.join(backupDir, fileName);
 
         const url = new URL(config.databaseUrl);
-        const cmd = `PGPASSWORD='${url.password}' pg_dump -h ${url.hostname} -p ${url.port || "5432"} -U ${url.username} -d ${url.pathname.slice(1)} -F p -f '${filePath}'`;
+        // Le mot de passe passe par l'env du process fils (jamais dans la ligne de commande : visible dans `ps` + injection shell)
+        const cmd = `pg_dump -h ${url.hostname} -p ${url.port || "5432"} -U ${url.username} -d ${url.pathname.slice(1)} -F p -f '${filePath}'`;
 
-        exec(cmd, { timeout: 300000 }, (error, _stdout, stderr) => {
+        exec(cmd, { timeout: 300000, env: { ...process.env, PGPASSWORD: url.password } }, (error, _stdout, stderr) => {
             if (error !== null) {
                 reject(new Error(`Backup échoué: ${stderr || error.message}`));
                 return;
