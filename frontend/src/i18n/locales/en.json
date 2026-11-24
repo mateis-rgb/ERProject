@@ -291,7 +291,8 @@
         "unavailable": "OUT",
         "newArticle": "+ New item",
         "createArticle": "Create item",
-        "unit": "Unit"
+        "unit": "Unit",
+        "editArticle": "Edit item"
     },
     "movement": {
         "in": "⬇️ In",

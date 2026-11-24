@@ -55,6 +55,29 @@ function useAvailability(): Record<string, AvailabilityEntry> {
     return avail;
 }
 
+// Modales de création / édition d'article
+function StockModals(p: {
+    showForm: boolean; editing: StockItem | null; canEdit: boolean;
+    onCloseForm: () => void; onCloseEdit: () => void; onSaved: () => void;
+}): JSX.Element | null {
+    const { t } = useTranslation();
+    if (p.showForm && p.canEdit) {
+        return (
+            <Modal title={t("stock.newArticle")} onClose={p.onCloseForm} maxWidth="640px">
+                <StockForm onSaved={p.onSaved} />
+            </Modal>
+        );
+    }
+    if (p.editing !== null) {
+        return (
+            <Modal title={t("stock.editArticle")} onClose={p.onCloseEdit} maxWidth="640px">
+                <StockForm initial={p.editing} onSaved={p.onSaved} />
+            </Modal>
+        );
+    }
+    return null;
+}
+
 export default function Stock(): JSX.Element {
     const { t } = useTranslation();
     const { user } = useAuth();
@@ -64,6 +87,7 @@ export default function Stock(): JSX.Element {
     const [search, setSearch] = useState("");
     const [lowOnly, setLowOnly] = useState(false);
     const [showForm, setShowForm] = useState(false);
+    const [editing, setEditing] = useState<StockItem | null>(null);
     const canEdit = user !== null && user.role !== "VIEWER";
 
     const load = (): void => {
@@ -90,11 +114,9 @@ export default function Stock(): JSX.Element {
 
             {tab === "inventory" && (
                 <>
-                    {showForm && canEdit && (
-                        <Modal title={t("stock.newArticle")} onClose={() => setShowForm(false)} maxWidth="640px">
-                            <StockForm onCreated={() => { setShowForm(false); load(); }} />
-                        </Modal>
-                    )}
+                    <StockModals showForm={showForm} editing={editing} canEdit={canEdit}
+                        onCloseForm={() => setShowForm(false)} onCloseEdit={() => setEditing(null)}
+                        onSaved={() => { setShowForm(false); setEditing(null); load(); }} />
                     <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
                         <input className="input" placeholder={t("stock.searchArticle")} value={search}
                             onChange={(e) => setSearch(e.target.value)} style={{ maxWidth: "400px" }} />
@@ -103,7 +125,7 @@ export default function Stock(): JSX.Element {
                             Stock faible
                         </label>
                     </div>
-                    <StockTable items={items} avail={avail} onChanged={load} canEdit={canEdit} />
+                    <StockTable items={items} avail={avail} onChanged={load} canEdit={canEdit} onEdit={setEditing} />
                 </>
             )}
             {tab === "movements" && <StockMovementsSection items={items} />}

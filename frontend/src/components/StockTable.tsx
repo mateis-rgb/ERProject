@@ -8,6 +8,7 @@ interface Props {
     avail: Record<string, AvailabilityEntry>;
     canEdit: boolean;
     onChanged: () => void;
+    onEdit: (item: StockItem) => void;
 }
 
 interface RowProps {
@@ -15,9 +16,10 @@ interface RowProps {
     avail: AvailabilityEntry | undefined;
     canEdit: boolean;
     onDelete: (id: string) => void;
+    onEdit: (item: StockItem) => void;
 }
 
-function StockRow({ item, avail: a, canEdit, onDelete }: RowProps): JSX.Element {
+function StockRow({ item, avail: a, canEdit, onDelete, onEdit }: RowProps): JSX.Element {
     const { t } = useTranslation();
     const isLow = item.quantity <= item.minThreshold;
     const unavailable = a !== undefined && a.reserved > 0 && a.available <= 0;
@@ -54,14 +56,18 @@ function StockRow({ item, avail: a, canEdit, onDelete }: RowProps): JSX.Element 
             <td className="table-cell">{item.purchasePrice !== null ? `${item.purchasePrice} €` : "—"}</td>
             {canEdit && (
                 <td className="table-cell">
-                    <button className="btn-danger" style={{ padding: "0.125rem 0.5rem", fontSize: "0.75rem" }} onClick={() => onDelete(item.id)}>✕</button>
+                    <span style={{ display: "inline-flex", gap: "0.3rem" }}>
+                        <button className="btn-ghost" style={{ padding: "0.125rem 0.5rem", fontSize: "0.75rem" }}
+                            title={t("stock.editArticle")} onClick={() => onEdit(item)}>✎</button>
+                        <button className="btn-danger" style={{ padding: "0.125rem 0.5rem", fontSize: "0.75rem" }} onClick={() => onDelete(item.id)}>✕</button>
+                    </span>
                 </td>
             )}
         </tr>
     );
 }
 
-export default function StockTable({ items, avail, canEdit, onChanged }: Props): JSX.Element {
+export default function StockTable({ items, avail, canEdit, onChanged, onEdit }: Props): JSX.Element {
     const { t } = useTranslation();
     const deleteItem = async (id: string): Promise<void> => {
         if (!confirm(t("stock.deleteConfirm"))) return;
@@ -87,7 +93,8 @@ export default function StockTable({ items, avail, canEdit, onChanged }: Props):
                 </thead>
                 <tbody>
                     {items.map((item) => (
-                        <StockRow key={item.id} item={item} avail={avail[item.id]} canEdit={canEdit} onDelete={(id) => void deleteItem(id)} />
+                        <StockRow key={item.id} item={item} avail={avail[item.id]} canEdit={canEdit}
+                            onDelete={(id) => void deleteItem(id)} onEdit={onEdit} />
                     ))}
                     {items.length === 0 && (
                         <tr><td className="table-cell" colSpan={9} style={{ textAlign: "center", color: "var(--muted)" }}>Aucun article</td></tr>

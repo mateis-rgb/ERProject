@@ -291,7 +291,8 @@
         "unavailable": "INDISPO",
         "newArticle": "+ Nouvel article",
         "createArticle": "Créer larticle",
-        "unit": "Unité"
+        "unit": "Unité",
+        "editArticle": "Modifier larticle"
     },
     "movement": {
         "in": "⬇️ Entrée",
