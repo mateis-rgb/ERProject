@@ -47,8 +47,6 @@
             "tags": "Tags",
             "milestones": "Milestones",
             "deadline": "Project deadline",
-            "stock": "Project stock",
-            "files": "Drive files",
             "empty": "No item."
         },
         "export": {
@@ -88,26 +86,37 @@
         "off": "Disabled",
         "viewList": "List",
         "viewGrid": "Grid",
-        "gantt": { "name": "Gantt planning", "desc": "Gantt chart with draggable milestones" },
-        "drive": { "name": "Document drive", "desc": "Folders, drag & drop upload, quota" },
-        "stock": { "name": "Stock management", "desc": "Inventory, movements, per project/milestone reservations" },
-        "notifications": { "name": "Real-time notifications", "desc": "Notification bell and background tasks" },
-        "export": { "name": "PDF export", "desc": "Project export as PDF (forecast / actual)" },
-        "templates": { "name": "Project templates", "desc": "Templates applicable at project creation" }
+        "gantt": {
+            "name": "Gantt planning",
+            "desc": "Gantt chart with draggable milestones"
+        },
+        "drive": {
+            "name": "Document drive",
+            "desc": "Folders, drag & drop upload, quota"
+        },
+        "stock": {
+            "name": "Stock management",
+            "desc": "Inventory, movements, per project/milestone reservations"
+        },
+        "notifications": {
+            "name": "Real-time notifications",
+            "desc": "Notification bell and background tasks"
+        },
+        "export": {
+            "name": "PDF export",
+            "desc": "Project export as PDF (forecast / actual)"
+        },
+        "templates": {
+            "name": "Project templates",
+            "desc": "Templates applicable at project creation"
+        }
     },
     "about": {
         "description": "ERProjects is a self-hosted app for project management (audiovisual production) and related stock: Gantt planning with milestones, document drive with quotas, user & access management, real-time notifications.",
         "version": "Current version",
         "authors": "Authors",
         "teamChip": "ERProjects team",
-        "teamModalTitle": "ERProjects team",
-        "updates": "Updates",
-        "check": "Check for updates",
-        "checking": "Checking…",
-        "updateTask": "Updating the application",
-        "updateTaskMsg": "Downloading and installing (simulation)…",
-        "updateDone": "Update finished (simulation)",
-        "mockHint": "Simulated behaviour for now: a task appears in the notifications with a progress bar, then a toast confirms completion."
+        "teamModalTitle": "ERProjects team"
     },
     "status": {
         "serverTitle": "Server status",
@@ -189,7 +198,6 @@
         "storage": "File storage",
         "storageHint": "Folder where project drive files are stored. Leave empty to use the default location.",
         "storageSave": "Save",
-        "storageSaved": "Path saved — applied immediately.",
         "storageEffective": "Effective path",
         "storageDefault": "default",
         "migrateTitle": "Migrate storage?",
@@ -206,14 +214,6 @@
         "themeDark": "Dark",
         "themeSystem": "System",
         "palette": "Palette"
-    },
-    "palette": {
-        "yellow": "Yellow",
-        "pink": "Pink",
-        "blue": "Blue",
-        "green": "Green",
-        "violet": "Violet",
-        "orange": "Orange"
     },
     "dashboard": {
         "kpiProjects": "Total projects",
@@ -402,10 +402,7 @@
     },
     "errors": {
         "404Title": "Page not found",
-        "404Body": "This page does not exist (anymore).",
-        "500Title": "Internal error",
-        "500Body": "Something went wrong. Reload the page or try again later.",
-        "code": "Error"
+        "404Body": "This page does not exist (anymore)."
     },
     "activity": {
         "title": "📋 Activity log",

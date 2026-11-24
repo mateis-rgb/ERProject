@@ -47,8 +47,6 @@
             "tags": "Tags",
             "milestones": "Jalons",
             "deadline": "Date de fin du projet",
-            "stock": "Stock lié au projet",
-            "files": "Fichiers du drive",
             "empty": "Aucun élément."
         },
         "export": {
@@ -88,26 +86,37 @@
         "off": "Désactivé",
         "viewList": "Liste",
         "viewGrid": "Tuiles",
-        "gantt": { "name": "Planning Gantt", "desc": "Diagramme de Gantt avec jalons déplaçables" },
-        "drive": { "name": "Drive documentaire", "desc": "Dossiers, upload drag & drop, quota" },
-        "stock": { "name": "Gestion de stock", "desc": "Inventaire, mouvements, réservations par projet/jalon" },
-        "notifications": { "name": "Notifications temps réel", "desc": "Cloche de notifications et tâches en arrière-plan" },
-        "export": { "name": "Export PDF", "desc": "Export du projet en PDF (prévisionnel / définitif)" },
-        "templates": { "name": "Modèles de projets", "desc": "Templates applicables à la création d'un projet" }
+        "gantt": {
+            "name": "Planning Gantt",
+            "desc": "Diagramme de Gantt avec jalons déplaçables"
+        },
+        "drive": {
+            "name": "Drive documentaire",
+            "desc": "Dossiers, upload drag & drop, quota"
+        },
+        "stock": {
+            "name": "Gestion de stock",
+            "desc": "Inventaire, mouvements, réservations par projet/jalon"
+        },
+        "notifications": {
+            "name": "Notifications temps réel",
+            "desc": "Cloche de notifications et tâches en arrière-plan"
+        },
+        "export": {
+            "name": "Export PDF",
+            "desc": "Export du projet en PDF (prévisionnel / définitif)"
+        },
+        "templates": {
+            "name": "Modèles de projets",
+            "desc": "Templates applicables à la création d'un projet"
+        }
     },
     "about": {
         "description": "ERProjects est une application self-hosted de gestion de projets (production audiovisuelle) et de stock lié : planning Gantt avec jalons, drive documentaire avec quotas, gestion des utilisateurs et des accès, notifications temps réel.",
         "version": "Version courante",
         "authors": "Auteurs",
         "teamChip": "Équipe ERProjects",
-        "teamModalTitle": "Équipe ERProjects",
-        "updates": "Mises à jour",
-        "check": "Vérifier les mises à jour",
-        "checking": "Vérification…",
-        "updateTask": "Mise à jour de l'application",
-        "updateTaskMsg": "Téléchargement et installation (simulation)…",
-        "updateDone": "Mise à jour terminée (simulation)",
-        "mockHint": "Comportement simulé pour l'instant : une tâche apparaît dans les notifications avec une barre de progression, puis un toast confirme la fin."
+        "teamModalTitle": "Équipe ERProjects"
     },
     "status": {
         "serverTitle": "Statut du serveur",
@@ -189,7 +198,6 @@
         "storage": "Stockage des fichiers",
         "storageHint": "Dossier où sont enregistrés les fichiers du drive des projets. Laissez vide pour utiliser l'emplacement par défaut.",
         "storageSave": "Enregistrer",
-        "storageSaved": "Chemin enregistré — appliqué immédiatement.",
         "storageEffective": "Chemin effectif",
         "storageDefault": "défaut",
         "migrateTitle": "Migrer le stockage ?",
@@ -206,14 +214,6 @@
         "themeDark": "Sombre",
         "themeSystem": "Système",
         "palette": "Palette"
-    },
-    "palette": {
-        "yellow": "Jaune",
-        "pink": "Rose",
-        "blue": "Bleu",
-        "green": "Vert",
-        "violet": "Violet",
-        "orange": "Orange"
     },
     "dashboard": {
         "kpiProjects": "Projets total",
@@ -402,10 +402,7 @@
     },
     "errors": {
         "404Title": "Page introuvable",
-        "404Body": "Cette page n'existe pas (ou plus).",
-        "500Title": "Erreur interne",
-        "500Body": "Une erreur est survenue. Recharge la page ou réessaie plus tard.",
-        "code": "Erreur"
+        "404Body": "Cette page n'existe pas (ou plus)."
     },
     "activity": {
         "title": "📋 Journal d'activité",

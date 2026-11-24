@@ -2,11 +2,11 @@
 import { useTranslation } from "../i18n/I18nContext";
 import { useModules } from "../context/ModulesContext";
 const CONFIG_KEYS: Record<string, string> = {
-    project_statuses: "Statuts de projet",
-    project_types: "Types de projet",
-    stock_units: "Unités de stock",
-    stock_locations: "Emplacements",
-    stock_categories: "Catégories de stock",
+    project_statuses: "settings.lists.projectStatuses",
+    project_types: "settings.lists.projectTypes",
+    stock_units: "settings.lists.units",
+    stock_locations: "settings.lists.locations",
+    stock_categories: "settings.lists.stockCategories",
 };
 
 interface Props {
@@ -24,10 +24,10 @@ export default function ConfigListsSection({ configs, editKey, editValue, onEdit
     return (
         <div className="card">
             <h2 style={{ fontSize: "1.125rem", fontWeight: 600, marginBottom: "1rem" }}>📝 Listes modifiables</h2>
-            {entries.map(([key, label]) => (
+            {entries.map(([key, labelKey]) => (
                 <div key={key} style={{ marginBottom: "1rem", paddingBottom: "1rem", borderBottom: "1px solid var(--surface-2)" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <strong>{label}</strong>
+                        <strong>{t(labelKey)}</strong>
                         <button className="btn-secondary" onClick={() => onEdit(key, (configs[key] ?? []).join(", "))}>
                             Modifier
                         </button>
