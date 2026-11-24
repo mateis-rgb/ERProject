@@ -1,6 +1,9 @@
 // Seed - crée un utilisateur admin par défaut si aucun utilisateur n'existe
 import { getPrisma } from "../config/prisma";
 import { hashPassword } from "../services/authService";
+import { config } from "../config";
+
+const DEFAULT_ADMIN_PASSWORD = "admin123456";
 
 export async function seedAdmin(): Promise<void> {
     const prisma = getPrisma();
@@ -10,7 +13,11 @@ export async function seedAdmin(): Promise<void> {
         return;
     }
     const email = process.env.ADMIN_EMAIL ?? "admin@erProjects.local";
-    const password = process.env.ADMIN_PASSWORD ?? "admin123456";
+    const envPassword = process.env.ADMIN_PASSWORD;
+    if (config.nodeEnv === "production" && (envPassword === undefined || envPassword === DEFAULT_ADMIN_PASSWORD)) {
+        throw new Error("[SEED] ADMIN_PASSWORD obligatoire en production (pas de mot de passe par défaut)");
+    }
+    const password = envPassword ?? DEFAULT_ADMIN_PASSWORD;
     const hash = await hashPassword(password);
     await prisma.user.create({
         data: {
@@ -20,6 +27,9 @@ export async function seedAdmin(): Promise<void> {
             role: "ADMIN",
         },
     });
-    console.log(`[SEED] Admin créé: ${email} / ${password}`);
-    console.log("[SEED] ⚠️  Change ce mot de passe après la première connexion !");
+    // ne jamais logger le mot de passe (même par défaut) : fuite dans les logs
+    console.log(`[SEED] Admin créé: ${email}`);
+    if (config.nodeEnv !== "production") {
+        console.log("[SEED] ⚠️  Change ce mot de passe après la première connexion !");
+    }
 }

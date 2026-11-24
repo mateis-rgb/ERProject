@@ -8,7 +8,9 @@ import cors from "cors";
 import https from "https";
 import http from "http";
 import fs from "fs";
+import path from "path";
 import { config } from "./config";
+import { requireAuth } from "./middleware/auth";
 import { getStorageDir, resolveStorageDir } from "./services/storageService";
 import { getPrisma, disconnectPrisma } from "./config/prisma";
 import { authRouter } from "./routes/authRoutes";
@@ -32,7 +34,9 @@ import { initSocket } from "./services/socketService";
 const app = express();
 
 app.disable("x-powered-by");
-app.use(cors({ origin: true, credentials: true }));
+// CORS : en prod, uniquement l'origine configurée (CORS_ORIGIN) ou same-origin (false) ; en dev, ouvert (Vite sur 5173)
+const corsOrigin = config.corsOrigin ?? (config.nodeEnv === "production" ? false : true);
+app.use(cors({ origin: corsOrigin, credentials: true }));
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true, limit: "1mb" }));
 app.use(cookieParser());
@@ -55,7 +59,14 @@ app.use(
 );
 
 // --- Uploads statiques (dossier résolu dynamiquement depuis la config storage_path) ---
-app.use("/uploads", (req: Request, res: Response, next: NextFunction) => {
+// Protégé par requireAuth + headers anti-XSS (nosniff, CSP sandbox, attachment pour les extensions exécutables)
+const DANGEROUS_UPLOAD_EXT = [".html", ".htm", ".svg", ".xml", ".xhtml", ".js", ".mjs", ".css"];
+app.use("/uploads", requireAuth, (req: Request, res: Response, next: NextFunction) => {
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    res.setHeader("Content-Security-Policy", "default-src 'none'");
+    if (DANGEROUS_UPLOAD_EXT.includes(path.extname(req.path).toLowerCase())) {
+        res.setHeader("Content-Disposition", "attachment");
+    }
     express.static(getStorageDir())(req, res, next);
 });
 
