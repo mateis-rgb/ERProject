@@ -30,17 +30,17 @@ export default function Dashboard(): JSX.Element {
             </div>
             <div className="bento">
                 <BentoCard value={kpis.totalProjects} label={t("dashboard.kpiProjects")} icon="◫" accent="var(--tally)" />
-                <BentoCard value={kpis.activeProjects} label="En cours" icon="●" accent="var(--green)" live />
+                <BentoCard value={kpis.activeProjects} label={t("dashboard.kpiActive")} icon="●" accent="var(--green)" live={kpis.activeProjects > 0} />
+                <BentoCard value={kpis.milestonesOverdue} label={t("dashboard.kpiOverdue")} icon="✗" accent="var(--danger)" warn={kpis.milestonesOverdue > 0} />
+                <BentoCard value={kpis.milestonesUpcoming} label={t("dashboard.kpiUpcoming")} icon="◔" accent="var(--blue)" />
                 {enabled("stock") && (
                     <>
-                        <BentoCard value={kpis.totalStockItems} label={t("dashboard.kpiStockItems")} icon="▤" accent="var(--blue)" />
                         <BentoCard value={kpis.lowStockItems} label={t("stock.low")} icon="▲" accent="var(--amber)" warn={kpis.lowStockItems > 0} />
+                        <BentoCard value={kpis.reservedItems} label={t("dashboard.kpiReserved")} icon="▤" accent="var(--blue)" />
                         <BentoCard value={`${kpis.totalStockValue.toFixed(0)} €`} label={t("dashboard.kpiValue")} icon="¤" accent="var(--green)" />
-                        <BentoCard value={kpis.totalMovementsOut} label={t("dashboard.kpiOut")} icon="⇪" accent="var(--tally)" />
                     </>
                 )}
-                <BentoCard value={`${kpis.totalTimeLogged}h`} label={t("dashboard.kpiTime")} icon="◷" accent="var(--violet)" />
-                <BentoCard value={kpis.activeProjects > 0 ? "ON AIR" : "STANDBY"} label={t("project.status")} icon="◉" accent={kpis.activeProjects > 0 ? "var(--tally)" : "var(--text-dim)"} live={kpis.activeProjects > 0} />
+                <BentoCard value={`${kpis.timeThisMonth}h`} label={t("dashboard.kpiTimeMonth")} icon="◷" accent="var(--violet)" />
             </div>
         </div>
     );

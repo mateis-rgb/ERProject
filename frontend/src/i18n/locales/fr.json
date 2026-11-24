@@ -214,10 +214,12 @@
     },
     "dashboard": {
         "kpiProjects": "Projets total",
-        "kpiStockItems": "Articles stock",
+        "kpiActive": "En cours",
+        "kpiOverdue": "Jalons en retard",
+        "kpiUpcoming": "Jalons à venir (7 j)",
+        "kpiReserved": "Articles réservés",
         "kpiValue": "Valeur stock",
-        "kpiOut": "Unités sorties",
-        "kpiTime": "Temps logué",
+        "kpiTimeMonth": "Temps ce mois-ci",
         "noUpcoming": "Aucun à venir"
     },
     "projects": {

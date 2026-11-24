@@ -69,11 +69,12 @@ export interface ProjectStockLink {
 export interface DashboardKPIs {
     totalProjects: number;
     activeProjects: number;
-    totalStockItems: number;
+    milestonesOverdue: number;
+    milestonesUpcoming: number;
     lowStockItems: number;
+    reservedItems: number;
     totalStockValue: number;
-    totalMovementsOut: number;
-    totalTimeLogged: number;
+    timeThisMonth: number;
 }
 
 export interface TimeEntry {

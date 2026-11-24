@@ -214,11 +214,13 @@
     },
     "dashboard": {
         "kpiProjects": "Total projects",
-        "kpiStockItems": "Stock items",
+        "kpiActive": "Active",
+        "kpiOverdue": "Overdue milestones",
+        "kpiUpcoming": "Upcoming (7 d)",
+        "kpiReserved": "Reserved items",
         "kpiValue": "Stock value",
-        "kpiOut": "Units out",
-        "kpiTime": "Time logged",
-        "noUpcoming": "None upcoming"
+        "kpiTimeMonth": "Time this month",
+        "noUpcoming": "Nothing upcoming"
     },
     "projects": {
         "search": "🔍 Search a project..."
