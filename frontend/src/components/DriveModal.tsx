@@ -49,10 +49,13 @@ export default function DriveModal(props: Props): JSX.Element {
                     </p>
                 )}
                 {withInput && (
-                    <input className="input" autoFocus value={value}
-                        placeholder={modal.kind === "folder" ? t("drive.modalNamePlaceholder") : modal.item.fileName}
-                        onChange={(e) => onValue(e.target.value)}
-                        onKeyDown={(e) => { if (e.key === "Enter") onConfirm(); }} />
+                    <div>
+                        <label className="label">{t("drive.modalName")}</label>
+                        <input className="input" autoFocus value={value}
+                            placeholder={modal.kind === "folder" ? "" : modal.item.fileName}
+                            onChange={(e) => onValue(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === "Enter") onConfirm(); }} />
+                    </div>
                 )}
                 <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", marginTop: "1.25rem" }}>
                     <button className="btn-ghost" onClick={onCancel}>{t("common.cancel")}</button>

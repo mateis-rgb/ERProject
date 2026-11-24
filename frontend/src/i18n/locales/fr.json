@@ -76,7 +76,8 @@
         "addMilestone": "Ajouter un jalon",
         "folders": "Arborescence de dossiers",
         "foldersHint": "un chemin par ligne, ex: 03_Tournage/Rushes",
-        "collaborators": "Collaborateurs pré-assignés"
+        "collaborators": "Collaborateurs pré-assignés",
+        "offsetShort": "J+"
     },
     "modules": {
         "title": "Modules",
@@ -262,7 +263,8 @@
         "datesTitle": "Dates du projet",
         "datesHint": "Le planning (Gantt) est borné aux dates limites du projet. Définis-les pour verrouiller la plage.",
         "datesRequired": "Les deux dates sont requises.",
-        "datesOrder": "La date de début doit être avant la fin."
+        "datesOrder": "La date de début doit être avant la fin.",
+        "template": "Modèle"
     },
     "stock": {
         "category": "Catégorie",
@@ -288,7 +290,8 @@
         "dispo": "Dispo",
         "unavailable": "INDISPO",
         "newArticle": "+ Nouvel article",
-        "createArticle": "Créer larticle"
+        "createArticle": "Créer larticle",
+        "unit": "Unité"
     },
     "movement": {
         "in": "⬇️ Entrée",
@@ -319,7 +322,7 @@
         "modalRename": "Renommer",
         "modalDelete": "Supprimer",
         "modalError": "Erreur",
-        "modalNamePlaceholder": "Nom..."
+        "modalName": "Nom"
     },
     "gantt": {
         "title": "Planning",
@@ -333,7 +336,6 @@
         "empty": "Aucun jalon. Crée un jalon pour planifier le projet.",
         "hint": "Glisse un jalon horizontalement pour déplacer ses dates. Le matériel réservé sur un jalon est bloqué pour les autres projets sur cette période.",
         "selectHint": "Sélectionne un jalon sur le planning pour voir et réserver le matériel.",
-        "milestoneNamePlaceholder": "Nom du jalon (ex: Tournage)",
         "noReserved": "Aucun matériel réservé.",
         "reservedStock": "Stock réservé sur ce jalon",
         "deleteConfirm": "Supprimer le jalon",
@@ -344,7 +346,11 @@
         "mode": {
             "read": "Lecture",
             "edit": "Édition"
-        }
+        },
+        "milestoneName": "Nom du jalon",
+        "color": "Couleur",
+        "newMilestone": "Nouveau jalon",
+        "editMilestone": "Modifier le jalon"
     },
     "roles": {
         "admin": "Admin",

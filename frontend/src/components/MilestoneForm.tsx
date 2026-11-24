@@ -38,9 +38,10 @@ function DateFields({ startDate, endDate, onStart, onEnd }: {
 }
 
 function ColorPicker({ color, onChange }: { color: string; onChange: (c: string) => void }): JSX.Element {
+    const { t } = useTranslation();
     return (
         <div>
-            <label className="label">Couleur</label>
+            <label className="label">{t("gantt.color")}</label>
             <div style={{ display: "flex", gap: "0.5rem" }}>
                 {COLORS.map((c) => (
                     <button key={c} type="button" onClick={() => onChange(c)}
@@ -98,10 +99,13 @@ export default function MilestoneForm({ projectId, milestone, milestones, onSave
     return (
         <form className="card" onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
             <h3 style={{ margin: 0, fontSize: "1rem", fontWeight: 700, textTransform: "uppercase" }}>
-                {milestone === null ? "Nouveau jalon" : "Modifier le jalon"}
+                {milestone === null ? t("gantt.newMilestone") : t("gantt.editMilestone")}
             </h3>
             {error !== null && <p style={{ color: "var(--danger)", fontFamily: "var(--font-mono)", fontSize: "0.78rem", margin: 0 }}>⚠ {error}</p>}
-            <input className="input" placeholder={t("gantt.milestoneNamePlaceholder")} value={name} onChange={(e) => setName(e.target.value)} required />
+            <div>
+                <label className="label">{t("gantt.milestoneName")}</label>
+                <input className="input" value={name} onChange={(e) => setName(e.target.value)} required />
+            </div>
             <div>
                 <label className="label">{t("gantt.parentMilestone")}</label>
                 <select className="select" value={parentId ?? ""} onChange={(e) => setParentId(e.target.value === "" ? null : e.target.value)}>
@@ -111,11 +115,14 @@ export default function MilestoneForm({ projectId, milestone, milestones, onSave
                     ))}
                 </select>
             </div>
-            <textarea className="input" placeholder={t("project.description")} value={description} onChange={(e) => setDescription(e.target.value)} rows={2} />
+            <div>
+                <label className="label">{t("project.description")}</label>
+                <textarea className="input" value={description} onChange={(e) => setDescription(e.target.value)} rows={2} />
+            </div>
             <DateFields startDate={startDate} endDate={endDate} onStart={setStartDate} onEnd={setEndDate} />
             <ColorPicker color={color} onChange={setColor} />
             <div style={{ display: "flex", gap: "0.75rem" }}>
-                <button className="btn" type="submit" disabled={busy}>{busy ? "..." : "Enregistrer"}</button>
+                <button className="btn" type="submit" disabled={busy}>{busy ? t("common.saving") : t("common.save")}</button>
                 <button className="btn-ghost" type="button" onClick={onCancel}>{t("common.cancel")}</button>
             </div>
         </form>

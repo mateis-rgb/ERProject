@@ -41,14 +41,26 @@ export default function ProjectForm({ onCreated, onError }: Props): JSX.Element 
 
     return (
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-            <input className="input" placeholder={t("project.name")} value={name} onChange={(e) => setName(e.target.value)} required />
-            <textarea className="input" placeholder={t("project.description")} value={description} onChange={(e) => setDescription(e.target.value)} rows={3} />
-            <input className="input" placeholder={t("project.client")} value={client} onChange={(e) => setClient(e.target.value)} />
+            <div>
+                <label className="label">{t("project.name")}</label>
+                <input className="input" value={name} onChange={(e) => setName(e.target.value)} required />
+            </div>
+            <div>
+                <label className="label">{t("project.description")}</label>
+                <textarea className="input" value={description} onChange={(e) => setDescription(e.target.value)} rows={3} />
+            </div>
+            <div>
+                <label className="label">{t("project.client")}</label>
+                <input className="input" value={client} onChange={(e) => setClient(e.target.value)} />
+            </div>
             {templatesOn && (
-                <select className="select" value={templateId} onChange={(e) => setTemplateId(e.target.value)}>
-                    <option value="">{t("project.noTemplate")}</option>
-                    {templates.map((tpl) => <option key={tpl.id} value={tpl.id}>{tpl.name}</option>)}
-                </select>
+                <div>
+                    <label className="label">{t("project.template")}</label>
+                    <select className="select" value={templateId} onChange={(e) => setTemplateId(e.target.value)}>
+                        <option value="">{t("project.noTemplate")}</option>
+                        {templates.map((tpl) => <option key={tpl.id} value={tpl.id}>{tpl.name}</option>)}
+                    </select>
+                </div>
             )}
             <button className="btn" type="submit" disabled={busy}>{busy ? t("common.creating") : t("projects.createProject")}</button>
         </form>

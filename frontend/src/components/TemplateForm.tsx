@@ -21,19 +21,72 @@ function MilestoneRow({ m, index, onChange, onRemove }: {
         onChange(index, { ...m, [k]: v } as TemplateMilestone);
     };
     return (
-        <div style={{ display: "flex", gap: "0.4rem", alignItems: "center", flexWrap: "wrap", border: "2px solid var(--ink)", padding: "0.5rem", marginBottom: "0.4rem" }}>
-            <input className="input" style={{ width: "90px", padding: "0.3rem 0.5rem" }} value={m.color} onChange={(e) => set("color", e.target.value)} title="couleur" />
-            {COLORS.map((c) => (
-                <button key={c} type="button" onClick={() => set("color", c)}
-                    style={{ width: "18px", height: "18px", background: c, border: m.color === c ? "3px solid var(--ink)" : "2px solid var(--ink)", cursor: "pointer", padding: 0 }} />
+        <div style={{ border: "2px solid var(--ink)", padding: "0.5rem", marginBottom: "0.4rem" }}>
+            <div style={{ display: "flex", gap: "0.4rem", alignItems: "flex-end", flexWrap: "wrap" }}>
+                <div>
+                    <label className="label">{t("gantt.color")}</label>
+                    <div style={{ display: "flex", gap: "0.3rem", alignItems: "center" }}>
+                        <input className="input" style={{ width: "80px", padding: "0.3rem 0.5rem" }} value={m.color} onChange={(e) => set("color", e.target.value)} />
+                        {COLORS.map((c) => (
+                            <button key={c} type="button" onClick={() => set("color", c)}
+                                style={{ width: "18px", height: "18px", background: c, border: m.color === c ? "3px solid var(--ink)" : "2px solid var(--ink)", cursor: "pointer", padding: 0 }} />
+                        ))}
+                    </div>
+                </div>
+                <div style={{ flex: 1, minWidth: "140px" }}>
+                    <label className="label">{t("templates.milestoneName")}</label>
+                    <input className="input" style={{ width: "100%", padding: "0.3rem 0.5rem" }}
+                        value={m.name} onChange={(e) => set("name", e.target.value)} />
+                </div>
+                <div>
+                    <label className="label" title={t("templates.offsetStart")}>{t("templates.offsetShort")}</label>
+                    <input className="input" type="number" style={{ width: "70px", padding: "0.3rem 0.5rem" }} title={t("templates.offsetStart")}
+                        value={m.offsetStartDays} onChange={(e) => set("offsetStartDays", parseInt(e.target.value, 10) || 0)} />
+                </div>
+                <div>
+                    <label className="label">{t("templates.duration")}</label>
+                    <input className="input" type="number" min="1" style={{ width: "70px", padding: "0.3rem 0.5rem" }}
+                        value={m.durationDays} onChange={(e) => set("durationDays", parseInt(e.target.value, 10) || 1)} />
+                </div>
+                <button type="button" className="btn-danger" style={{ padding: "0.2rem 0.45rem", boxShadow: "2px 2px 0 var(--danger)" }} onClick={() => onRemove(index)}>✕</button>
+            </div>
+        </div>
+    );
+}
+
+function MilestonesEditor({ milestones, onChange, onRemove, onAdd }: {
+    milestones: TemplateMilestone[];
+    onChange: (i: number, m: TemplateMilestone) => void;
+    onRemove: (i: number) => void;
+    onAdd: () => void;
+}): JSX.Element {
+    const { t } = useTranslation();
+    return (
+        <div style={{ marginBottom: "0.9rem" }}>
+            <label className="label">{t("templates.milestones")} (J+ offset / durée en jours)</label>
+            {milestones.map((m, i) => (
+                <MilestoneRow key={i} m={m} index={i} onChange={onChange} onRemove={onRemove} />
             ))}
-            <input className="input" style={{ flex: 1, minWidth: "140px", padding: "0.3rem 0.5rem" }} placeholder={t("templates.milestoneName")}
-                value={m.name} onChange={(e) => set("name", e.target.value)} />
-            <input className="input" type="number" style={{ width: "70px", padding: "0.3rem 0.5rem" }} title={t("templates.offsetStart")}
-                value={m.offsetStartDays} onChange={(e) => set("offsetStartDays", parseInt(e.target.value, 10) || 0)} />
-            <input className="input" type="number" min="1" style={{ width: "70px", padding: "0.3rem 0.5rem" }} title={t("templates.duration")}
-                value={m.durationDays} onChange={(e) => set("durationDays", parseInt(e.target.value, 10) || 1)} />
-            <button type="button" className="btn-danger" style={{ padding: "0.2rem 0.45rem", boxShadow: "2px 2px 0 var(--danger)" }} onClick={() => onRemove(index)}>✕</button>
+            <button type="button" className="btn-ghost" onClick={onAdd}>+ {t("templates.addMilestone")}</button>
+        </div>
+    );
+}
+
+function CollabPicker({ users, selected, onToggle }: {
+    users: AuthUser[]; selected: string[]; onToggle: (uid: string) => void;
+}): JSX.Element {
+    const { t } = useTranslation();
+    return (
+        <div style={{ marginBottom: "1.1rem" }}>
+            <label className="label">{t("templates.collaborators")}</label>
+            <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
+                {users.map((u) => (
+                    <button key={u.id} type="button" className={selected.includes(u.id) ? "btn" : "btn-ghost"}
+                        style={{ padding: "0.25rem 0.6rem", fontSize: "0.75rem" }} onClick={() => onToggle(u.id)}>
+                        {u.name}
+                    </button>
+                ))}
+            </div>
         </div>
     );
 }
@@ -68,25 +121,21 @@ export default function TemplateForm({ initial, users, onSave, onCancel }: Props
             <h2 style={{ margin: "0 0 1rem", fontSize: "1.1rem", fontWeight: 700, textTransform: "uppercase" }}>
                 {initial === null ? t("templates.new") : t("templates.edit")}
             </h2>
-            <input className="input" placeholder={t("templates.name")} value={name} onChange={(e) => setName(e.target.value)} style={{ marginBottom: "0.6rem" }} />
-            <textarea className="input" placeholder={t("templates.description")} value={description} onChange={(e) => setDescription(e.target.value)} rows={2} style={{ marginBottom: "0.9rem" }} />
-            <label className="label">{t("templates.milestones")} (J+ offset / durée en jours)</label>
-            {milestones.map((m, i) => (
-                <MilestoneRow key={i} m={m} index={i} onChange={setMilestone} onRemove={removeMilestone} />
-            ))}
-            <button type="button" className="btn-ghost" style={{ marginBottom: "0.9rem" }} onClick={addMilestone}>+ {t("templates.addMilestone")}</button>
-            <label className="label">{t("templates.folders")} ({t("templates.foldersHint")})</label>
-            <textarea className="input mono" value={foldersText} onChange={(e) => setFoldersText(e.target.value)} rows={5}
-                placeholder={"01_Admin\n03_Tournage/Rushes"} style={{ marginBottom: "0.9rem", fontSize: "0.78rem" }} />
-            <label className="label">{t("templates.collaborators")}</label>
-            <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap", marginBottom: "1.1rem" }}>
-                {users.map((u) => (
-                    <button key={u.id} type="button" className={collabIds.includes(u.id) ? "btn" : "btn-ghost"}
-                        style={{ padding: "0.25rem 0.6rem", fontSize: "0.75rem" }} onClick={() => toggleCollab(u.id)}>
-                        {u.name}
-                    </button>
-                ))}
+            <div style={{ marginBottom: "0.6rem" }}>
+                <label className="label">{t("templates.name")}</label>
+                <input className="input" value={name} onChange={(e) => setName(e.target.value)} />
             </div>
+            <div style={{ marginBottom: "0.9rem" }}>
+                <label className="label">{t("templates.description")}</label>
+                <textarea className="input" value={description} onChange={(e) => setDescription(e.target.value)} rows={2} />
+            </div>
+            <MilestonesEditor milestones={milestones} onChange={setMilestone} onRemove={removeMilestone} onAdd={addMilestone} />
+            <div style={{ marginBottom: "0.9rem" }}>
+                <label className="label">{t("templates.folders")} ({t("templates.foldersHint")})</label>
+                <textarea className="input mono" value={foldersText} onChange={(e) => setFoldersText(e.target.value)} rows={5}
+                    placeholder={"01_Admin\n03_Tournage/Rushes"} style={{ fontSize: "0.78rem" }} />
+            </div>
+            <CollabPicker users={users} selected={collabIds} onToggle={toggleCollab} />
             <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
                 <button className="btn-ghost" onClick={onCancel}>{t("common.cancel")}</button>
                 <button className="btn" disabled={name.trim() === ""} onClick={submit}>{t("common.save")}</button>

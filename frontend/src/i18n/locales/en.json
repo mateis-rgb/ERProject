@@ -76,7 +76,8 @@
         "addMilestone": "Add a milestone",
         "folders": "Folder tree",
         "foldersHint": "one path per line, e.g. 03_Shoot/Footage",
-        "collaborators": "Pre-assigned collaborators"
+        "collaborators": "Pre-assigned collaborators",
+        "offsetShort": "D+"
     },
     "modules": {
         "title": "Modules",
@@ -262,7 +263,8 @@
         "datesTitle": "Project dates",
         "datesHint": "The planning (Gantt) is bounded by the project's start/end dates. Set them to lock the range.",
         "datesRequired": "Both dates are required.",
-        "datesOrder": "Start date must be before end date."
+        "datesOrder": "Start date must be before end date.",
+        "template": "Template"
     },
     "stock": {
         "category": "Category",
@@ -288,7 +290,8 @@
         "dispo": "Avail.",
         "unavailable": "OUT",
         "newArticle": "+ New item",
-        "createArticle": "Create item"
+        "createArticle": "Create item",
+        "unit": "Unit"
     },
     "movement": {
         "in": "⬇️ In",
@@ -319,7 +322,7 @@
         "modalRename": "Rename",
         "modalDelete": "Delete",
         "modalError": "Error",
-        "modalNamePlaceholder": "Name..."
+        "modalName": "Name"
     },
     "gantt": {
         "title": "Planning",
@@ -333,7 +336,6 @@
         "empty": "No milestone yet. Create one to plan the project.",
         "hint": "Drag a milestone horizontally to move its dates. Equipment reserved on a milestone is blocked for other projects during that period.",
         "selectHint": "Select a milestone on the planning to see and reserve equipment.",
-        "milestoneNamePlaceholder": "Milestone name (e.g. Shoot)",
         "noReserved": "No equipment reserved.",
         "reservedStock": "Equipment reserved on this milestone",
         "deleteConfirm": "Delete milestone",
@@ -344,7 +346,11 @@
         "mode": {
             "read": "Read",
             "edit": "Edit"
-        }
+        },
+        "milestoneName": "Milestone name",
+        "color": "Color",
+        "newMilestone": "New milestone",
+        "editMilestone": "Edit milestone"
     },
     "roles": {
         "admin": "Admin",
