@@ -7,6 +7,7 @@ import MilestoneForm from "./MilestoneForm";
 import MilestoneModal from "./MilestoneModal";
 import ProjectDatesModal from "./ProjectDatesModal";
 import type { ResizeSide } from "./useResizeDrag";
+import { currentMilestone } from "./ganttUtils";
 
 interface Props {
     projectId: string;
@@ -40,10 +41,11 @@ export default function PlanningView(props: Props): JSX.Element {
     const selected = milestones.find((m) => m.id === selectedId) ?? null;
     const noDates = projectStart === null || projectEnd === null;
     const editing = canEdit && editMode;
+    const current = currentMilestone(milestones, new Date())?.name ?? null;
     return (
         <div style={{ marginTop: "1.25rem" }}>
             <div className="card">
-                <PlanningHeader count={milestones.length} canEdit={canEdit} editMode={editMode}
+                <PlanningHeader current={current} canEdit={canEdit} editMode={editMode}
                     creating={creating} onToggleEdit={onToggleEdit} onToggleCreate={onToggleCreate} />
                 {creating && editing && (
                     <div style={{ marginBottom: "1rem" }}>

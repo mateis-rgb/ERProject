@@ -3,7 +3,7 @@ import { useTranslation } from "../i18n/I18nContext";
 import EditModeSwitch from "./EditModeSwitch";
 
 interface Props {
-    count: number;
+    current: string | null; // nom de l'étape en cours (ou prochaine)
     canEdit: boolean;
     editMode: boolean;
     creating: boolean;
@@ -12,15 +12,18 @@ interface Props {
 }
 
 export default function PlanningHeader(props: Props): JSX.Element {
-    const { count, canEdit, editMode, creating, onToggleEdit, onToggleCreate } = props;
+    const { current, canEdit, editMode, creating, onToggleEdit, onToggleCreate } = props;
     const { t } = useTranslation();
     const editing = canEdit && editMode;
     return (
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", flexWrap: "wrap", gap: "0.5rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
                 <h2 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 700, textTransform: "uppercase" }}>
-                    {t("gantt.title")} ({count})
+                    {t("gantt.title")}
                 </h2>
+                <span className="badge" style={{ background: "var(--tally)", color: "var(--ink)" }}>
+                    {current ?? t("gantt.noCurrent")}
+                </span>
                 {editing ? (
 					<span className="badge" style={{ background: "var(--accent)", color: "var(--accent-ink)" }}>
                         {t("gantt.mode.edit")}

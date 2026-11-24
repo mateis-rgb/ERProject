@@ -35,14 +35,15 @@ export default function SettingsTabs({ active, onChange, isAdmin }: Props): JSX.
     const visible = TABS.filter((t) => (!t.adminOnly || isAdmin) && (t.id !== "templates" || enabled("templates")));
 
     return (
-        <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.5rem", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.5rem", flexWrap: "wrap", width: "100%" }}>
             {visible.map((t) => (
                 <button
                     key={t.id}
                     className={active === t.id ? "btn" : "btn-ghost"}
                     onClick={() => onChange(t.id)}
-                    style={{ fontSize: "0.8rem" }}
+                    style={{ fontSize: "0.8rem", display: "inline-flex", alignItems: "center", gap: "0.3rem" }}
                 >
+                    {t.adminOnly === true && <span aria-label="admin">🔒</span>}
                     {tt(t.key)}
                 </button>
             ))}

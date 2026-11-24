@@ -33,21 +33,23 @@ export default function Settings(): JSX.Element {
     }, [tabParam, navigate, enabled, user]);
 
     return (
-        <div style={{ maxWidth: "900px" }}>
+        <div>
             <div style={{ marginBottom: "1.5rem" }}>
                 <h1 className="page-title">{t("nav.settings")}</h1>
                 <p className="page-subtitle">{t("settings.subtitle2")}</p>
             </div>
             <SettingsTabs active={tab} onChange={(t2) => navigate(`/settings/${t2}`)} isAdmin={user?.role === "ADMIN"} />
-            {tab === "app" && <AppTab />}
-            {tab === "appearance" && <AppearanceSection />}
-            {tab === "lists" && <ListsTab />}
-            {tab === "templates" && <TemplatesTab />}
-            {tab === "modules" && user?.role === "ADMIN" && <ModulesTab />}
-            {tab === "access" && user?.role === "ADMIN" && <AccessTab />}
-            {tab === "security" && <SecurityTab />}
-            {tab === "status" && user?.role === "ADMIN" && <StatusTab />}
-            {tab === "about" && <AboutTab />}
+            <div style={{ maxWidth: "900px" }}>
+                {tab === "app" && <AppTab />}
+                {tab === "appearance" && <AppearanceSection />}
+                {tab === "lists" && <ListsTab />}
+                {tab === "templates" && <TemplatesTab />}
+                {tab === "modules" && user?.role === "ADMIN" && <ModulesTab />}
+                {tab === "access" && user?.role === "ADMIN" && <AccessTab />}
+                {tab === "security" && <SecurityTab />}
+                {tab === "status" && user?.role === "ADMIN" && <StatusTab />}
+                {tab === "about" && <AboutTab />}
+            </div>
         </div>
     );
 }

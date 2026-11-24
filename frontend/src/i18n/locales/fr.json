@@ -351,7 +351,8 @@
         "milestoneName": "Nom du jalon",
         "color": "Couleur",
         "newMilestone": "Nouveau jalon",
-        "editMilestone": "Modifier le jalon"
+        "editMilestone": "Modifier le jalon",
+        "noCurrent": "Aucune étape en cours"
     },
     "roles": {
         "admin": "Admin",

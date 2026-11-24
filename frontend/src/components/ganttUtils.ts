@@ -41,6 +41,19 @@ export function addPeriod(t: number, n: number, view: GanttView): number {
 }
 
 // Aplatit la hiérarchie des jalons : parents d'abord, enfants juste après (itératif - R1, boucle bornée - R2)
+// Étape en cours : jalon couvrant "now" (le plus court = le plus spécifique),
+// sinon le prochain jalon à démarrer
+export function currentMilestone(milestones: import("../types").Milestone[], now: Date): import("../types").Milestone | null {
+    const covering = milestones
+        .filter((m) => new Date(m.startDate) <= now && new Date(m.endDate) >= now)
+        .sort((a, b) => (new Date(a.endDate).getTime() - new Date(a.startDate).getTime()) - (new Date(b.endDate).getTime() - new Date(b.startDate).getTime()));
+    if (covering.length > 0) return covering[0] ?? null;
+    const upcoming = milestones
+        .filter((m) => new Date(m.startDate) > now)
+        .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+    return upcoming[0] ?? null;
+}
+
 export interface FlatMilestone { m: import("../types").Milestone; depth: number }
 export function orderMilestones(milestones: import("../types").Milestone[]): FlatMilestone[] {
     const MAX_DEPTH = 10;
