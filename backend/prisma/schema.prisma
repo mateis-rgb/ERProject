@@ -1,0 +1,301 @@
+// ERProjects - Schéma Prisma PostgreSQL
+// Power of 10 : modèles plats, relations explicites, pas de récursivité
+// IDs en UUID (string) partout pour éviter les énumérations d'URL
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// UTILISATEURS & AUTH
+// ============================================================
+
+enum UserRole {
+    ADMIN
+    EDITOR
+    VIEWER
+}
+
+model User {
+    id           String    @id @default(uuid())
+    email        String    @unique
+    passwordHash String
+    name         String
+    role         UserRole  @default(VIEWER)
+    createdAt    DateTime  @default(now())
+    updatedAt    DateTime  @updatedAt
+
+    // Relations
+    projectsCreated    Project[]          @relation("ProjectCreator")
+    collaborators      ProjectCollaborator[]
+    stockMovements     StockMovement[]
+    attachments        Attachment[]
+    activityLogs       ActivityLog[]
+    timeEntries        TimeEntry[]
+    refreshTokens      RefreshToken[]
+    notifications      Notification[]
+}
+
+// ============================================================
+// PROJETS
+// ============================================================
+
+model Project {
+    id          String    @id @default(uuid())
+    name        String
+    description String    @default("")
+    status      String    @default("En étude")
+    startDate   DateTime?
+    endDate     DateTime?
+    budget      Float?
+    client      String    @default("")
+    tags        String[]  @default([])
+    type        String    @default("")
+    quotaBytes  Float?    // quota drive du projet (octets), null = illimité
+    createdById String
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+
+    // Relations
+    createdBy      User                  @relation("ProjectCreator", fields: [createdById], references: [id])
+    collaborators  ProjectCollaborator[]
+    stockLinks     ProjectStock[]
+    movements      StockMovement[]
+    attachments    Attachment[]
+    activityLogs   ActivityLog[]
+    timeEntries    TimeEntry[]
+    milestones     Milestone[]
+}
+
+model ProjectCollaborator {
+    projectId String
+    userId    String
+    addedAt   DateTime @default(now())
+
+    project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@id([projectId, userId])
+}
+
+// ============================================================
+// STOCK
+// ============================================================
+
+model StockItem {
+    id            String   @id @default(uuid())
+    name          String
+    reference     String   @unique
+    quantity      Float    @default(0)
+    unit          String   @default("pièces")
+    category      String   @default("")
+    supplier      String   @default("")
+    purchasePrice Float?
+    location      String   @default("")
+    minThreshold  Float    @default(0)
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+
+    // Relations
+    projectLinks ProjectStock[]
+    movements    StockMovement[]
+}
+
+// Liaison Projet <-> Stock (allocation souple/stricte + prévisionnel)
+// milestoneId null = engagé sur le projet en général,
+// sinon = réservé sur ce jalon précis (bloque le stock à ces dates)
+model ProjectStock {
+    projectId         String
+    stockItemId       String
+    milestoneId       String?
+    allocatedQuantity Float   @default(0)   // quantité réservée (stricte)
+    consumedQuantity  Float   @default(0)   // quantité déjà consommée
+    forecastQuantity  Float   @default(0)   // prévisionnel
+    forecastDate      DateTime?
+    createdAt         DateTime @default(now())
+    updatedAt         DateTime @updatedAt
+
+    project   Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    stockItem StockItem  @relation(fields: [stockItemId], references: [id], onDelete: Cascade)
+    milestone Milestone? @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+
+    @@id([projectId, stockItemId])
+}
+
+enum MovementType {
+    IN      // entrée de stock
+    OUT     // sortie (consommation par un projet)
+    RETURN  // retour de stock non utilisé
+}
+
+model StockMovement {
+    id          String       @id @default(uuid())
+    stockItemId String
+    projectId   String?
+    userId      String
+    type        MovementType
+    quantity    Float
+    reason      String       @default("")
+    date        DateTime     @default(now())
+    createdAt   DateTime     @default(now())
+
+    stockItem StockItem @relation(fields: [stockItemId], references: [id])
+    project   Project?  @relation(fields: [projectId], references: [id])
+    user      User      @relation(fields: [userId], references: [id])
+}
+
+// ============================================================
+// JALONS (milestones) d'un projet
+// Le stock réservé sur un jalon passe par ProjectStock.milestoneId
+// ============================================================
+
+model Milestone {
+    id          String   @id @default(uuid())
+    projectId   String
+    parentId    String?  // sous-jalon : jalon parent dans le même projet
+    name        String
+    description String   @default("")
+    startDate   DateTime
+    endDate     DateTime
+    color       String   @default("#ffd600")
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    project    Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    parent     Milestone?     @relation("SubMilestones", fields: [parentId], references: [id])
+    children   Milestone[]    @relation("SubMilestones")
+    stockLinks ProjectStock[]
+}
+
+// ============================================================
+// DRIVE DU PROJET (dossiers + fichiers, hiérarchie par parentId)
+// ============================================================
+
+model Attachment {
+    id         String   @id @default(uuid())
+    projectId  String
+    parentId   String?  // null = racine du drive du projet
+    isFolder   Boolean  @default(false)
+    fileName   String
+    filePath   String   @default("") // chemin relatif sur le disque (vide si dossier)
+    fileSize   Float    @default(0)   // en octets
+    mimeType   String   @default("")
+    uploadedBy String
+    uploadedAt DateTime @default(now())
+
+    project  Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    uploader User         @relation(fields: [uploadedBy], references: [id])
+    parent   Attachment?  @relation("FolderTree", fields: [parentId], references: [id], onDelete: Cascade)
+    children Attachment[] @relation("FolderTree")
+}
+
+// ============================================================
+// JOURNAL D'ACTIVITÉ & HISTORIQUE
+// ============================================================
+
+model ActivityLog {
+    id        String   @id @default(uuid())
+    projectId String?
+    userId    String
+    action    String   // ex: "project.created", "stock.updated"
+    details   String   @default("") // JSON stringifié
+    timestamp DateTime @default(now())
+
+    project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+    user    User     @relation(fields: [userId], references: [id])
+}
+
+// ============================================================
+// SUIVI DU TEMPS
+// ============================================================
+
+model TimeEntry {
+    id          String   @id @default(uuid())
+    projectId   String
+    userId      String
+    hours       Float
+    description String   @default("")
+    date        DateTime @default(now())
+    createdAt   DateTime @default(now())
+
+    project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    user    User    @relation(fields: [userId], references: [id])
+}
+
+// ============================================================
+// CONFIGURATION (listes modifiables : statuts, types, unités, emplacements)
+// ============================================================
+
+model Config {
+    id    String @id @default(uuid())
+    key   String @unique // ex: "project_statuses", "project_types", "units", "locations"
+    value String // JSON array stringifié
+}
+
+// ============================================================
+// TABLE SESSION (gérée par connect-pg-simple, déclarée ici pour
+// que `prisma db push` ne propose pas de la supprimer)
+// ============================================================
+
+model Session {
+    sid    String   @id
+    sess   Json
+    expire DateTime @db.Timestamp(6)
+
+    @@map("session")
+}
+
+// ============================================================
+// REFRESH TOKENS (rotation, révocation)
+// ============================================================
+
+model RefreshToken {
+    id        String   @id @default(uuid())
+    tokenHash String   @unique
+    userId    String
+    expiresAt DateTime
+    revoked   Boolean  @default(false)
+    createdAt DateTime @default(now())
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ============================================================
+// NOTIFICATIONS IN-APP
+// ============================================================
+
+model Notification {
+    id        String   @id @default(uuid())
+    userId    String
+    type      String   @default("info") // info | warning | success | admin | task
+    title     String
+    message   String   @default("")
+    link      String?  // ex: "/projects/3"
+    read      Boolean  @default(false)
+    progress  Int?     // null = pas une tâche ; 0..100 = barre de progression
+    createdAt DateTime @default(now())
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ============================================================
+// TEMPLATES DE PROJETS
+// ============================================================
+
+model ProjectTemplate {
+    id              String   @id @default(uuid())
+    name            String
+    description     String   @default("")
+    // jalons préfaits : [{ name, description, offsetStartDays, durationDays, color }]
+    milestones      Json     @default("[]")
+    // hiérarchie de dossiers en chemins plats : ["01_Admin", "02_Tournage/rushes", ...]
+    folders         Json     @default("[]")
+    collaboratorIds String[] @default([])
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
+}

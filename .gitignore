@@ -1,0 +1,12 @@
+# ERProjects - .gitignore
+node_modules/
+dist/
+.env
+.env.local
+uploads/
+backups/
+*.log
+.DS_Store
+
+.dev/
+graphify-out/
