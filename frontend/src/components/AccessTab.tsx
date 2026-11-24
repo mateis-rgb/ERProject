@@ -34,7 +34,7 @@ export default function AccessTab(): JSX.Element {
             {error !== null && (
                 <p style={{ color: "var(--danger)", border: "2px solid var(--danger)", padding: "0.5rem 0.75rem",
                     fontFamily: "var(--font-mono)", fontSize: "0.8rem", fontWeight: 700, marginBottom: "1rem" }}>
-                    <FiAlertTriangle /> {error}
+                    <span className="ic"><FiAlertTriangle /> {error}</span>
                 </p>
             )}
             {showForm && <UserForm onCreated={() => { setShowForm(false); load(); }} onError={setError} />}

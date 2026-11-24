@@ -27,7 +27,7 @@ export default function Toast({ toast, onDismiss }: Props): JSX.Element | null {
             border: "3px solid var(--ink)", boxShadow: "6px 6px 0 var(--ink)",
             padding: "0.7rem 1rem", fontWeight: 700, fontSize: "0.85rem", maxWidth: "360px",
         }}>
-            {toast.kind === "success" ? <FiCheckCircle /> : <FiAlertTriangle />} {toast.msg}
+            <span className="ic">{toast.kind === "success" ? <FiCheckCircle /> : <FiAlertTriangle />} {toast.msg}</span>
         </div>
     );
 }

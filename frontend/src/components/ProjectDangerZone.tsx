@@ -53,7 +53,7 @@ export default function ProjectDangerZone({ project, canEdit, isAdmin, onSaved }
                     <button className="btn-danger" onClick={() => setModal("delete")}>{t("project.delete")}</button>
                 )}
             </div>
-            {err !== null && <p style={{ color: "var(--danger)", fontSize: "0.8rem", marginTop: "0.6rem" }}><FiAlertTriangle /> {err}</p>}
+            {err !== null && <p style={{ color: "var(--danger)", fontSize: "0.8rem", marginTop: "0.6rem" }}><span className="ic"><FiAlertTriangle /> {err}</span></p>}
             {modal !== null && (
                 <ConfirmModal
                     title={modal === "delete" ? t("project.deleteTitle") : t("project.archiveTitle")}

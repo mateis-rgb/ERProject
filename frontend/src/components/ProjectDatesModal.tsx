@@ -59,7 +59,7 @@ export default function ProjectDatesModal({ projectId, initialStart, initialEnd,
                         <input className="input" type="date" value={end} onChange={(e) => setEnd(e.target.value)} />
                     </div>
                 </div>
-                {err !== null && <p style={{ color: "var(--danger)", fontSize: "0.8rem", fontFamily: "var(--font-mono)" }}><FiAlertTriangle /> {err}</p>}
+                {err !== null && <p style={{ color: "var(--danger)", fontSize: "0.8rem", fontFamily: "var(--font-mono)" }}><span className="ic"><FiAlertTriangle /> {err}</span></p>}
                 <button className="btn" style={{ width: "100%" }} onClick={save} disabled={busy}>
                     {busy ? t("common.saving") : t("common.save")}
                 </button>

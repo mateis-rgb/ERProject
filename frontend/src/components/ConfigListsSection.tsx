@@ -24,7 +24,7 @@ export default function ConfigListsSection({ configs, editKey, editValue, onEdit
     const entries = Object.entries(CONFIG_KEYS).filter(([key]) => !key.startsWith("stock_") || enabled("stock"));
     return (
         <div className="card">
-            <h2 style={{ fontSize: "1.125rem", fontWeight: 600, marginBottom: "1rem" }}><FiEdit3 /> Listes modifiables</h2>
+            <h2 style={{ fontSize: "1.125rem", fontWeight: 600, marginBottom: "1rem" }}><span className="ic"><FiEdit3 /> Listes modifiables</span></h2>
             {entries.map(([key, labelKey]) => (
                 <div key={key} style={{ marginBottom: "1rem", paddingBottom: "1rem", borderBottom: "1px solid var(--surface-2)" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>

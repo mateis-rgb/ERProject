@@ -452,3 +452,7 @@ svg { vertical-align: middle; }
 .bento-item svg, .kbd svg, a svg, button svg, span svg, p svg, h1 svg, h2 svg, h3 svg {
     flex-shrink: 0;
 }
+
+/* Icône + texte collés (l'icône ne passe jamais à la ligne seule) */
+.ic { display: inline-flex; align-items: center; gap: 0.4rem; min-width: 0; }
+.ic > svg { flex-shrink: 0; }

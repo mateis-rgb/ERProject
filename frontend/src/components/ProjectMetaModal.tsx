@@ -60,7 +60,7 @@ function MilestoneList({ milestones }: { milestones: Milestone[] }): JSX.Element
                         <span style={{ display: "inline-block", width: "10px", height: "10px", background: m.color, border: "1px solid var(--ink)", marginRight: "0.4rem" }} />
                         {m.name}
                     </span>
-                    <span className="mono" style={{ fontSize: "0.72rem", color: "var(--muted)" }}>{fmt(m.startDate)} <FiArrowRight /> {fmt(m.endDate)}</span>
+                    <span className="mono" style={{ fontSize: "0.72rem", color: "var(--muted)" }}><span className="ic">{fmt(m.startDate)} <FiArrowRight /> {fmt(m.endDate)}</span></span>
                 </div>
             ))}
         </div>

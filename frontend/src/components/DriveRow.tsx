@@ -36,11 +36,11 @@ export default function DriveRow(props: Props): JSX.Element {
                 {item.isFolder ? (
                     <button className="btn-ghost" style={{ padding: "0.15rem 0.5rem", fontSize: "0.78rem" }}
                         onClick={() => onOpen(item)}>
-                        <FiFolder /> {item.fileName}
+                        <span className="ic"><FiFolder /> {item.fileName}</span>
                     </button>
                 ) : (
                     <a href={`/api/attachments/download/${item.id}`} style={{ color: "var(--accent)", fontWeight: 700 }}>
-                        <FiFileText /> {item.fileName}
+                        <span className="ic"><FiFileText /> {item.fileName}</span>
                     </a>
                 )}
             </div>

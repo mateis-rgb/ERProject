@@ -79,7 +79,7 @@ function UpdateModal({ info, steps, onClose }: { info: UpdateInfo; steps: Step[]
         <div className="modal-backdrop" onClick={onClose}>
             <div className="modal" style={{ maxWidth: "560px", maxHeight: "80vh", overflow: "auto" }} onClick={(e) => e.stopPropagation()}>
                 <h3 style={{ margin: "0 0 0.5rem", fontSize: "1rem", fontWeight: 700, textTransform: "uppercase" }}>
-                    <FiUpload /> {t("update.modalTitle")} {info.latest ?? ""}
+                    <span className="ic"><FiUpload /> {t("update.modalTitle")} {info.latest ?? ""}</span>
                 </h3>
                 <p style={{ margin: "0 0 0.75rem", fontSize: "0.8rem", color: "var(--muted)" }}>{t("update.modalHint")}</p>
                 {info.changelog !== "" && (
@@ -103,17 +103,17 @@ function UpdateModal({ info, steps, onClose }: { info: UpdateInfo; steps: Step[]
 function UpdateStatus({ info, onUpdateNow }: { info: UpdateInfo; onUpdateNow: () => void }): JSX.Element {
     const { t } = useTranslation();
     if (!info.enabled) return <p style={{ color: "var(--muted)", fontSize: "0.85rem" }}>{t("update.disabled")}</p>;
-    if (info.error !== null) return <p style={{ color: "var(--danger)", fontSize: "0.85rem" }}><FiAlertTriangle /> {t("update.error")} : {info.error}</p>;
-    if (!info.available) return <p style={{ color: "var(--green)", fontSize: "0.85rem", fontWeight: 700 }}><FiCheckCircle /> {t("update.upToDate")} (v{info.current})</p>;
+    if (info.error !== null) return <p style={{ color: "var(--danger)", fontSize: "0.85rem" }}><span className="ic"><FiAlertTriangle /> {t("update.error")} : {info.error}</span></p>;
+    if (!info.available) return <p style={{ color: "var(--green)", fontSize: "0.85rem", fontWeight: 700 }}><span className="ic"><FiCheckCircle /> {t("update.upToDate")} (v{info.current})</span></p>;
     return (
         <div>
             <p style={{ color: "var(--accent)", fontSize: "0.9rem", fontWeight: 700, margin: "0 0 0.5rem" }}>
-                <FiUpload /> {t("update.available")} : {info.latest} (v{info.current} locale)
+                <span className="ic"><FiUpload /> {t("update.available")} : {info.latest} (v{info.current} locale)</span>
             </p>
             <button className="btn" onClick={onUpdateNow}>{t("update.updateNow")}</button>
             {info.url !== null && (
                 <a href={info.url} target="_blank" rel="noreferrer" style={{ marginLeft: "0.75rem", fontSize: "0.8rem", color: "var(--accent)" }}>
-                    {t("update.releaseNotes")} <FiExternalLink />
+                    <span className="ic">{t("update.releaseNotes")} <FiExternalLink /></span>
                 </a>
             )}
         </div>
@@ -160,10 +160,10 @@ function RepoModal({ initial, onSaved, onClose, label }: RepoModalProps): JSX.El
                 {verify !== null && (
                     <p style={{ margin: "0.75rem 0 0", fontSize: "0.82rem", fontWeight: 700, color: verify.ok ? "var(--green)" : "var(--danger)" }}>
                         {verify.ok
-                            ? <><FiCheckCircle /> {verify.fullName ?? ""} — branche {verify.defaultBranch ?? "?"}</>
-                            : <><FiXCircle /> {verify.error ?? "?"}</>}
+                            ? <span className="ic"><FiCheckCircle /> {verify.fullName ?? ""} — branche {verify.defaultBranch ?? "?"}</span>
+                            : <span className="ic"><FiXCircle /> {verify.error ?? "?"}</span>}
                         {verify.ok && verify.url !== null && (
-                            <> · <a href={verify.url} target="_blank" rel="noreferrer" style={{ color: "var(--accent)" }}>GitHub <FiExternalLink /></a></>
+                            <> · <a href={verify.url} target="_blank" rel="noreferrer" style={{ color: "var(--accent)" }}><span className="ic">GitHub <FiExternalLink /></span></a></>
                         )}
                     </p>
                 )}
@@ -196,7 +196,7 @@ function RepoChip({ onChanged }: { onChanged: () => void }): JSX.Element {
             <button className="btn-ghost" title={t("update.repoChipHint")}
                 style={{ position: "absolute", top: "0.75rem", right: "0.75rem", padding: "0.2rem 0.6rem", fontSize: "0.72rem" }}
                 onClick={() => setOpen(true)}>
-                <FiSettings /> {info !== null && info.configured !== "" ? info.configured : t("update.repoChip")}
+                <span className="ic"><FiSettings /> {info !== null && info.configured !== "" ? info.configured : t("update.repoChip")}</span>
             </button>
             {open && <RepoModal initial={info?.configured ?? ""} onSaved={handleSaved} onClose={() => setOpen(false)} label={t} />}
         </>

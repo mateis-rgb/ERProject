@@ -29,7 +29,7 @@ function TeamModal({ onClose, label }: { onClose: () => void; label: (k: string)
                         </div>
                         <a className="btn-ghost" style={{ textDecoration: "none", padding: "0.25rem 0.6rem", fontSize: "0.75rem" }}
                             href={`https://github.com/${m.github}`} target="_blank" rel="noreferrer">
-                            @{m.github} <FiExternalLink />
+                            <span className="ic">@{m.github} <FiExternalLink /></span>
                         </a>
                     </div>
                 ))}
@@ -48,7 +48,7 @@ export default function AboutTab(): JSX.Element {
     return (
         <div style={{ maxWidth: "640px" }}>
             <div className="card" style={{ marginBottom: "1rem" }}>
-                <h2 style={{ margin: "0 0 0.75rem", fontSize: "1.4rem", fontWeight: 700 }}><FiPenTool /> ERProjects</h2>
+                <h2 style={{ margin: "0 0 0.75rem", fontSize: "1.4rem", fontWeight: 700 }}><span className="ic"><FiPenTool /> ERProjects</span></h2>
                 <p style={{ color: "var(--muted)", fontSize: "0.9rem", margin: "0 0 0.75rem" }}>{t("about.description")}</p>
                 <p className="mono" style={{ fontSize: "0.78rem", margin: "0.25rem 0" }}>{t("about.version")} : <strong>{VERSION}</strong></p>
                 <p className="mono" style={{ fontSize: "0.78rem", margin: "0.25rem 0", display: "flex", alignItems: "center", gap: "0.5rem" }}>

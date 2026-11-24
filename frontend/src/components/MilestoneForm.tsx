@@ -102,7 +102,7 @@ export default function MilestoneForm({ projectId, milestone, milestones, onSave
             <h3 style={{ margin: 0, fontSize: "1rem", fontWeight: 700, textTransform: "uppercase" }}>
                 {milestone === null ? t("gantt.newMilestone") : t("gantt.editMilestone")}
             </h3>
-            {error !== null && <p style={{ color: "var(--danger)", fontFamily: "var(--font-mono)", fontSize: "0.78rem", margin: 0 }}><FiAlertTriangle /> {error}</p>}
+            {error !== null && <p style={{ color: "var(--danger)", fontFamily: "var(--font-mono)", fontSize: "0.78rem", margin: 0 }}><span className="ic"><FiAlertTriangle /> {error}</span></p>}
             <div>
                 <label className="label">{t("gantt.milestoneName")}</label>
                 <input className="input" value={name} onChange={(e) => setName(e.target.value)} required />

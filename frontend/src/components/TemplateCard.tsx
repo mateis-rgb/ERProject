@@ -82,7 +82,7 @@ export default function TemplateCard(props: Props): JSX.Element {
                     <strong style={{ fontSize: "1rem" }}>{tpl.name}</strong>
                     <p style={{ margin: "0.25rem 0 0", color: "var(--muted)", fontSize: "0.85rem" }}>{tpl.description}</p>
                     <p className="mono" style={{ margin: "0.4rem 0 0", fontSize: "0.7rem", color: "var(--muted)" }}>
-                        <FiFlag /> {tpl.milestones.length} · <FiFolder /> {tpl.folders.length} · <FiUsers /> {tpl.collaboratorIds.length}
+                        <span className="ic"><FiFlag /> {tpl.milestones.length}</span> · <span className="ic"><FiFolder /> {tpl.folders.length}</span> · <span className="ic"><FiUsers /> {tpl.collaboratorIds.length}</span>
                     </p>
                     {msg !== null && <p style={{ color: "var(--green)", fontSize: "0.8rem", margin: "0.3rem 0 0" }}>{msg}</p>}
                 </div>

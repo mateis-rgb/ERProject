@@ -60,7 +60,7 @@ export default function AppearanceSection(): JSX.Element {
             </div>
             {theme === "system" && (
                 <p className="mono" style={{ marginTop: "0.75rem", fontSize: "0.72rem", color: "var(--muted)" }}>
-                    <FiArrowRight /> {resolvedTheme === "dark" ? "sombre" : "clair"}
+                    <span className="ic"><FiArrowRight /> {resolvedTheme === "dark" ? "sombre" : "clair"}</span>
                 </p>
             )}
         </div>

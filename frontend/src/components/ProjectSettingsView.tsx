@@ -35,7 +35,7 @@ export default function ProjectSettingsView(props: Props): JSX.Element {
                     <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                         <button className="btn" onClick={onSave}>{t("common.save")}</button>
                         {msg !== null && <span className="mono" style={{ color: "var(--ok, #3ddc68)", fontSize: "0.78rem" }}>{msg}</span>}
-                        {err !== null && <span className="mono" style={{ color: "var(--danger)", fontSize: "0.78rem" }}><FiAlertTriangle /> {err}</span>}
+                        {err !== null && <span className="mono" style={{ color: "var(--danger)", fontSize: "0.78rem" }}><span className="ic"><FiAlertTriangle /> {err}</span></span>}
                     </div>
                 )}
             </div>

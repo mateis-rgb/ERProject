@@ -44,7 +44,7 @@ export default function ProfileForm({ onSaved }: Props): JSX.Element {
             {error !== null && (
                 <p style={{ color: "var(--danger)", border: "2px solid var(--danger)", padding: "0.4rem 0.6rem",
                     fontFamily: "var(--font-mono)", fontSize: "0.75rem", fontWeight: 700, margin: 0 }}>
-                    <FiAlertTriangle /> {error}
+                    <span className="ic"><FiAlertTriangle /> {error}</span>
                 </p>
             )}
             <div>
