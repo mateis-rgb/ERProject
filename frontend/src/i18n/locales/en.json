@@ -11,12 +11,10 @@
         "save": "Save",
         "cancel": "Cancel",
         "delete": "Delete",
-        "add": "Add",
         "search": "Search...",
         "loading": "Loading...",
         "backHome": "Back to home",
         "close": "Close",
-        "creating": "Creating...",
         "saving": "Saving...",
         "confirm": "Confirm",
         "nameRequired": "Name *",
@@ -182,7 +180,6 @@
         "about": "About"
     },
     "settings": {
-        "subtitle": "Appearance, lists, access, security",
         "lists": {
             "projectStatuses": "Project statuses",
             "projectTypes": "Project types",
@@ -224,16 +221,11 @@
         "noUpcoming": "None upcoming"
     },
     "projects": {
-        "title": "Projects",
-        "all": "All projects",
-        "new": "+ New project",
-        "search": "🔍 Search a project...",
-        "create": "Create project"
+        "search": "🔍 Search a project..."
     },
     "project": {
         "name": "Project name",
         "description": "Description",
-        "noDescription": "No description",
         "noTemplate": "No template (blank creation)",
         "dangerZone": "Danger zone",
         "dangerHint": "Archiving makes the project read-only in lists. Deletion is permanent (admin only).",
@@ -256,9 +248,7 @@
         "kpiMilestones": "Milestones",
         "kpiTime": "Time spent",
         "searchCollaborator": "Search a collaborator...",
-        "collaborators": "Collaborators",
         "info": "Information",
-        "timeTotal": "Time spent — Total",
         "unitsAllocated": "units allocated",
         "entries": "entries",
         "articles": "items",
@@ -270,10 +260,6 @@
         "datesOrder": "Start date must be before end date."
     },
     "stock": {
-        "title": "Stock & movements",
-        "subtitle": "Inventory + in/out",
-        "new": "+ New item",
-        "create": "Create item",
         "category": "Category",
         "location": "Location",
         "supplier": "Supplier",
@@ -286,7 +272,6 @@
         "addPlaceholder": "Add equipment...",
         "wholeProject": "Whole project",
         "searchArticle": "Search an item...",
-        "committed": "Committed stock",
         "allocated": "Allocated (reserved)",
         "consumed": "Consumed",
         "forecast": "Forecast",
@@ -315,11 +300,6 @@
         "name": "Name",
         "size": "Size",
         "by": "By",
-        "newFolderPrompt": "Folder name?",
-        "folderNamePrompt": "Folder name?",
-        "renamePrompt": "New name?",
-        "deleteFolderConfirm": "Delete folder",
-        "deleteFileConfirm": "Delete file",
         "deleteFolder": "the folder (and all its content)",
         "deleteFile": "the file",
         "uploadFailed": "Upload failed",
@@ -344,10 +324,7 @@
         "empty": "No milestone yet. Create one to plan the project.",
         "hint": "Drag a milestone horizontally to move its dates. Equipment reserved on a milestone is blocked for other projects during that period.",
         "selectHint": "Select a milestone on the planning to see and reserve equipment.",
-        "newMilestone": "New milestone",
-        "editMilestone": "Edit milestone",
         "milestoneNamePlaceholder": "Milestone name (e.g. Shoot)",
-        "milestoneDeleted": "Deleted milestone",
         "noReserved": "No equipment reserved.",
         "reservedStock": "Equipment reserved on this milestone",
         "deleteConfirm": "Delete milestone",
@@ -369,34 +346,24 @@
         "viewerDesc": "Read-only"
     },
     "access": {
-        "newUser": "+ New user",
-        "createUser": "Create user",
         "noAudit": "No admin action logged",
         "changeRole": "Change role",
         "role": "Role"
     },
     "security": {
-        "password": "Password",
         "passwordLeaveEmpty": "Leave empty to keep unchanged",
         "passwordMin": "Min. 6 characters",
         "passwordRequired": "Required if you change the password",
-        "revokeAll": "Revoke other sessions",
-        "sessionsRevoked": "All other sessions have been revoked.",
         "profileUpdated": "Profile updated.",
-        "nothingToChange": "Nothing to change.",
-        "username": "Username"
+        "nothingToChange": "Nothing to change."
     },
     "quota": {
-        "placeholder": "e.g. 5368709120 (5 GB)",
-        "label": "Quota (bytes) — leave empty for unlimited",
-        "title": "Drive quota"
+        "label": "Quota (bytes) — leave empty for unlimited"
     },
     "cmd": {
         "placeholder": "Search a project, item, user... (or navigate)"
     },
     "topbar": {
-        "onAir": "ON AIR",
-        "standby": "STANDBY",
         "loadingSignal": "LOADING SIGNAL...",
         "live": "OVERVIEW · LIVE SIGNAL"
     },

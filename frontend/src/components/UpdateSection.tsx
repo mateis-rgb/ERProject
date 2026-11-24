@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../services/api";
 import { useTranslation } from "../i18n/I18nContext";
+import Toast, { ToastData } from "./Toast";
 
 export interface UpdateInfo {
     enabled: boolean;
@@ -205,18 +206,17 @@ export default function UpdateSection(): JSX.Element {
     const { t } = useTranslation();
     const [info, setInfo] = useState<UpdateInfo | null>(null);
     const [checking, setChecking] = useState(false);
-    const [toast, setToast] = useState<string | null>(null);
+    const [toast, setToast] = useState<ToastData | null>(null);
     const [modalOpen, setModalOpen] = useState(false);
 
     const check = (): void => {
         setChecking(true);
         api.get<UpdateInfo>("/api/update/check?force=true").then((r) => {
             setChecking(false);
-            if (!r.success) { setToast(r.error); return; }
+            if (!r.success) { setToast({ kind: "error", msg: r.error }); return; }
             setInfo(r.data);
             if (r.data.available && r.data.latest !== null) {
-                setToast(`${t("update.toastAvailable")} : ${r.data.latest}`);
-                setTimeout(() => setToast(null), 5000);
+                setToast({ kind: "success", msg: `${t("update.toastAvailable")} : ${r.data.latest}` });
             }
         });
     };
@@ -244,15 +244,7 @@ export default function UpdateSection(): JSX.Element {
                 </div>
             )}
             <p style={{ color: "var(--muted)", fontSize: "0.78rem", marginTop: "0.6rem", marginBottom: 0 }}>{t("update.hint")}</p>
-            {toast !== null && (
-                <div style={{
-                    position: "fixed", right: "1.25rem", bottom: "1.25rem", zIndex: 2000,
-                    background: "var(--surface)", color: "var(--text)", border: "3px solid var(--ink)",
-                    boxShadow: "6px 6px 0 var(--ink)", padding: "0.8rem 1.1rem", fontWeight: 700, fontSize: "0.85rem",
-                }}>
-                    ⬆ {toast}
-                </div>
-            )}
+            <Toast toast={toast} onDismiss={() => setToast(null)} />
             {modalOpen && info !== null && <UpdateModal info={info} steps={steps} onClose={() => setModalOpen(false)} />}
         </div>
     );

@@ -4,16 +4,12 @@ import { useTranslation } from "../i18n/I18nContext";
 import { api } from "../services/api";
 import { AppNotification } from "../context/NotificationContext";
 import ConfirmModal from "./ConfirmModal";
+import Toast, { ToastData } from "./Toast";
 
 interface StorageInfo {
     configured: string;
     effective: string;
     default: string;
-}
-
-interface Toast {
-    kind: "success" | "error";
-    msg: string;
 }
 
 function ProgressModal({ progress, title }: { progress: number; title: string }): JSX.Element {
@@ -26,19 +22,6 @@ function ProgressModal({ progress, title }: { progress: number; title: string })
                 </div>
                 <p className="mono" style={{ margin: "0.5rem 0 0", fontSize: "0.75rem", color: "var(--muted)", textAlign: "right" }}>{progress}%</p>
             </div>
-        </div>
-    );
-}
-
-function ToastView({ toast }: { toast: Toast }): JSX.Element {
-    return (
-        <div style={{
-            position: "fixed", bottom: "1.25rem", right: "1.25rem", zIndex: 300,
-            background: toast.kind === "success" ? "var(--green)" : "var(--danger)", color: "#fff",
-            border: "3px solid var(--ink)", boxShadow: "6px 6px 0 var(--ink)",
-            padding: "0.7rem 1rem", fontWeight: 700, fontSize: "0.85rem", maxWidth: "360px",
-        }}>
-            {toast.kind === "success" ? "✅" : "⚠️"} {toast.msg}
         </div>
     );
 }
@@ -56,14 +39,6 @@ function useStorageInfo(): [StorageInfo | null, string, (p: string) => void, () 
     }, []);
     useEffect(load, [load]);
     return [info, path, setPath, load];
-}
-
-function useAutoDismissToast(toast: Toast | null, setToast: (t: Toast | null) => void): void {
-    useEffect(() => {
-        if (toast === null) return;
-        const to = window.setTimeout(() => setToast(null), 5000);
-        return () => window.clearTimeout(to);
-    }, [toast, setToast]);
 }
 
 function useMigrationPoll(notifId: string | null, onDone: (n: AppNotification) => void): number {
@@ -93,8 +68,9 @@ interface ViewProps {
     confirmOpen: boolean;
     notifId: string | null;
     progress: number;
-    toast: Toast | null;
+    toast: ToastData | null;
     target: string;
+    onToastDismiss: () => void;
     onPath: (p: string) => void;
     onSaveClick: () => void;
     onConfirm: () => void;
@@ -133,7 +109,7 @@ function StorageView(p: ViewProps): JSX.Element {
                 />
             )}
             {p.notifId !== null && <ProgressModal progress={p.progress} title={t("app.migratingTitle")} />}
-            {p.toast !== null && <ToastView toast={p.toast} />}
+            <Toast toast={p.toast} onDismiss={p.onToastDismiss} />
         </div>
     );
 }
@@ -143,7 +119,7 @@ export default function StorageSection(): JSX.Element {
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [busy, setBusy] = useState(false);
     const [notifId, setNotifId] = useState<string | null>(null);
-    const [toast, setToast] = useState<Toast | null>(null);
+    const [toast, setToast] = useState<ToastData | null>(null);
 
     const onDone = useCallback((n: AppNotification): void => {
         setNotifId(null);
@@ -152,7 +128,6 @@ export default function StorageSection(): JSX.Element {
     }, [load]);
 
     const progress = useMigrationPoll(notifId, onDone);
-    useAutoDismissToast(toast, setToast);
 
     const target = path.trim() === "" ? (info?.default ?? "") : path.trim();
 
@@ -173,6 +148,7 @@ export default function StorageSection(): JSX.Element {
         <StorageView
             info={info} path={path} busy={busy} confirmOpen={confirmOpen}
             notifId={notifId} progress={progress} toast={toast} target={target}
+            onToastDismiss={() => setToast(null)}
             onPath={setPath}
             onSaveClick={() => setConfirmOpen(true)}
             onConfirm={startMigration}

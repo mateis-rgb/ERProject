@@ -11,12 +11,10 @@
         "save": "Enregistrer",
         "cancel": "Annuler",
         "delete": "Supprimer",
-        "add": "Ajouter",
         "search": "Rechercher...",
         "loading": "Chargement...",
         "backHome": "Retour à l'accueil",
         "close": "Fermer",
-        "creating": "Création...",
         "saving": "Enregistrement...",
         "confirm": "Confirmer",
         "nameRequired": "Nom *",
@@ -182,7 +180,6 @@
         "about": "À propos"
     },
     "settings": {
-        "subtitle": "Apparence, listes, accès, sécurité",
         "lists": {
             "projectStatuses": "Statuts de projet",
             "projectTypes": "Types de projet",
@@ -224,16 +221,11 @@
         "noUpcoming": "Aucun à venir"
     },
     "projects": {
-        "title": "Projets",
-        "all": "Tous les projets",
-        "new": "+ Nouveau projet",
-        "search": "🔍 Rechercher un projet...",
-        "create": "Créer le projet"
+        "search": "🔍 Rechercher un projet..."
     },
     "project": {
         "name": "Nom du projet",
         "description": "Description",
-        "noDescription": "Aucune description",
         "noTemplate": "Sans modèle (création vierge)",
         "dangerZone": "Zone dangereuse",
         "dangerHint": "Archiver le projet le rend lecture seule dans les listes. La suppression est définitive (admin uniquement).",
@@ -256,9 +248,7 @@
         "kpiMilestones": "Jalons",
         "kpiTime": "Temps passé",
         "searchCollaborator": "Rechercher un collaborateur...",
-        "collaborators": "Collaborateurs",
         "info": "Informations",
-        "timeTotal": "Temps passé — Total",
         "unitsAllocated": "unités allouées",
         "entries": "entrées",
         "articles": "articles",
@@ -270,10 +260,6 @@
         "datesOrder": "La date de début doit être avant la fin."
     },
     "stock": {
-        "title": "Stock & mouvements",
-        "subtitle": "Inventaire + entrées/sorties",
-        "new": "+ Nouvel article",
-        "create": "Créer l'article",
         "category": "Catégorie",
         "location": "Emplacement",
         "supplier": "Fournisseur",
@@ -286,7 +272,6 @@
         "addPlaceholder": "Ajouter du matériel...",
         "wholeProject": "Projet entier",
         "searchArticle": "Rechercher un article...",
-        "committed": "Stock engagé",
         "allocated": "Alloué (réservé)",
         "consumed": "Consommé",
         "forecast": "Prévisionnel",
@@ -315,11 +300,6 @@
         "name": "Nom",
         "size": "Taille",
         "by": "Par",
-        "newFolderPrompt": "Nom du dossier ?",
-        "folderNamePrompt": "Nom du dossier ?",
-        "renamePrompt": "Nouveau nom ?",
-        "deleteFolderConfirm": "Supprimer le dossier",
-        "deleteFileConfirm": "Supprimer le fichier",
         "deleteFolder": "le dossier (et tout son contenu)",
         "deleteFile": "le fichier",
         "uploadFailed": "Upload impossible",
@@ -344,10 +324,7 @@
         "empty": "Aucun jalon. Crée un jalon pour planifier le projet.",
         "hint": "Glisse un jalon horizontalement pour déplacer ses dates. Le matériel réservé sur un jalon est bloqué pour les autres projets sur cette période.",
         "selectHint": "Sélectionne un jalon sur le planning pour voir et réserver le matériel.",
-        "newMilestone": "Nouveau jalon",
-        "editMilestone": "Modifier le jalon",
         "milestoneNamePlaceholder": "Nom du jalon (ex: Tournage)",
-        "milestoneDeleted": "Jalon supprimé",
         "noReserved": "Aucun matériel réservé.",
         "reservedStock": "Stock réservé sur ce jalon",
         "deleteConfirm": "Supprimer le jalon",
@@ -369,34 +346,24 @@
         "viewerDesc": "Consultation seule"
     },
     "access": {
-        "newUser": "+ Nouvel utilisateur",
-        "createUser": "Créer l'utilisateur",
         "noAudit": "Aucune action admin enregistrée",
         "changeRole": "Changer le rôle",
         "role": "Rôle"
     },
     "security": {
-        "password": "Mot de passe",
         "passwordLeaveEmpty": "Laisser vide pour ne pas changer",
         "passwordMin": "Min. 6 caractères",
         "passwordRequired": "Requis si tu changes le mot de passe",
-        "revokeAll": "Révoquer les autres sessions",
-        "sessionsRevoked": "Toutes les autres sessions ont été révoquées.",
         "profileUpdated": "Profil mis à jour.",
-        "nothingToChange": "Rien à modifier.",
-        "username": "Nom d'utilisateur"
+        "nothingToChange": "Rien à modifier."
     },
     "quota": {
-        "placeholder": "ex: 5368709120 (5 Go)",
-        "label": "Quota (octets) — laisser vide pour illimité",
-        "title": "Quota du drive"
+        "label": "Quota (octets) — laisser vide pour illimité"
     },
     "cmd": {
         "placeholder": "Rechercher un projet, un article, un user... (ou naviguer)"
     },
     "topbar": {
-        "onAir": "ON AIR",
-        "standby": "STANDBY",
         "loadingSignal": "CHARGEMENT DU SIGNAL...",
         "live": "VUE D'ENSEMBLE · SIGNAL EN DIRECT"
     },
