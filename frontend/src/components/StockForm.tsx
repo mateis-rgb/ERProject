@@ -3,13 +3,12 @@ import { useTranslation } from "../i18n/I18nContext";
 import { useState, FormEvent, ReactNode } from "react";
 import { api } from "../services/api";
 import { StockItem } from "../types";
+import { useConfigLists } from "../hooks/useConfigLists";
 
 interface Props {
     initial?: StockItem | null; // null/undefined = création, sinon édition (PATCH)
     onSaved: () => void;
 }
-
-const UNITS = ["kg", "pièces", "m", "L"];
 
 type FormState = { name: string; reference: string; quantity: string; unit: string; category: string; supplier: string; purchasePrice: string; location: string; minThreshold: string };
 
@@ -50,8 +49,24 @@ function initialForm(initial: StockItem | null): FormState {
     };
 }
 
-function FormFields({ form, busy, editing, onSet, onSubmit }: {
+// Select alimenté par une liste modifiable (config) ; la valeur courante est toujours proposée (édition)
+function ConfigSelect({ label, value, options, allowEmpty, onChange }: {
+    label: string; value: string; options: string[]; allowEmpty: boolean; onChange: (v: string) => void;
+}): JSX.Element {
+    const opts = value !== "" && !options.includes(value) ? [value, ...options] : options;
+    return (
+        <Field label={label}>
+            <select className="select" value={value} onChange={(e) => onChange(e.target.value)}>
+                {allowEmpty && <option value="">—</option>}
+                {opts.map((o) => <option key={o} value={o}>{o}</option>)}
+            </select>
+        </Field>
+    );
+}
+
+function FormFields({ form, busy, editing, configs, onSet, onSubmit }: {
     form: FormState; busy: boolean; editing: boolean;
+    configs: Record<string, string[]>;
     onSet: (k: string, v: string) => void; onSubmit: (e: FormEvent) => void;
 }): JSX.Element {
     const { t } = useTranslation();
@@ -66,23 +81,18 @@ function FormFields({ form, busy, editing, onSet, onSubmit }: {
             <Field label={t("stock.quantity")}>
                 <input className="input" type="number" step="0.01" value={form.quantity} onChange={(e) => onSet("quantity", e.target.value)} />
             </Field>
-            <Field label={t("stock.unit")}>
-                <select className="select" value={form.unit} onChange={(e) => onSet("unit", e.target.value)}>
-                    {UNITS.map((u) => <option key={u}>{u}</option>)}
-                </select>
-            </Field>
-            <Field label={t("stock.category")}>
-                <input className="input" value={form.category} onChange={(e) => onSet("category", e.target.value)} />
-            </Field>
+            <ConfigSelect label={t("stock.unit")} value={form.unit} options={configs["stock_units"] ?? []}
+                allowEmpty={false} onChange={(v) => onSet("unit", v)} />
+            <ConfigSelect label={t("stock.category")} value={form.category} options={configs["stock_categories"] ?? []}
+                allowEmpty onChange={(v) => onSet("category", v)} />
             <Field label={t("stock.supplier")}>
                 <input className="input" value={form.supplier} onChange={(e) => onSet("supplier", e.target.value)} />
             </Field>
             <Field label={t("stock.purchasePrice")}>
                 <input className="input" type="number" step="0.01" value={form.purchasePrice} onChange={(e) => onSet("purchasePrice", e.target.value)} />
             </Field>
-            <Field label={t("stock.location")}>
-                <input className="input" value={form.location} onChange={(e) => onSet("location", e.target.value)} />
-            </Field>
+            <ConfigSelect label={t("stock.location")} value={form.location} options={configs["stock_locations"] ?? []}
+                allowEmpty onChange={(v) => onSet("location", v)} />
             <Field label={t("stock.minThreshold")}>
                 <input className="input" type="number" step="0.01" value={form.minThreshold} onChange={(e) => onSet("minThreshold", e.target.value)} />
             </Field>
@@ -96,6 +106,7 @@ function FormFields({ form, busy, editing, onSet, onSubmit }: {
 export default function StockForm({ initial = null, onSaved }: Props): JSX.Element {
     const [form, setForm] = useState<FormState>(() => initialForm(initial));
     const [busy, setBusy] = useState(false);
+    const configs = useConfigLists();
 
     const set = (k: string, v: string): void => setForm((f) => ({ ...f, [k]: v }));
 
@@ -110,6 +121,6 @@ export default function StockForm({ initial = null, onSaved }: Props): JSX.Eleme
     };
 
     return (
-        <FormFields form={form} busy={busy} editing={initial !== null} onSet={set} onSubmit={submit} />
+        <FormFields form={form} busy={busy} editing={initial !== null} configs={configs} onSet={set} onSubmit={submit} />
     );
 }

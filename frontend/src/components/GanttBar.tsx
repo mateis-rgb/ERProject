@@ -64,9 +64,9 @@ export default function GanttBar(props: Props): JSX.Element {
                 onMouseLeave={() => setHover(false)}
                 style={barStyle(geom, milestone.color, isSel, busy, canEdit, depth)}
             >
-                <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>
+                <span style={{ display: "flex", alignItems: "center", gap: "2px", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0, flex: 1 }}>
                     {depth > 0 && Array.from({ length: Math.min(depth, 4) }, (_, i) => <FiCornerDownRight key={i} style={{ flexShrink: 0 }} />)}
-                    {milestone.name}
+                    <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{milestone.name}</span>
                 </span>
                 {canEdit && (
                     <>

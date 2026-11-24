@@ -99,6 +99,7 @@ export function barStyle(geom: { left: number; width: number }, color: string, i
         border: isSel ? "3px solid var(--ink)" : "2px solid var(--ink)",
         boxShadow: isSel ? "4px 4px 0 var(--ink)" : "2px 2px 0 var(--ink)",
         cursor: canEdit ? "grab" : "pointer",
+        display: "flex", alignItems: "center",
         overflow: "visible", padding: "0 8px",
         fontFamily: "var(--font-ui)", fontWeight: 700, fontSize: "0.75rem",
         color: "#000", textAlign: "left", whiteSpace: "nowrap", textOverflow: "ellipsis",

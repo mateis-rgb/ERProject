@@ -4,10 +4,28 @@ import { useEffect, useState, FormEvent } from "react";
 import { api } from "../services/api";
 import { Project, ProjectTemplate } from "../types";
 import { useModules } from "../context/ModulesContext";
+import { useConfigLists } from "../hooks/useConfigLists";
 
 interface Props {
     onCreated: () => void;
     onError: (msg: string) => void;
+}
+
+function useTemplates(on: boolean): ProjectTemplate[] {
+    const [templates, setTemplates] = useState<ProjectTemplate[]>([]);
+    useEffect(() => {
+        if (!on) return;
+        api.get<ProjectTemplate[]>("/api/templates").then((r) => { if (r.success) setTemplates(r.data); });
+    }, [on]);
+    return templates;
+}
+
+function buildProjectPayload(p: { name: string; description: string; client: string; type: string; templateId: string }): Record<string, unknown> {
+    return {
+        name: p.name, description: p.description, client: p.client,
+        status: "En étude", tags: [], type: p.type, collaboratorIds: [],
+        templateId: p.templateId === "" ? null : p.templateId,
+    };
 }
 
 export default function ProjectForm({ onCreated, onError }: Props): JSX.Element {
@@ -15,27 +33,22 @@ export default function ProjectForm({ onCreated, onError }: Props): JSX.Element 
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [client, setClient] = useState("");
+    const [type, setType] = useState("");
     const [templateId, setTemplateId] = useState("");
-    const [templates, setTemplates] = useState<ProjectTemplate[]>([]);
     const [busy, setBusy] = useState(false);
     const { enabled } = useModules();
     const templatesOn = enabled("templates");
-
-    useEffect(() => {
-        if (!templatesOn) return;
-        api.get<ProjectTemplate[]>("/api/templates").then((r) => { if (r.success) setTemplates(r.data); });
-    }, [templatesOn]);
+    const templates = useTemplates(templatesOn);
+    const configs = useConfigLists();
+    const typeOptions = configs["project_types"] ?? [];
 
     const handleSubmit = async (e: FormEvent): Promise<void> => {
         e.preventDefault();
         setBusy(true);
-        const res = await api.post<Project>("/api/projects", {
-            name, description, client, status: "En étude", tags: [], type: "", collaboratorIds: [],
-            templateId: templateId === "" ? null : templateId,
-        });
+        const res = await api.post<Project>("/api/projects", buildProjectPayload({ name, description, client, type, templateId }));
         setBusy(false);
         if (!res.success) { onError(res.error); return; }
-        setName(""); setDescription(""); setClient(""); setTemplateId("");
+        setName(""); setDescription(""); setClient(""); setType(""); setTemplateId("");
         onCreated();
     };
 
@@ -52,6 +65,13 @@ export default function ProjectForm({ onCreated, onError }: Props): JSX.Element 
             <div>
                 <label className="label">{t("project.client")}</label>
                 <input className="input" value={client} onChange={(e) => setClient(e.target.value)} />
+            </div>
+            <div>
+                <label className="label">{t("settings.lists.projectTypes")}</label>
+                <select className="select" value={type} onChange={(e) => setType(e.target.value)}>
+                    <option value="">—</option>
+                    {typeOptions.map((o) => <option key={o} value={o}>{o}</option>)}
+                </select>
             </div>
             {templatesOn && (
                 <div>

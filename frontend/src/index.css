@@ -425,3 +425,17 @@ tbody tr:hover { background: var(--surface-2); }
     padding: 1.5rem; width: 100%; max-width: 520px;
     max-height: 85vh; overflow-y: auto;
 }
+
+/* ===== Icônes react-icons : alignement et taille cohérents ===== */
+svg { vertical-align: middle; }
+.btn svg, .btn-ghost svg, .btn-danger svg, .btn-secondary svg,
+.badge svg, .chip svg, td svg, th svg, .label svg, .page-subtitle svg,
+.bento-item svg, .kbd svg, a svg, button svg, span svg, p svg, h1 svg, h2 svg, h3 svg {
+    flex-shrink: 0;
+}
+.btn svg, .btn-ghost svg, .btn-danger svg, .btn-secondary svg {
+    margin-right: 0.35rem;
+}
+.btn svg:only-child, .btn-ghost svg:only-child, .btn-danger svg:only-child, .btn-secondary svg:only-child {
+    margin-right: 0;
+}
