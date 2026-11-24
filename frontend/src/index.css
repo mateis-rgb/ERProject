@@ -77,6 +77,11 @@ body::before {
 
 /* ===== BOUTONS — ombre dure, effet press ===== */
 .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    gap: 0.35rem;
     font-family: var(--font-ui);
     font-weight: 700;
     font-size: 0.85rem;
@@ -97,6 +102,11 @@ body::before {
 .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
 .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    gap: 0.35rem;
     font-family: var(--font-ui);
     font-weight: 700;
     font-size: 0.85rem;
@@ -115,6 +125,11 @@ body::before {
 .btn-ghost:active { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--ink); }
 
 .btn-danger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    gap: 0.35rem;
     font-family: var(--font-ui);
     font-weight: 700;
     font-size: 0.78rem;
@@ -194,6 +209,7 @@ tbody tr:hover { background: var(--surface-2); }
 
 /* ===== BADGES — encadrés ===== */
 .badge {
+    white-space: nowrap;
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -286,6 +302,9 @@ tbody tr:hover { background: var(--surface-2); }
 .cmd-item.active .kbd { border-color: var(--accent-ink); color: var(--accent-ink); background: transparent; }
 
 .kbd {
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
     font-family: var(--font-mono);
     font-size: 0.68rem;
     font-weight: 700;
@@ -432,10 +451,4 @@ svg { vertical-align: middle; }
 .badge svg, .chip svg, td svg, th svg, .label svg, .page-subtitle svg,
 .bento-item svg, .kbd svg, a svg, button svg, span svg, p svg, h1 svg, h2 svg, h3 svg {
     flex-shrink: 0;
-}
-.btn svg, .btn-ghost svg, .btn-danger svg, .btn-secondary svg {
-    margin-right: 0.35rem;
-}
-.btn svg:only-child, .btn-ghost svg:only-child, .btn-danger svg:only-child, .btn-secondary svg:only-child {
-    margin-right: 0;
 }
