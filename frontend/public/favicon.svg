@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72">
+  <!-- ombre dure néo-brutaliste -->
+  <rect x="10" y="10" width="60" height="60" fill="#111111"/>
+  <!-- tuile jaune, bordure épaisse -->
+  <rect x="2" y="2" width="60" height="60" fill="#ffd600" stroke="#111111" stroke-width="6"/>
+  <text x="32" y="45" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="900" letter-spacing="-1" text-anchor="middle" fill="#111111">ER</text>
+</svg>
