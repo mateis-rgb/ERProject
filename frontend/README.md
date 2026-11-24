@@ -47,3 +47,6 @@ frontend/
 
 - `docs/ARCHITECTURE.md` — router, contextes, flux de données, règles Power of 10
 - `docs/API_CLIENT.md` — client HTTP et tableau des endpoints appelés
+
+Fait avec ❤️ en France 🇫🇷 avec Mistral AI
+

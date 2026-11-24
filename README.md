@@ -120,3 +120,5 @@ Chaque fichier est vérifié automatiquement par le hook `power-of-10:lint`.
 
 Un `pg_dump` automatique est exécuté chaque jour à l'heure définie par `BACKUP_HOUR` (défaut 3h).
 Les 30 derniers backups sont conservés dans le volume `erProjects_backups`.
+
+Fait avec ❤️ en France 🇫🇷 avec Mistral AI

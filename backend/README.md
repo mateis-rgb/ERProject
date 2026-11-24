@@ -60,3 +60,6 @@ backend/
 
 - `docs/API.md` — **toutes les routes**, conventions de réponse, rôles, modules, rate limiting
 - `docs/ARCHITECTURE.md` — couches, services, WebSocket, sécurité, règles Power of 10
+
+Fait avec ❤️ en France 🇫🇷 avec Mistral AI
+
