@@ -33,24 +33,27 @@ export default function Sidebar({ user, collapsed, onToggle, onLogout }: Props):
             padding: collapsed ? "1rem 0.5rem" : "1.25rem 1rem", overflow: "hidden",
             transition: "padding 0.15s",
         }}>
-            <div style={{
-                display: "flex", alignItems: "center", gap: "0.625rem", marginBottom: "0.75rem",
-                justifyContent: collapsed ? "center" : "flex-start",
-                border: "2px solid var(--ink)", padding: collapsed ? "0.5rem" : "0.6rem 0.75rem",
-                background: "var(--bg)", boxShadow: "4px 4px 0 var(--ink)",
-            }}>
-                <span className="rec-dot" />
-                {!collapsed && (
-                    <span style={{ fontWeight: 700, fontSize: "1.1rem", textTransform: "uppercase", letterSpacing: "-0.02em", whiteSpace: "nowrap" }}>
-                        L’<span style={{ color: "var(--accent)" }}>Entrepôt</span>
-                    </span>
-                )}
+            {/* Header : bouton rétracter en haut à gauche, puis logo */}
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.25rem" }}>
+                <button className="btn-ghost" onClick={onToggle} title={collapsed ? t("nav.expand") : t("nav.collapse")}
+                    aria-label={collapsed ? t("nav.expand") : t("nav.collapse")}
+                    style={{ padding: "0.4rem", flexShrink: 0 }}>
+                    {collapsed ? <FiChevronsRight /> : <FiChevronsLeft />}
+                </button>
+                <div style={{
+                    display: "flex", alignItems: "center", gap: "0.625rem", flex: 1, minWidth: 0,
+                    justifyContent: collapsed ? "center" : "flex-start",
+                    border: "2px solid var(--ink)", padding: collapsed ? "0.5rem" : "0.6rem 0.75rem",
+                    background: "var(--bg)", boxShadow: "4px 4px 0 var(--ink)",
+                }}>
+                    <span className="rec-dot" />
+                    {!collapsed && (
+                        <span style={{ fontWeight: 700, fontSize: "1.1rem", textTransform: "uppercase", letterSpacing: "-0.02em", whiteSpace: "nowrap" }}>
+                            L’<span style={{ color: "var(--accent)" }}>Entrepôt</span>
+                        </span>
+                    )}
+                </div>
             </div>
-            <button className="btn-ghost" onClick={onToggle} title={collapsed ? t("nav.expand") : t("nav.collapse")}
-                aria-label={collapsed ? t("nav.expand") : t("nav.collapse")}
-                style={{ alignSelf: collapsed ? "center" : "flex-end", padding: "0.35rem 0.55rem", marginBottom: "0.75rem" }}>
-                {collapsed ? <FiChevronsRight /> : <FiChevronsLeft />}
-            </button>
             <nav style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
                 {nav.map((item) => (
                     <NavLink key={item.to} to={item.to} end={item.end} title={t(item.key)}
@@ -60,7 +63,7 @@ export default function Sidebar({ user, collapsed, onToggle, onLogout }: Props):
                             justifyContent: collapsed ? "center" : "flex-start",
                             padding: collapsed ? "0.65rem 0" : undefined,
                         }}>
-                        <item.icon style={{ flexShrink: 0, fontSize: "1.05rem" }} />
+                        <item.icon />
                         {!collapsed && t(item.key)}
                     </NavLink>
                 ))}

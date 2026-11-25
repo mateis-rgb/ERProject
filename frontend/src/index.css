@@ -456,3 +456,18 @@ svg { vertical-align: middle; }
 /* Icône + texte collés (l'icône ne passe jamais à la ligne seule) */
 .ic { display: inline-flex; align-items: center; gap: 0.4rem; min-width: 0; }
 .ic > svg { flex-shrink: 0; }
+
+/* Icône seule dans un bouton/lien : toujours carrée, jamais déformée */
+button > svg:only-child,
+a > svg:only-child {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+/* Nav : icônes toujours carrées, même en mode rétracté */
+.nav-link svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
