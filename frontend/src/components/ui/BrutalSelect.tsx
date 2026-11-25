@@ -95,12 +95,12 @@ export default function BrutalSelect({ value, onChange, options, ariaLabel, minW
                 onClick={() => setOpen(!open)}
                 onKeyDown={onKey}
                 className="select"
-                style={{ width: "100%", height, display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem", cursor: "pointer", textTransform: "none", letterSpacing: 0 }}
+                style={{ width: "100%", height, display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem", cursor: "pointer", textTransform: "none", letterSpacing: 0, backgroundImage: "none", paddingRight: "0.7rem" }}
             >
                 <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {current !== undefined ? current.label : value}
                 </span>
-                <FiChevronDown style={{ flexShrink: 0, transform: open ? "rotate(180deg)" : undefined, transition: "transform 0.15s ease" }} />
+                <FiChevronDown size={18} style={{ flexShrink: 0, transform: open ? "rotate(180deg)" : undefined, transition: "transform 0.15s ease" }} />
             </button>
             {open && (
                 <OptionDropdown options={options} value={value} highlight={highlight} onPick={pick} onHover={setHighlight} />
