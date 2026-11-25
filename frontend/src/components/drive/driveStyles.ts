@@ -2,7 +2,7 @@
 export function driveCols(canEdit: boolean): string {
     // nom en 1fr = complète le reste de la ligne ; autres colonnes au minimum (actions = 2 boutons de 26px)
     const base = "minmax(0,1fr) 70px 110px 90px";
-    return canEdit ? `${base} 120px 80px` : base;
+    return canEdit ? `${base} 100px 80px` : base; // déplacer = taille mini du select, actions = 2 boutons de 26px
 }
 
 export const driveHeaderCell: React.CSSProperties = {
