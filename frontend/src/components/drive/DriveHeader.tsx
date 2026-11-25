@@ -9,7 +9,7 @@ export default function DriveHeader({ canEdit }: { canEdit: boolean }): JSX.Elem
     return (
         <div style={{
             display: "grid", gridTemplateColumns: driveCols(canEdit),
-            minWidth: "460px", // même largeur mini que les lignes : header et contenu scrollent ensemble en horizontal
+            minWidth: "520px", // même largeur mini que les lignes : header et contenu scrollent ensemble en horizontal
             borderBottom: "2px solid var(--ink)", background: "var(--surface-2)",
         }}>
             {cols.map((c, i) => (

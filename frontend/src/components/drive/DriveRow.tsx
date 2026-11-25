@@ -37,7 +37,7 @@ export default function DriveRow(props: Props): JSX.Element {
             title={item.isFolder && canEdit ? t("drive.dropInFolder") : undefined}
             style={{
                 display: "grid", gridTemplateColumns: driveCols(canEdit), alignItems: "center",
-                minWidth: "460px", // force le scroll horizontal du bloc si l'écran est plus étroit que les colonnes fixes
+                minWidth: "520px", // force le scroll horizontal du bloc si l'écran est plus étroit que les colonnes fixes
                 borderBottom: "1px solid var(--ink)", background: drag.over ? "var(--surface-2)" : "transparent",
                 outline: drag.over ? "2px dashed var(--accent)" : "none", outlineOffset: "-2px",
                 cursor: drag.draggable ? "grab" : "default",
@@ -64,7 +64,7 @@ export default function DriveRow(props: Props): JSX.Element {
             <div style={{ ...driveRowCell }} className="mono">{new Date(item.uploadedAt).toLocaleDateString("fr-FR")}</div>
             {canEdit && (
                 <div style={driveRowCell}>
-                    <BrutalSelect value={item.parentId ?? ""} width="auto" minWidth="88px" height="28px"
+                    <BrutalSelect value={item.parentId ?? ""} width="auto" minWidth="128px" height="30px"
                         onChange={(v) => onMove(item, v === "" ? null : v)}
                         options={[
                             { value: "", label: t("drive.root") },
