@@ -131,7 +131,6 @@ function BarTitle({ name, hasConflict, left, maxW }: { name: string; hasConflict
             display: "inline-flex", alignItems: "center", gap: "4px",
             maxWidth: `${maxW}px`, padding: "0 8px", boxSizing: "border-box",
             fontWeight: 700, fontSize: "0.72rem", textTransform: "uppercase", color: "var(--ink)",
-            background: "var(--surface)", border: "var(--border-w) solid var(--ink)", boxShadow: "var(--shadow-btn)",
             whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
         }}>
             {hasConflict && <FiAlertTriangle style={{ color: "var(--danger)", flexShrink: 0 }} />}
