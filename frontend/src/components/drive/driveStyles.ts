@@ -1,7 +1,7 @@
 // Styles partagés du bloc drive (header/content façon Gantt) - constantes, pas de macros (Power of 10 R8)
 export function driveCols(canEdit: boolean): string {
-    const base = "minmax(0,1fr) 90px 130px 110px";
-    return canEdit ? `${base} 150px 90px` : base;
+    const base = "minmax(140px, 240px) 80px 120px 100px";
+    return canEdit ? `${base} 130px 110px` : base;
 }
 
 export const driveHeaderCell: React.CSSProperties = {

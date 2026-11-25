@@ -55,7 +55,7 @@ export default function QuotaField({ value, canEdit, onChange }: Props): JSX.Ele
             </h2>
             <label className="label">{t("quota.label")}</label>
             <input className="input" type="text" value={text} disabled={!canEdit}
-                placeholder="5 Go" onChange={(e) => onText(e.target.value)} />
+                placeholder="Ex: 5 Go" onChange={(e) => onText(e.target.value)} />
             <p className="mono" style={{ fontSize: "0.72rem", color: "var(--muted)", marginTop: "0.4rem" }}>
                 {bytes !== null && Number.isFinite(bytes) ? `= ${Math.round(bytes)} octets` : "—"}
             </p>

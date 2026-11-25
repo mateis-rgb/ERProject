@@ -41,7 +41,7 @@ export default function ProjectSettingsView(props: Props): JSX.Element {
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
                 <CollaboratorPicker users={users} selected={form.collaboratorIds} excludeId={project.createdById} canEdit={canEdit} onToggle={onToggleCollab} />
-                {isAdmin && <QuotaField value={form.quotaBytes} canEdit={canEdit} onChange={(v) => onChange("quotaBytes", v)} />}
+                {isAdmin && <QuotaField value={form.quotaBytes} canEdit={canEdit}  onChange={(v) => onChange("quotaBytes", v)} />}
             </div>
             <div style={{ gridColumn: "1 / -1" }}>
                 <ProjectDangerZone project={project} canEdit={canEdit} isAdmin={isAdmin} onSaved={onSave} />
