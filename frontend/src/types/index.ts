@@ -39,6 +39,7 @@ export interface StockItem {
     location: string;
     minThreshold: number;
     imagePath: string | null;
+    icon: string | null;
     createdAt: string;
     updatedAt: string;
 }

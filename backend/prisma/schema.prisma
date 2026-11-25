@@ -101,6 +101,7 @@ model StockItem {
     location      String   @default("")
     minThreshold  Float    @default(0)
     imagePath     String?  // photo de l'article (chemin relatif sous UPLOAD_DIR)
+    icon          String?  // nom d'icône choisie manuellement (null = auto selon la référence)
     createdAt     DateTime @default(now())
     updatedAt     DateTime @updatedAt
 

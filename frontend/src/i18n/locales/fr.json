@@ -318,7 +318,11 @@
         "suggestLocation": "Emplacement",
         "noSuggestion": "Aucune suggestion",
         "resetFilters": "Réinitialiser",
-        "results": "résultats"
+        "results": "résultats",
+        "iconPreview": "Icône",
+        "chooseIcon": "Choisir une icône...",
+        "iconAuto": "Auto",
+        "iconSearch": "Filtrer les icônes..."
     },
     "movement": {
         "in": "Entrée",

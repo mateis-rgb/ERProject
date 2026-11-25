@@ -90,13 +90,13 @@ stockRouter.post("/", requireRole("EDITOR"), validateBody(stockItemCreateSchema)
     const body = req.body as {
         name: string; reference: string; quantity: number; unit: string;
         category: string; supplier: string; purchasePrice?: number | null;
-        location: string; minThreshold: number;
+        location: string; minThreshold: number; icon?: string | null;
     };
     const item = await createStockItem({
         name: body.name, reference: body.reference, quantity: body.quantity,
         unit: body.unit, category: body.category, supplier: body.supplier,
         purchasePrice: body.purchasePrice ?? null, location: body.location,
-        minThreshold: body.minThreshold,
+        minThreshold: body.minThreshold, icon: body.icon ?? null,
     });
     res.status(201).json({ success: true, data: item });
 });

@@ -5,6 +5,9 @@ import { api } from "../../services/api";
 import { StockItem } from "../../types";
 import { useConfigLists } from "../../hooks/useConfigLists";
 import BrutalSelect from "../ui/BrutalSelect";
+import StockIcon from "./StockIcon";
+import IconPickerModal from "./IconPickerModal";
+import { iconNameOf, stockIconFor } from "../../utils/stockIcon";
 
 interface Props {
     initial?: StockItem | null; // null/undefined = création, sinon édition (PATCH)
@@ -13,7 +16,7 @@ interface Props {
 
 type FormState = { name: string; reference: string; quantity: string; unit: string; category: string; supplier: string; purchasePrice: string; location: string; minThreshold: string };
 
-function buildPayload(form: FormState): Record<string, unknown> {
+function buildPayload(form: FormState, icon: string | null): Record<string, unknown> {
     return {
         name: form.name,
         reference: form.reference,
@@ -24,6 +27,7 @@ function buildPayload(form: FormState): Record<string, unknown> {
         purchasePrice: form.purchasePrice ? parseFloat(form.purchasePrice) : null,
         location: form.location,
         minThreshold: parseFloat(form.minThreshold),
+        icon,
     };
 }
 
@@ -66,9 +70,30 @@ function ConfigSelect({ label, value, options, allowEmpty, onChange }: {
     );
 }
 
-function FormFields({ form, busy, editing, configs, onSet, onSubmit }: {
+// Aperçu live de l'icône résolue (manuelle > ref > catégorie/nom) + bouton pour choisir manuellement
+function IconPreview({ form, icon, onOpenPicker }: { form: FormState; icon: string | null; onOpenPicker: () => void }): JSX.Element {
+    const { t } = useTranslation();
+    const auto = stockIconFor(form.category, form.name, form.reference);
+    const label = icon !== null ? icon : `${iconNameOf(auto)} (${t("stock.iconAuto")})`;
+    return (
+        <Field label={t("stock.iconPreview")}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                <StockIcon category={form.category} name={form.name} reference={form.reference} iconName={icon} imagePath={null} size={44} />
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", alignItems: "flex-start" }}>
+                    <span className="mono" style={{ fontSize: "0.72rem", color: "var(--muted)" }}>{label}</span>
+                    <button type="button" className="btn-ghost" style={{ fontSize: "0.78rem", padding: "0.25rem 0.6rem" }} onClick={onOpenPicker}>
+                        {t("stock.chooseIcon")}
+                    </button>
+                </div>
+            </div>
+        </Field>
+    );
+}
+
+function FormFields({ form, busy, editing, configs, icon, onOpenPicker, onSet, onSubmit }: {
     form: FormState; busy: boolean; editing: boolean;
     configs: Record<string, string[]>;
+    icon: string | null; onOpenPicker: () => void;
     onSet: (k: string, v: string) => void; onSubmit: (e: FormEvent) => void;
 }): JSX.Element {
     const { t } = useTranslation();
@@ -80,6 +105,7 @@ function FormFields({ form, busy, editing, configs, onSet, onSubmit }: {
             <Field label={t("stock.referenceRequired")}>
                 <input className="input" value={form.reference} onChange={(e) => onSet("reference", e.target.value)} required />
             </Field>
+            <IconPreview form={form} icon={icon} onOpenPicker={onOpenPicker} />
             <Field label={t("stock.quantity")}>
                 <input className="input" type="number" step="0.01" value={form.quantity} onChange={(e) => onSet("quantity", e.target.value)} />
             </Field>
@@ -107,6 +133,8 @@ function FormFields({ form, busy, editing, configs, onSet, onSubmit }: {
 
 export default function StockForm({ initial = null, onSaved }: Props): JSX.Element {
     const [form, setForm] = useState<FormState>(() => initialForm(initial));
+    const [icon, setIcon] = useState<string | null>(initial?.icon ?? null);
+    const [pickerOpen, setPickerOpen] = useState(false);
     const [busy, setBusy] = useState(false);
     const configs = useConfigLists();
 
@@ -116,13 +144,19 @@ export default function StockForm({ initial = null, onSaved }: Props): JSX.Eleme
         e.preventDefault();
         setBusy(true);
         const res = initial !== null
-            ? await api.patch(`/api/stock/${initial.id}`, buildPayload(form))
-            : await api.post("/api/stock", buildPayload(form));
+            ? await api.patch(`/api/stock/${initial.id}`, buildPayload(form, icon))
+            : await api.post("/api/stock", buildPayload(form, icon));
         setBusy(false);
         if (res.success) onSaved();
     };
 
     return (
-        <FormFields form={form} busy={busy} editing={initial !== null} configs={configs} onSet={set} onSubmit={submit} />
+        <>
+            <FormFields form={form} busy={busy} editing={initial !== null} configs={configs}
+                icon={icon} onOpenPicker={() => setPickerOpen(true)} onSet={set} onSubmit={submit} />
+            {pickerOpen && (
+                <IconPickerModal current={icon} onPick={setIcon} onClose={() => setPickerOpen(false)} />
+            )}
+        </>
     );
 }

@@ -42,11 +42,12 @@ interface PhotoProps {
     category: string;
     name: string;
     reference: string;
+    icon: string | null;
     canEdit: boolean;
     onChanged: () => void;
 }
 
-function PhotoCard({ itemId, imagePath, category, name, reference, canEdit, onChanged }: PhotoProps): JSX.Element {
+function PhotoCard({ itemId, imagePath, category, name, reference, icon, canEdit, onChanged }: PhotoProps): JSX.Element {
     const { t } = useTranslation();
     const inputRef = useRef<HTMLInputElement>(null);
     const [error, setError] = useState<string | null>(null);
@@ -77,7 +78,7 @@ function PhotoCard({ itemId, imagePath, category, name, reference, canEdit, onCh
                     height: "160px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "0.6rem",
                     border: "var(--border-w) solid var(--ink)", color: "var(--muted)", fontSize: "0.85rem",
                 }}>
-                    <StockIcon category={category} name={name} reference={reference} imagePath={null} size={64} />
+                    <StockIcon category={category} name={name} reference={reference} iconName={icon} imagePath={null} size={64} />
                     {t("stockDetail.noPhoto")}
                 </div>
             )}
@@ -265,7 +266,8 @@ export default function StockItemPage(): JSX.Element {
             <div style={{ display: "grid", gridTemplateColumns: "320px 1fr", gap: "1.25rem", alignItems: "start" }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
                     <PhotoCard itemId={itemId} imagePath={details.item.imagePath} category={details.item.category}
-                        name={details.item.name} reference={details.item.reference} canEdit={canEdit} onChanged={reload} />
+                        name={details.item.name} reference={details.item.reference} icon={details.item.icon}
+                        canEdit={canEdit} onChanged={reload} />
                     <InfoCard details={details} />
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>

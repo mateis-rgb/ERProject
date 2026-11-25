@@ -46,6 +46,7 @@ export const stockItemCreateSchema = z.object({
     purchasePrice: z.number().nonnegative().optional().nullable(),
     location: z.string().max(200).optional().default(""),
     minThreshold: z.number().nonnegative().optional().default(0),
+    icon: z.string().max(64).regex(/^[A-Za-z0-9]+$/, "Nom d'icône invalide").optional().nullable(),
 });
 
 export const stockItemUpdateSchema = stockItemCreateSchema.partial();

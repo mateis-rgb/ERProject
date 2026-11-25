@@ -1,5 +1,5 @@
-// Icône automatique d'un article stock : 1er mot-clé de la référence (ex. "CAB-HDMI-03" -> "CAB")
-// -> icône isométrique (pack bs) ; fallback sur catégorie/nom, puis cube par défaut (Power of 10 R4)
+// Icône d'un article stock : icône choisie manuellement > 1er mot-clé de la référence
+// (ex. "CAB-HDMI-03" -> "CAB") > catégorie/nom > cube par défaut (Power of 10 R4)
 import { IconType } from "react-icons";
 import {
     BsAlarm, BsArchive, BsBagHeart, BsBasket, BsBatteryCharging, BsBicycle, BsBox2, BsBoxSeam, BsBriefcase,
@@ -12,6 +12,32 @@ import {
 } from "react-icons/bs";
 
 export const DEFAULT_STOCK_ICON = BsBoxSeam;
+
+// Registre complet des icônes disponibles (sélecteur manuel) : nom -> composant
+const I: Record<string, IconType> = {
+    BsAlarm, BsArchive, BsBagHeart, BsBasket, BsBatteryCharging, BsBicycle, BsBox2, BsBoxSeam, BsBriefcase,
+    BsBrush, BsCamera, BsCameraVideo, BsCarFront, BsClock, BsDisplay, BsDroplet, BsEasel,
+    BsFan, BsFileText, BsFilm, BsFlag, BsFolder, BsFuelPump, BsGear, BsGridFill, BsHdd, BsHeadphones,
+    BsImage, BsJournalText, BsKeyboard, BsLadder, BsLaptop, BsLightbulbFill, BsLightningCharge, BsMicFill,
+    BsMouse, BsPalette, BsPaperclip, BsPencil, BsPhone, BsPlugFill, BsPower, BsPrinter, BsRecordCircle,
+    BsRepeat, BsRulers, BsSdCard, BsShieldCheck, BsSignpost, BsSpeakerFill, BsStars, BsStopwatch, BsTools,
+    BsThermometer, BsThermometerHigh, BsTruck, BsUmbrella, BsUsbDrive, BsWifi, BsWrenchAdjustable, BsHammer, BsScrewdriver,
+};
+
+export const ALL_STOCK_ICONS: { name: string; icon: IconType }[] =
+    Object.entries(I).map(([name, icon]) => ({ name, icon })).sort((a, b) => a.name.localeCompare(b.name));
+
+export function iconByName(name: string | null | undefined): IconType | null {
+    if (name === null || name === undefined || name === "") return null;
+    return I[name] ?? null;
+}
+
+export function iconNameOf(icon: IconType): string {
+    for (const entry of Object.entries(I)) {
+        if (entry[1] === icon) return entry[0];
+    }
+    return "";
+}
 
 // Préfixes de référence (1er token, en majuscules) -> icône
 const PREFIX_ICONS: [string, IconType][] = [
@@ -117,7 +143,10 @@ function iconForToken(token: string): IconType | null {
     return byPrefix !== undefined ? byPrefix[1] : null;
 }
 
-export function stockIconFor(category: string, name: string, reference: string = ""): IconType {
+// Résolution complète : manuelle > ref > catégorie/nom > défaut
+export function stockIconFor(category: string, name: string, reference: string = "", manualIcon: string | null = null): IconType {
+    const manual = iconByName(manualIcon);
+    if (manual !== null) return manual;
     const fromRef = iconForToken(firstRefToken(reference));
     if (fromRef !== null) return fromRef;
     const text = `${category} ${name}`.toLowerCase();

@@ -21,18 +21,19 @@ interface StockItemInput {
     purchasePrice: number | null;
     location: string;
     minThreshold: number;
+    icon: string | null;
 }
 
 function toStockDTO(s: {
     id: string; name: string; reference: string; quantity: number;
     unit: string; category: string; supplier: string; purchasePrice: number | null;
-    location: string; minThreshold: number; imagePath: string | null; createdAt: Date; updatedAt: Date;
+    location: string; minThreshold: number; imagePath: string | null; icon: string | null; createdAt: Date; updatedAt: Date;
 }): StockItemDTO {
     return {
         id: s.id, name: s.name, reference: s.reference, quantity: s.quantity,
         unit: s.unit, category: s.category, supplier: s.supplier,
         purchasePrice: s.purchasePrice, location: s.location,
-        minThreshold: s.minThreshold, imagePath: s.imagePath, createdAt: s.createdAt, updatedAt: s.updatedAt,
+        minThreshold: s.minThreshold, imagePath: s.imagePath, icon: s.icon, createdAt: s.createdAt, updatedAt: s.updatedAt,
     };
 }
 
@@ -56,7 +57,7 @@ export async function createStockItem(input: StockItemInput): Promise<StockItemD
             name: input.name, reference: input.reference, quantity: input.quantity,
             unit: input.unit, category: input.category, supplier: input.supplier,
             purchasePrice: input.purchasePrice, location: input.location,
-            minThreshold: input.minThreshold,
+            minThreshold: input.minThreshold, icon: input.icon ?? null,
         },
     });
     return toStockDTO(item);

@@ -318,7 +318,11 @@
         "suggestLocation": "Location",
         "noSuggestion": "No suggestion",
         "resetFilters": "Reset",
-        "results": "results"
+        "results": "results",
+        "iconPreview": "Icon",
+        "chooseIcon": "Choose an icon...",
+        "iconAuto": "Auto",
+        "iconSearch": "Filter icons..."
     },
     "movement": {
         "in": "In",

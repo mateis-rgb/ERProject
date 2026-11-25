@@ -48,7 +48,7 @@ export function buildSuggestions(query: string, allItems: StockItem[], categorie
 
 function SuggestionIcon(p: { s: Suggestion; active: boolean }): JSX.Element {
     if (p.s.kind === "item" && p.s.item !== undefined) {
-        return <StockIcon category={p.s.item.category} name={p.s.item.name} reference={p.s.item.reference} imagePath={p.s.item.imagePath} size={24} />;
+        return <StockIcon category={p.s.item.category} name={p.s.item.name} reference={p.s.item.reference} imagePath={p.s.item.imagePath} iconName={p.s.item.icon} size={24} />;
     }
     const Icon = p.s.kind === "category" ? FiTag : FiMapPin;
     return <Icon style={{ flexShrink: 0, color: p.active ? "var(--accent-ink)" : "var(--accent)" }} />;

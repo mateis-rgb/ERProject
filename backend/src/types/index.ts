@@ -38,6 +38,7 @@ export interface StockItemDTO {
     location: string;
     minThreshold: number;
     imagePath: string | null;
+    icon: string | null;
     createdAt: Date;
     updatedAt: Date;
 }
