@@ -20,7 +20,7 @@ interface Props {
 export default function DriveTable(props: Props): JSX.Element {
     const { current, folders, canEdit, parentId, onOpen, onEditFile, onRename, onMove, onRemove, onDropFiles, onDropItem } = props;
     return (
-        <div style={{ border: "2px solid var(--ink)", background: "var(--surface)" }}>
+        <div style={{ border: "2px solid var(--ink)", background: "var(--surface)", maxHeight: "70vh", overflow: "auto" }}>
             <DriveHeader canEdit={canEdit} />
             <DriveContent current={current} folders={folders} canEdit={canEdit} parentId={parentId}
                 onOpen={onOpen} onEditFile={onEditFile} onRename={onRename} onMove={onMove} onRemove={onRemove}

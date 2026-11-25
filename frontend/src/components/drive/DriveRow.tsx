@@ -31,6 +31,7 @@ export default function DriveRow(props: Props): JSX.Element {
             title={item.isFolder && canEdit ? t("drive.dropInFolder") : undefined}
             style={{
                 display: "grid", gridTemplateColumns: driveCols(canEdit), alignItems: "center",
+                minWidth: "640px", // force le scroll horizontal du bloc plutôt que l'écrasement de la colonne actions
                 borderBottom: "1px solid var(--ink)", background: drag.over ? "var(--surface-2)" : "transparent",
                 outline: drag.over ? "2px dashed var(--accent)" : "none", outlineOffset: "-2px",
                 cursor: drag.draggable ? "grab" : "default",

@@ -43,7 +43,6 @@ export default function DriveContent(props: Props): JSX.Element {
     return (
         <div onDragOver={onDragOver} onDragLeave={() => setOver(false)} onDrop={onDrop}
             style={{
-                maxHeight: "70vh", overflowY: "auto",
                 background: over ? "var(--surface-2)" : "transparent",
                 outline: over ? "2px dashed var(--accent)" : "none", outlineOffset: "-2px",
             }}>
