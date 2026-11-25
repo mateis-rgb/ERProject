@@ -3,12 +3,12 @@ import { Router, Request, Response } from "express";
 import multer from "multer";
 import {
     saveAttachment, listAttachments, getAttachmentPath, deleteAttachment,
-    createFolder, updateAttachment, getProjectUsage,
+    createFolder, updateAttachment, getProjectUsage, readTextContent, writeTextContent,
 } from "../services/attachmentService";
 import { requireAuth, requireRole } from "../middleware/auth";
 import { requireModule } from "../middleware/modules";
 import { validateBody } from "../middleware/validation";
-import { folderCreateSchema, attachmentUpdateSchema } from "../types/schemas";
+import { folderCreateSchema, attachmentUpdateSchema, attachmentContentSchema } from "../types/schemas";
 import { config } from "../config";
 
 export const attachmentRouter = Router();
@@ -91,6 +91,28 @@ attachmentRouter.patch("/:id", requireRole("EDITOR"), validateBody(attachmentUpd
             fileName: body.fileName,
             parentId: body.parentId === undefined ? undefined : (body.parentId === null ? null : body.parentId),
         });
+        res.json({ success: true, data: updated });
+    } catch (e) {
+        res.status(400).json({ success: false, error: (e as Error).message });
+    }
+});
+
+// Lecture du contenu texte d'un fichier éditable (.md, .txt, .fountain, ...)
+attachmentRouter.get("/content/:id", async (req: Request, res: Response) => {
+    const r = await readTextContent(req.params.id ?? "");
+    if (r === null) {
+        res.status(404).json({ success: false, error: "Contenu texte introuvable" });
+        return;
+    }
+    res.json({ success: true, data: r });
+});
+
+// Écriture du contenu texte (quota vérifié si le fichier grossit)
+attachmentRouter.put("/content/:id", requireRole("EDITOR"), validateBody(attachmentContentSchema), async (req: Request, res: Response) => {
+    const user = requireAuthUser(req, res);
+    if (user === null) return;
+    try {
+        const updated = await writeTextContent(req.params.id ?? "", user.id, (req.body as { content: string }).content);
         res.json({ success: true, data: updated });
     } catch (e) {
         res.status(400).json({ success: false, error: (e as Error).message });

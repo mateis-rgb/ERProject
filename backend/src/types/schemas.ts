@@ -93,3 +93,7 @@ export const attachmentUpdateSchema = z.object({
     fileName: z.string().min(1).max(255).optional(),
     parentId: z.string().min(1).optional().nullable(), // déplacer dans un dossier (null = racine)
 });
+
+export const attachmentContentSchema = z.object({
+    content: z.string().max(5 * 1024 * 1024, "Contenu trop volumineux (max 5 Mo)"),
+});

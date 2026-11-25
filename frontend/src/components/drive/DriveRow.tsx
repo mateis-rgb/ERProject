@@ -6,12 +6,14 @@ import { formatSize } from "./DriveTab";
 import { driveCols, driveRowCell } from "./driveStyles";
 import { useRowDrag } from "../../hooks/useRowDrag";
 import BrutalSelect from "../ui/BrutalSelect";
+import { isEditableFile } from "../../utils/textFiles";
 
 interface Props {
     item: Attachment;
     folders: Attachment[];
     canEdit: boolean;
     onOpen: (a: Attachment) => void;
+    onEditFile: (a: Attachment) => void;
     onRename: (a: Attachment) => void;
     onMove: (a: Attachment, targetId: string | null) => void;
     onRemove: (a: Attachment) => void;
@@ -20,7 +22,7 @@ interface Props {
 }
 
 export default function DriveRow(props: Props): JSX.Element {
-    const { item, folders, canEdit, onOpen, onRename, onMove, onRemove, onDropFiles, onDropItem } = props;
+    const { item, folders, canEdit, onOpen, onEditFile, onRename, onMove, onRemove, onDropFiles, onDropItem } = props;
     const { t } = useTranslation();
     const drag = useRowDrag(item, canEdit, onDropFiles, onDropItem);
     return (
@@ -38,6 +40,11 @@ export default function DriveRow(props: Props): JSX.Element {
                     <button className="btn-ghost" style={{ padding: "0.15rem 0.5rem", fontSize: "0.78rem" }}
                         onClick={() => onOpen(item)}>
                         <span className="ic"><FiFolder /> {item.fileName}</span>
+                    </button>
+                ) : isEditableFile(item.fileName, item.mimeType) ? (
+                    <button className="btn-ghost" style={{ padding: "0.15rem 0.5rem", fontSize: "0.78rem", color: "var(--accent)", fontWeight: 700 }}
+                        onClick={() => onEditFile(item)} title={item.fileName}>
+                        <span className="ic"><FiFileText /> {item.fileName}</span>
                     </button>
                 ) : (
                     <a href={`/api/attachments/download/${item.id}`} style={{ color: "var(--accent)", fontWeight: 700 }}>

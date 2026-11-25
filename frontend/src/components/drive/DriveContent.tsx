@@ -11,6 +11,7 @@ interface Props {
     canEdit: boolean;
     parentId: string | null; // dossier courant (cible du dépôt sur le content)
     onOpen: (a: Attachment) => void;
+    onEditFile: (a: Attachment) => void;
     onRename: (a: Attachment) => void;
     onMove: (a: Attachment, targetId: string | null) => void;
     onRemove: (a: Attachment) => void;
@@ -19,7 +20,7 @@ interface Props {
 }
 
 export default function DriveContent(props: Props): JSX.Element {
-    const { current, folders, canEdit, parentId, onOpen, onRename, onMove, onRemove, onDropFiles, onDropItem } = props;
+    const { current, folders, canEdit, parentId, onOpen, onEditFile, onRename, onMove, onRemove, onDropFiles, onDropItem } = props;
     const { t } = useTranslation();
     const [over, setOver] = useState(false);
 
@@ -53,7 +54,7 @@ export default function DriveContent(props: Props): JSX.Element {
             ) : (
                 current.map((a) => (
                     <DriveRow key={a.id} item={a} folders={folders} canEdit={canEdit}
-                        onOpen={onOpen} onRename={onRename} onMove={onMove} onRemove={onRemove}
+                        onOpen={onOpen} onEditFile={onEditFile} onRename={onRename} onMove={onMove} onRemove={onRemove}
                         onDropFiles={(f, t) => onDropFiles(f, t)} onDropItem={(id, t) => onDropItem(id, t)} />
                 ))
             )}

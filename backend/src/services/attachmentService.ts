@@ -2,6 +2,7 @@
 import { getPrisma } from "../config/prisma";
 import { assert } from "../utils/power10";
 import { logActivity } from "./activityService";
+import { emitGlobal } from "./socketService";
 import path from "path";
 import fs from "fs";
 import { config } from "../config";
@@ -10,6 +11,25 @@ import { getStorageDir } from "./storageService";
 const ALLOWED_MIME_PREFIXES = ["image/", "video/", "audio/", "application/pdf", "text/", "application/zip", "application/json"];
 const MAX_FILE_SIZE = config.maxUploadSize;
 const MAX_TREE_DEPTH = 20; // boucle bornée pour la suppression d'un dossier (R2)
+export const MAX_TEXT_EDIT_SIZE = 5 * 1024 * 1024; // 5 Mo max pour l'édition en ligne
+
+const TEXT_EXTENSIONS = [
+    ".md", ".markdown", ".txt", ".fountain", ".script", ".json", ".csv", ".tsv", ".log",
+    ".xml", ".yml", ".yaml", ".html", ".htm", ".css", ".js", ".ts", ".jsx", ".tsx",
+    ".py", ".sh", ".env", ".ini", ".toml", ".sql",
+];
+
+export function isTextEditableFile(fileName: string, mimeType: string): boolean {
+    if (TEXT_EXTENSIONS.includes(path.extname(fileName).toLowerCase())) return true;
+    return mimeType.startsWith("text/");
+}
+
+function resolveSafeFilePath(filePath: string): string | null {
+    const root = path.resolve(getStorageDir());
+    const full = path.resolve(root, filePath);
+    if (!full.startsWith(root + path.sep) && full !== root) return null;
+    return full;
+}
 
 export interface AttachmentDTO {
     id: string;
@@ -168,6 +188,46 @@ export function getAttachmentPath(attachmentId: string): Promise<string | null> 
     const prisma = getPrisma();
     return prisma.attachment.findUnique({ where: { id: attachmentId } })
         .then((a) => (a === null || a.isFolder) ? null : path.resolve(getStorageDir(), a.filePath));
+}
+
+// Lecture du contenu texte d'un fichier éditable (null si dossier/non texte/trop gros/inexistant)
+export async function readTextContent(attachmentId: string): Promise<{ content: string; fileName: string; mimeType: string } | null> {
+    assert(attachmentId.length > 0, "readTextContent: invalid id");
+    const prisma = getPrisma();
+    const att = await prisma.attachment.findUnique({ where: { id: attachmentId } });
+    if (att === null || att.isFolder) return null;
+    if (!isTextEditableFile(att.fileName, att.mimeType)) return null;
+    if (att.fileSize > MAX_TEXT_EDIT_SIZE) return null;
+    const full = resolveSafeFilePath(att.filePath);
+    if (full === null || !fs.existsSync(full)) return null;
+    return { content: fs.readFileSync(full, "utf8"), fileName: att.fileName, mimeType: att.mimeType };
+}
+
+// Écriture du contenu texte (vérifie le quota si le fichier grossit, log + websocket)
+export async function writeTextContent(attachmentId: string, userId: string, content: string): Promise<AttachmentDTO> {
+    assert(attachmentId.length > 0, "writeTextContent: invalid id");
+    assert(userId.length > 0, "writeTextContent: invalid userId");
+    assert(content.length <= MAX_TEXT_EDIT_SIZE, "writeTextContent: contenu trop volumineux");
+    const prisma = getPrisma();
+    const att = await prisma.attachment.findUnique({
+        where: { id: attachmentId },
+        include: { uploader: { select: { name: true } } },
+    });
+    if (att === null || att.isFolder) throw new Error("Fichier introuvable");
+    if (!isTextEditableFile(att.fileName, att.mimeType)) throw new Error("Fichier non éditable en tant que texte");
+    const buffer = Buffer.from(content, "utf8");
+    if (buffer.length > att.fileSize) await assertQuotaOk(att.projectId, buffer.length - att.fileSize);
+    const full = resolveSafeFilePath(att.filePath);
+    if (full === null) throw new Error("Chemin invalide");
+    fs.writeFileSync(full, buffer);
+    const updated = await prisma.attachment.update({
+        where: { id: attachmentId },
+        data: { fileSize: buffer.length, mimeType: "text/plain" },
+        include: { uploader: { select: { name: true } } },
+    });
+    await logActivity(userId, "drive.edited", { attachmentId, fileName: att.fileName, size: buffer.length }, att.projectId);
+    emitGlobal("drive:updated", { projectId: att.projectId, attachmentId });
+    return toDTO(updated);
 }
 
 // Suppression d'un élément (dossier = suppression en cascade bornée par niveaux, R1/R2)

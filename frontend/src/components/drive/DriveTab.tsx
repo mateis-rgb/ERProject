@@ -7,6 +7,8 @@ import DriveBreadcrumb from "./DriveBreadcrumb";
 import DriveToolbar from "./DriveToolbar";
 import DriveTable from "./DriveTable";
 import DriveModal from "./DriveModal";
+import TextEditorModal from "./TextEditorModal";
+import NewTextFileModal from "./NewTextFileModal";
 import { useDriveActions } from "./driveActions";
 import { useDriveModal } from "../../hooks/useDriveModal";
 
@@ -31,6 +33,8 @@ export function formatSize(bytes: number): string {
 export default function DriveTab({ projectId, attachments, canEdit, onChanged }: Props): JSX.Element {
     const [path, setPath] = useState<Crumb[]>([{ id: null, name: "Racine" }]);
     const [usage, setUsage] = useState<DriveUsage | null>(null);
+    const [editing, setEditing] = useState<Attachment | null>(null);
+    const [newTextOpen, setNewTextOpen] = useState(false);
     const actions = useDriveActions();
 
     const parentId = path[path.length - 1]?.id ?? null;
@@ -55,10 +59,12 @@ export default function DriveTab({ projectId, attachments, canEdit, onChanged }:
             <DriveBreadcrumb path={path} onGo={(i) => setPath((p) => p.slice(0, i + 1))} />
             {canEdit && (
                 <DriveToolbar busy={actions.busy} onFiles={(f) => dm.onDropFiles(f, parentId)}
-                    onNewFolder={() => dm.openModal({ kind: "folder" })} />
+                    onNewFolder={() => dm.openModal({ kind: "folder" })}
+                    onNewText={() => setNewTextOpen(true)} />
             )}
             <DriveTable current={current} folders={folders} canEdit={canEdit} parentId={parentId}
                 onOpen={openFolder}
+                onEditFile={(a) => setEditing(a)}
                 onRename={(a) => dm.openModal({ kind: "rename", item: a }, a.fileName)}
                 onMove={(a, t) => actions.moveTo(a, t).then(onChanged)}
                 onRemove={(a) => dm.openModal({ kind: "delete", item: a })}
@@ -66,6 +72,15 @@ export default function DriveTab({ projectId, attachments, canEdit, onChanged }:
             {dm.modal !== null && (
                 <DriveModal modal={dm.modal} value={dm.value} busy={actions.busy}
                     onValue={dm.setValue} onCancel={dm.closeModal} onConfirm={dm.confirmModal} />
+            )}
+            {editing !== null && (
+                <TextEditorModal attachment={editing} canEdit={canEdit}
+                    onClose={() => setEditing(null)} onSaved={onChanged} />
+            )}
+            {newTextOpen && (
+                <NewTextFileModal projectId={projectId} parentId={parentId}
+                    onClose={() => setNewTextOpen(false)}
+                    onCreated={(att) => { setNewTextOpen(false); onChanged(); setEditing(att); }} />
             )}
         </div>
     );
