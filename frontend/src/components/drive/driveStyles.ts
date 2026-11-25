@@ -2,7 +2,7 @@
 export function driveCols(canEdit: boolean): string {
     // nom en 1fr = complète le reste de la ligne ; autres colonnes au minimum (actions = 2 boutons de 26px)
     const base = "minmax(0,1fr) 70px 110px 110px"; // date JJ/MM/AAAA en mono à l'aise
-    return canEdit ? `${base} 140px 96px` : base; // tailles optimales avec léger gap ; le nom (1fr) absorbe le reste
+    return canEdit ? `${base} 150px 96px` : base; // tailles optimales avec gap ; le nom (1fr) absorbe le reste
 }
 
 export const driveHeaderCell: React.CSSProperties = {
