@@ -2,7 +2,7 @@
 import { Prisma } from "@prisma/client";
 import { getPrisma } from "../config/prisma";
 import { MAX_ITERATIONS } from "../utils/power10";
-import { PlanningMilestoneDTO, StockConflictDTO, PlanningDTO } from "../types";
+import { PlanningMilestoneDTO, StockConflictDTO, PlanningDTO, PlanningProjectDTO } from "../types";
 
 const INACTIVE_STATUSES = ["Archivé", "Annulé"];
 const MAX_CONFLICTS = 200;
@@ -138,9 +138,24 @@ function buildReturnsMap(
     return out;
 }
 
+// Projets actifs avec leurs propres dates (source de vérité pour la ligne projet)
+export async function listPlanningProjects(): Promise<PlanningProjectDTO[]> {
+    const prisma = getPrisma();
+    const rows = await prisma.project.findMany({
+        where: { status: { notIn: INACTIVE_STATUSES } },
+        select: { id: true, name: true, status: true, startDate: true, endDate: true },
+        orderBy: { name: "asc" },
+        take: MAX_ITERATIONS,
+    });
+    return rows.map((p) => ({
+        id: p.id, name: p.name, status: p.status, startDate: p.startDate, endDate: p.endDate,
+    }));
+}
+
 export async function getPlanning(): Promise<PlanningDTO> {
     const prisma = getPrisma();
-    const [milestones, links, returns] = await Promise.all([
+    const [projects, milestones, links, returns] = await Promise.all([
+        listPlanningProjects(),
         listPlanningMilestones(),
         prismaLinks(),
         prisma.stockMovement.findMany({
@@ -151,6 +166,7 @@ export async function getPlanning(): Promise<PlanningDTO> {
         }),
     ]);
     return {
+        projects,
         milestones,
         conflicts: findConflicts(buildReservations(links), buildReturnsMap(returns)),
     };

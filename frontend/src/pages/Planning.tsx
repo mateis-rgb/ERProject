@@ -5,48 +5,58 @@ import { FiAlertTriangle, FiArrowRight } from "react-icons/fi";
 import { useTranslation } from "../i18n/I18nContext";
 import { useModules } from "../context/ModulesContext";
 import { api } from "../services/api";
-import { Planning, PlanningMilestone, StockConflict } from "../types";
+import { Planning, PlanningMilestone, PlanningProject, StockConflict } from "../types";
 import GanttHeader from "../components/gantt/GanttHeader";
 import GanttToolbar from "../components/gantt/GanttToolbar";
-import { GanttView, buildTicks, barGeom, computeGanttRange, GanttRange } from "../components/gantt/ganttUtils";
+import { GanttView, DAY_MS, buildTicks, barGeom, computeGanttRange, GanttRange } from "../components/gantt/ganttUtils";
 
 const MIN_WIDTH = 600;
 const LABEL_W = 190;
 
 type Range = GanttRange;
 
-function computeRange(milestones: PlanningMilestone[], view: GanttView): Range {
-    const starts = milestones.map((m) => new Date(m.startDate).getTime());
-    const ends = milestones.map((m) => new Date(m.endDate).getTime());
-    return computeGanttRange(Math.min(...starts), Math.max(...ends), view, 1, MIN_WIDTH);
-}
-
 interface ProjectGroup {
     projectId: string;
     projectName: string;
     projectStatus: string;
     items: PlanningMilestone[];
-    start: number; // borne globale du projet = min/max des jalons
-    end: number;
+    start: number | null; // dates propres du projet, sinon min/max des jalons, sinon null (pas de barre)
+    end: number | null;
 }
 
-function groupByProject(milestones: PlanningMilestone[]): ProjectGroup[] {
-    const groups: ProjectGroup[] = [];
-    const byId = new Map<string, ProjectGroup>();
-    for (const m of milestones) {
-        let g = byId.get(m.projectId);
-        if (g === undefined) {
-            g = { projectId: m.projectId, projectName: m.projectName, projectStatus: m.projectStatus, items: [], start: Infinity, end: -Infinity };
-            byId.set(m.projectId, g);
-            groups.push(g);
+// Un groupe par projet actif ; la barre couvre les dates du projet (fallback: span des jalons)
+function groupByProject(projects: PlanningProject[], milestones: PlanningMilestone[]): ProjectGroup[] {
+    return projects.map((p) => {
+        const items = milestones.filter((m) => m.projectId === p.id);
+        let start: number | null = p.startDate !== null ? new Date(p.startDate).getTime() : null;
+        let end: number | null = p.endDate !== null ? new Date(p.endDate).getTime() : null;
+        if (start === null || end === null) {
+            for (const m of items) {
+                const s = new Date(m.startDate).getTime();
+                const e = new Date(m.endDate).getTime();
+                if (start === null || s < start) start = s;
+                if (end === null || e > end) end = e;
+            }
         }
-        g.items.push(m);
-        const s = new Date(m.startDate).getTime();
-        const e = new Date(m.endDate).getTime();
-        if (s < g.start) g.start = s;
-        if (e > g.end) g.end = e;
+        return { projectId: p.id, projectName: p.name, projectStatus: p.status, items, start, end };
+    });
+}
+
+// Plage du planning : bornes des projets datés, sinon span des jalons, sinon fenêtre autour d'aujourd'hui
+function computeRange(groups: ProjectGroup[], milestones: PlanningMilestone[], view: GanttView): Range {
+    const dated = groups.filter((g) => g.start !== null && g.end !== null);
+    if (dated.length > 0) {
+        const starts = dated.map((g) => g.start as number);
+        const ends = dated.map((g) => g.end as number);
+        return computeGanttRange(Math.min(...starts), Math.max(...ends), view, 1, MIN_WIDTH);
     }
-    return groups;
+    if (milestones.length > 0) {
+        const starts = milestones.map((m) => new Date(m.startDate).getTime());
+        const ends = milestones.map((m) => new Date(m.endDate).getTime());
+        return computeGanttRange(Math.min(...starts), Math.max(...ends), view, 1, MIN_WIDTH);
+    }
+    const now = Date.now();
+    return computeGanttRange(now - 30 * DAY_MS, now + 90 * DAY_MS, view, 1, MIN_WIDTH);
 }
 
 function conflictMilestoneIds(conflicts: StockConflict[]): Set<string> {
@@ -81,6 +91,9 @@ const LABEL_STYLE: React.CSSProperties = {
 };
 
 function ProjectLabel({ g }: { g: ProjectGroup }): JSX.Element {
+    const dates = g.start !== null && g.end !== null
+        ? `${fmtDate(new Date(g.start).toISOString())} - ${fmtDate(new Date(g.end).toISOString())}`
+        : null;
     return (
         <div style={LABEL_STYLE}>
             <Link to={`/projects/${g.projectId}`} style={{ fontWeight: 700, fontSize: "0.8rem", color: "var(--ink)", textDecoration: "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
@@ -90,27 +103,38 @@ function ProjectLabel({ g }: { g: ProjectGroup }): JSX.Element {
                 <span className="mono" style={{ fontSize: "0.62rem", color: "var(--muted)", textTransform: "uppercase" }}>{g.projectStatus}</span>
                 <span className="badge" style={{ fontSize: "0.62rem" }}>{g.items.length}</span>
             </span>
+            {dates !== null && (
+                <span className="mono" style={{ fontSize: "0.6rem", color: "var(--muted)" }}>{dates}</span>
+            )}
+        </div>
+    );
+}
+
+function ProjectBar({ g, r, hasConflict }: { g: ProjectGroup; r: Range; hasConflict: boolean }): JSX.Element | null {
+    if (g.start === null || g.end === null) return null;
+    const geom = barGeom(g.start, g.end, r.pct);
+    const title = `${g.projectName} - ${fmtDate(new Date(g.start).toISOString())} - ${fmtDate(new Date(g.end).toISOString())}`;
+    return (
+        <div title={title}
+            style={{
+                position: "absolute", left: `${geom.left}%`, width: `${geom.width}%`, top: "8px", height: "28px",
+                backgroundColor: "var(--surface-2)", backgroundImage: PROJECT_HATCH,
+                border: hasConflict ? "3px solid var(--danger)" : "var(--border-w) solid var(--ink)",
+                boxShadow: hasConflict ? "3px 3px 0 var(--danger)" : "var(--shadow-btn)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+            {hasConflict && <FiAlertTriangle style={{ color: "var(--danger)", flexShrink: 0 }} />}
         </div>
     );
 }
 
 function ProjectRow({ g, r, conflicted, last }: RowProps): JSX.Element {
     const hasConflict = g.items.some((m) => conflicted.has(m.id));
-    const geom = barGeom(g.start, g.end, r.pct);
     return (
         <div style={{ display: "flex", borderBottom: last ? "none" : "var(--border-w) solid var(--ink)", height: "44px" }}>
             <ProjectLabel g={g} />
             <div style={{ position: "relative", width: `${r.width}px`, flexShrink: 0 }}>
-                <div title={`${g.projectName} - ${fmtDate(new Date(g.start).toISOString())} - ${fmtDate(new Date(g.end).toISOString())}`}
-                    style={{
-                        position: "absolute", left: `${geom.left}%`, width: `${geom.width}%`, top: "8px", height: "28px",
-                        backgroundColor: "var(--surface-2)", backgroundImage: PROJECT_HATCH,
-                        border: hasConflict ? "3px solid var(--danger)" : "var(--border-w) solid var(--ink)",
-                        boxShadow: hasConflict ? "3px 3px 0 var(--danger)" : "var(--shadow-btn)",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                    }}>
-                    {hasConflict && <FiAlertTriangle style={{ color: "var(--danger)", flexShrink: 0 }} />}
-                </div>
+                <ProjectBar g={g} r={r} hasConflict={hasConflict} />
             </div>
         </div>
     );
@@ -148,9 +172,9 @@ interface TimelineProps {
 }
 
 function PlanningTimeline({ data, view, onView }: TimelineProps): JSX.Element {
-    const groups = groupByProject(data.milestones);
+    const groups = groupByProject(data.projects, data.milestones);
     const conflicted = conflictMilestoneIds(data.conflicts);
-    const r = computeRange(data.milestones, view);
+    const r = computeRange(groups, data.milestones, view);
     const rangeEnd = r.rangeStart + r.rangeMs;
     const ticks = buildTicks(r.rangeStart, rangeEnd, view);
     const todayPct = Math.min(100, Math.max(0, r.pct(Date.now())));
@@ -162,7 +186,8 @@ function PlanningTimeline({ data, view, onView }: TimelineProps): JSX.Element {
                     <div style={{ display: "flex", position: "sticky", top: 0, zIndex: 10 }}>
                         <div style={{ ...LABEL_STYLE, height: "36px", borderBottom: "var(--border-w) solid var(--ink)", zIndex: 11 }} />
                         <GanttHeader width={r.width} ticks={ticks} pct={r.pct} rangeEnd={rangeEnd} todayPct={todayPct} />
-                    </div>
+					</div>
+                    
                     {groups.map((g, i) => <ProjectRow key={g.projectId} g={g} r={r} conflicted={conflicted} last={i === groups.length - 1} />)}
                 </div>
             </div>
@@ -202,7 +227,7 @@ export default function PlanningPage(): JSX.Element {
     }, []);
 
     if (data === null) return <div />;
-    if (data.milestones.length === 0) {
+    if (data.projects.length === 0) {
         return (
             <div>
                 <h1 className="page-title">{t("planning.title")}</h1>
@@ -210,7 +235,7 @@ export default function PlanningPage(): JSX.Element {
             </div>
         );
     }
-    const groups = groupByProject(data.milestones);
+    const groups = groupByProject(data.projects, data.milestones);
     return (
         <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>

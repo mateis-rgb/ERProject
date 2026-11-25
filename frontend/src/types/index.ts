@@ -179,6 +179,14 @@ export interface ProjectTemplate {
 }
 
 // Planning global cross-projets (GET /api/planning)
+export interface PlanningProject {
+    id: string;
+    name: string;
+    status: string;
+    startDate: string | null; // dates propres du projet (source de vérité de la barre)
+    endDate: string | null;
+}
+
 export interface PlanningMilestone {
     id: string;
     projectId: string;
@@ -210,6 +218,7 @@ export interface StockConflict {
 }
 
 export interface Planning {
+    projects: PlanningProject[];
     milestones: PlanningMilestone[];
     conflicts: StockConflict[];
 }

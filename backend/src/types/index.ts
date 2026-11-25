@@ -119,7 +119,17 @@ export interface StockConflictDTO {
     b: ConflictSideDTO;
 }
 
+// Infos du projet lui-même (pour la ligne projet du planning global)
+export interface PlanningProjectDTO {
+    id: string;
+    name: string;
+    status: string;
+    startDate: Date | null;
+    endDate: Date | null;
+}
+
 export interface PlanningDTO {
+    projects: PlanningProjectDTO[];
     milestones: PlanningMilestoneDTO[];
     conflicts: StockConflictDTO[];
 }
