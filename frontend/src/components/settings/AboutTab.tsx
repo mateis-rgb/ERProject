@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslation } from "../../i18n/I18nContext";
 import UpdateSection from "./UpdateSection";
 
-const VERSION = "0.1.0";
+const VERSION = "0.2.0";
 
 interface Member { name: string; github: string; role: string }
 

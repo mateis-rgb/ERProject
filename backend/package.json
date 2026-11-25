@@ -1,6 +1,6 @@
 {
     "name": "entrepot-backend",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Backend API pour L'Entrepôt - Gestion de projets et stock",
     "main": "dist/index.js",
     "scripts": {
