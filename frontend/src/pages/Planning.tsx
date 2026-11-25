@@ -97,17 +97,35 @@ function ProjectLabel({ g }: { g: ProjectGroup }): JSX.Element {
         : null;
     return (
         <div style={LABEL_STYLE}>
-            <Link to={`/projects/${g.projectId}`} style={{ fontWeight: 700, fontSize: "0.8rem", color: "var(--ink)", textDecoration: "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {g.projectName}
-            </Link>
-            <span style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span className="mono" style={{ fontSize: "0.62rem", color: "var(--muted)", textTransform: "uppercase" }}>{g.projectStatus}</span>
-                <span className="badge" style={{ fontSize: "0.62rem" }}>{g.items.length}</span>
+            <span style={{ display: "flex", alignItems: "baseline", gap: "0.35rem", minWidth: 0 }}>
+                <Link to={`/projects/${g.projectId}`} style={{ fontWeight: 700, fontSize: "0.8rem", color: "var(--ink)", textDecoration: "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {g.projectName}
+                </Link>
+                <span className="mono" style={{ fontSize: "0.62rem", color: "var(--muted)", textTransform: "uppercase", flexShrink: 0 }}>{g.projectStatus}</span>
             </span>
-            {dates !== null && (
-                <span className="mono" style={{ fontSize: "0.6rem", color: "var(--muted)" }}>{dates}</span>
-            )}
+            <span style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.35rem" }}>
+                <span className="mono" style={{ fontSize: "0.6rem", color: "var(--muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{dates ?? "—"}</span>
+                <span className="badge" style={{ fontSize: "0.62rem", flexShrink: 0 }}>{g.items.length}</span>
+            </span>
         </div>
+    );
+}
+
+// Titre du projet dans la barre : sticky (scroll horizontal) mais contraint par la barre
+// => il suit le scroll tant que la barre est visible, et reste dans la barre sinon
+function BarTitle({ name, hasConflict }: { name: string; hasConflict: boolean }): JSX.Element {
+    return (
+        <span style={{
+            position: "sticky", left: "8px", top: 0, height: "28px",
+            display: "inline-flex", alignItems: "center", gap: "4px",
+            maxWidth: "calc(100% - 16px)", padding: "0 8px",
+            fontWeight: 700, fontSize: "0.72rem", textTransform: "uppercase", color: "var(--ink)",
+            background: "var(--surface)", border: "var(--border-w) solid var(--ink)", boxShadow: "var(--shadow-btn)",
+            whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+        }}>
+            {hasConflict && <FiAlertTriangle style={{ color: "var(--danger)", flexShrink: 0 }} />}
+            {name}
+        </span>
     );
 }
 
@@ -122,29 +140,8 @@ function ProjectBar({ g, r, hasConflict }: { g: ProjectGroup; r: Range; hasConfl
                 backgroundColor: "var(--surface-2)", backgroundImage: PROJECT_HATCH,
                 border: hasConflict ? "3px solid var(--danger)" : "var(--border-w) solid var(--ink)",
                 boxShadow: hasConflict ? "3px 3px 0 var(--danger)" : "var(--shadow-btn)",
-                display: "flex", alignItems: "center", justifyContent: "center",
             }}>
-            {hasConflict && <FiAlertTriangle style={{ color: "var(--danger)", flexShrink: 0 }} />}
-        </div>
-    );
-}
-
-// Titre du projet épinglé sur la barre : sticky à gauche, reste visible pendant le scroll horizontal
-function StickyTitle({ name }: { name: string }): JSX.Element {
-    return (
-        <div style={{
-            position: "sticky", left: `calc(${LABEL_W} + 8px)`, marginTop: "15px", height: "28px",
-            width: "fit-content", maxWidth: "70%",
-            display: "flex", alignItems: "center", zIndex: 4, pointerEvents: "none",
-        }}>
-            <span style={{
-                fontWeight: 700, fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.04em",
-                background: "var(--surface)", border: "var(--border-w) solid var(--ink)",
-                boxShadow: "var(--shadow-btn)", padding: "2px 8px", color: "var(--ink)",
-                whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "100%",
-            }}>
-                {name}
-            </span>
+            <BarTitle name={g.projectName} hasConflict={hasConflict} />
         </div>
     );
 }
@@ -156,7 +153,6 @@ function ProjectRow({ g, r, conflicted, last }: RowProps): JSX.Element {
             <ProjectLabel g={g} />
             <div style={{ position: "relative", width: `${r.width}px`, flexShrink: 0 }}>
                 <ProjectBar g={g} r={r} hasConflict={hasConflict} />
-                <StickyTitle name={g.projectName} />
             </div>
         </div>
     );
