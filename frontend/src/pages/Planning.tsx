@@ -26,6 +26,8 @@ interface ProjectGroup {
     projectName: string;
     projectStatus: string;
     items: PlanningMilestone[];
+    start: number; // borne globale du projet = min/max des jalons
+    end: number;
 }
 
 function groupByProject(milestones: PlanningMilestone[]): ProjectGroup[] {
@@ -34,11 +36,15 @@ function groupByProject(milestones: PlanningMilestone[]): ProjectGroup[] {
     for (const m of milestones) {
         let g = byId.get(m.projectId);
         if (g === undefined) {
-            g = { projectId: m.projectId, projectName: m.projectName, projectStatus: m.projectStatus, items: [] };
+            g = { projectId: m.projectId, projectName: m.projectName, projectStatus: m.projectStatus, items: [], start: Infinity, end: -Infinity };
             byId.set(m.projectId, g);
             groups.push(g);
         }
         g.items.push(m);
+        const s = new Date(m.startDate).getTime();
+        const e = new Date(m.endDate).getTime();
+        if (s < g.start) g.start = s;
+        if (e > g.end) g.end = e;
     }
     return groups;
 }
@@ -60,11 +66,27 @@ interface RowProps {
     g: ProjectGroup;
     r: Range;
     conflicted: Set<string>;
+    last: boolean;
+}
+
+// Bande "projet" : couvre toute la durée du projet, les jalons passent dans la ligne du dessous
+const PROJECT_HATCH = "repeating-linear-gradient(45deg, var(--muted) 0px, var(--muted) 2px, transparent 2px, transparent 7px)";
+
+function ProjectBand({ g, r }: { g: ProjectGroup; r: Range }): JSX.Element {
+    const geom = barGeom(g.start, g.end, r.pct);
+    return (
+        <div title={`${g.projectName} - ${fmtDate(new Date(g.start).toISOString())} - ${fmtDate(new Date(g.end).toISOString())}`}
+            style={{
+                position: "absolute", left: `${geom.left}%`, width: `${geom.width}%`, top: "5px", height: "12px",
+                backgroundColor: "var(--surface-2)", backgroundImage: PROJECT_HATCH,
+                border: "var(--border-w) solid var(--ink)",
+            }} />
+    );
 }
 
 const LABEL_STYLE: React.CSSProperties = {
     width: `${LABEL_W}px`, flexShrink: 0, position: "sticky", left: 0, zIndex: 6,
-    padding: "0.5rem 0.6rem", borderRight: "2px solid var(--ink)", background: "var(--bg)",
+    padding: "0.5rem 0.6rem", borderRight: "var(--border-w) solid var(--ink)", background: "var(--bg)",
     display: "flex", flexDirection: "column", justifyContent: "center", gap: "0.15rem",
 };
 
@@ -82,20 +104,21 @@ function ProjectLabel({ g }: { g: ProjectGroup }): JSX.Element {
     );
 }
 
-function ProjectRow({ g, r, conflicted }: RowProps): JSX.Element {
+function ProjectRow({ g, r, conflicted, last }: RowProps): JSX.Element {
     return (
-        <div style={{ display: "flex", borderBottom: "2px solid var(--ink)", height: "48px" }}>
+        <div style={{ display: "flex", borderBottom: last ? "none" : "var(--border-w) solid var(--ink)", height: "62px" }}>
             <ProjectLabel g={g} />
             <div style={{ position: "relative", width: `${r.width}px`, flexShrink: 0 }}>
+                <ProjectBand g={g} r={r} />
                 {g.items.map((m) => {
                     const geom = barGeom(new Date(m.startDate).getTime(), new Date(m.endDate).getTime(), r.pct);
                     const isConflict = conflicted.has(m.id);
                     return (
                         <div key={m.id} title={`${m.name} - ${fmtDate(m.startDate)} - ${fmtDate(m.endDate)}`}
                             style={{
-                                position: "absolute", left: `${geom.left}%`, width: `${geom.width}%`, top: "10px", height: "28px",
-                                backgroundColor: m.color, border: isConflict ? "3px solid var(--danger)" : "2px solid var(--ink)",
-                                boxShadow: isConflict ? "3px 3px 0 var(--danger)" : "2px 2px 0 var(--ink)",
+                                position: "absolute", left: `${geom.left}%`, width: `${geom.width}%`, top: "26px", height: "28px",
+                                backgroundColor: m.color, border: isConflict ? "3px solid var(--danger)" : "var(--border-w) solid var(--ink)",
+                                boxShadow: isConflict ? "3px 3px 0 var(--danger)" : "var(--shadow-btn)",
                                 display: "flex", alignItems: "center", justifyContent: "center",
                             }}>
                             {isConflict && <FiAlertTriangle style={{ color: "#000", flexShrink: 0 }} />}
@@ -148,13 +171,13 @@ function PlanningTimeline({ data, view, onView }: TimelineProps): JSX.Element {
     return (
         <div style={{ flex: 1, minWidth: 0 }}>
             <GanttToolbar view={view} onView={onView} />
-            <div style={{ overflow: "auto", border: "2px solid var(--ink)", background: "var(--surface)" }}>
+            <div style={{ overflow: "auto", border: "var(--border-w) solid var(--ink)", background: "var(--surface)" }}>
                 <div style={{ display: "inline-block", minWidth: "100%" }}>
                     <div style={{ display: "flex", position: "sticky", top: 0, zIndex: 10 }}>
-                        <div style={{ ...LABEL_STYLE, height: "36px", borderBottom: "2px solid var(--ink)", zIndex: 11 }} />
+                        <div style={{ ...LABEL_STYLE, height: "36px", borderBottom: "var(--border-w) solid var(--ink)", zIndex: 11 }} />
                         <GanttHeader width={r.width} ticks={ticks} pct={r.pct} rangeEnd={rangeEnd} todayPct={todayPct} />
                     </div>
-                    {groups.map((g) => <ProjectRow key={g.projectId} g={g} r={r} conflicted={conflicted} />)}
+                    {groups.map((g, i) => <ProjectRow key={g.projectId} g={g} r={r} conflicted={conflicted} last={i === groups.length - 1} />)}
                 </div>
             </div>
         </div>

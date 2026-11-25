@@ -31,12 +31,12 @@ export default function MovementTable({ movements, items }: Props): JSX.Element 
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
                     <tr>
-                        <th className="table-header">Date</th>
+                        <th className="table-header">{t("movement.date")}</th>
                         <th className="table-header">{t("stock.article")}</th>
                         <th className="table-header">{t("project.type")}</th>
                         <th className="table-header">{t("stock.quantity")}</th>
-                        <th className="table-header">Raison</th>
-                        <th className="table-header">Projet</th>
+                        <th className="table-header">{t("movement.reason")}</th>
+                        <th className="table-header">{t("movement.project")}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -55,7 +55,7 @@ export default function MovementTable({ movements, items }: Props): JSX.Element 
                         </tr>
                     ))}
                     {movements.length === 0 && (
-                        <tr><td className="table-cell" colSpan={6} style={{ textAlign: "center", color: "var(--muted)" }}>Aucun mouvement</td></tr>
+                        <tr><td className="table-cell" colSpan={6} style={{ textAlign: "center", color: "var(--muted)" }}>{t("movement.none")}</td></tr>
                     )}
                 </tbody>
             </table>

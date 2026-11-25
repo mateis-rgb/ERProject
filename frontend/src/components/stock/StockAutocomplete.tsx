@@ -1,5 +1,6 @@
 // Autocomplétion article de stock (Power of 10 R4)
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "../../i18n/I18nContext";
 import { StockItem } from "../../types";
 import AutocompleteList from "../ui/AutocompleteList";
 
@@ -12,6 +13,7 @@ interface Props {
 const MAX_SUGGESTIONS = 8;
 
 export default function StockAutocomplete({ items, onSelect, placeholder }: Props): JSX.Element {
+    const { t } = useTranslation();
     const [query, setQuery] = useState("");
     const [open, setOpen] = useState(false);
     const [highlight, setHighlight] = useState(0);
@@ -49,7 +51,7 @@ export default function StockAutocomplete({ items, onSelect, placeholder }: Prop
         <div ref={ref} style={{ position: "relative", flex: 1, minWidth: "180px" }}>
             <input
                 className="input"
-                placeholder={placeholder ?? "Rechercher un article..."}
+                placeholder={placeholder ?? t("stock.searchArticle")}
                 value={query}
                 onChange={(e) => { setQuery(e.target.value); setOpen(true); setHighlight(0); }}
                 onFocus={() => setOpen(true)}

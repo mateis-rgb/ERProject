@@ -49,11 +49,7 @@ function StockRow({ item, avail: a, canEdit, onDelete, onEdit }: RowProps): JSX.
                             {a.available}/{a.totalQuantity}
                         </strong>
                         {unavailable && (
-                            <span style={{
-                                border: "var(--border-w) solid var(--ink)", boxShadow: "var(--shadow-btn)",
-                                background: "var(--danger)", color: "#fff",
-                                padding: "0.1rem 0.45rem", fontSize: "0.68rem", fontWeight: 700, textTransform: "uppercase",
-                            }}>
+                            <span className="badge" style={{ background: "var(--danger)", color: "#fff" }}>
                                 {t("stock.unavailable")}
                             </span>
                         )}
@@ -96,8 +92,8 @@ export default function StockTable({ items, avail, canEdit, onChanged, onEdit }:
                         <th className="table-header">{t("stock.dispo")}</th>
                         <th className="table-header">{t("stock.category")}</th>
                         <th className="table-header">{t("stock.location")}</th>
-                        <th className="table-header">Seuil</th>
-                        <th className="table-header">Prix</th>
+                        <th className="table-header">{t("stock.minThreshold")}</th>
+                        <th className="table-header">{t("stock.purchasePrice")}</th>
                         {canEdit && <th className="table-header"></th>}
                     </tr>
                 </thead>
@@ -107,7 +103,7 @@ export default function StockTable({ items, avail, canEdit, onChanged, onEdit }:
                             onDelete={(id) => void deleteItem(id)} onEdit={onEdit} />
                     ))}
                     {items.length === 0 && (
-                        <tr><td className="table-cell" colSpan={9} style={{ textAlign: "center", color: "var(--muted)" }}>Aucun article</td></tr>
+                        <tr><td className="table-cell" colSpan={9} style={{ textAlign: "center", color: "var(--muted)" }}>{t("stock.noItems")}</td></tr>
                     )}
                 </tbody>
             </table>

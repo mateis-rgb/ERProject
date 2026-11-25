@@ -62,16 +62,16 @@ function PhotoCard({ itemId, imagePath, canEdit, onChanged }: PhotoProps): JSX.E
 
     return (
         <div className="card">
-            <h2 style={{ fontSize: "0.95rem", fontWeight: 700, textTransform: "uppercase", margin: "0 0 0.75rem" }}>
+            <h2 style={SECTION_H2}>
                 {t("stockDetail.photo")}
             </h2>
             {imagePath !== null ? (
                 <img src={`/uploads/${imagePath}`} alt=""
-                    style={{ width: "100%", maxHeight: "260px", objectFit: "cover", border: "2px solid var(--ink)" }} />
+                    style={{ width: "100%", maxHeight: "260px", objectFit: "cover", border: "var(--border-w) solid var(--ink)" }} />
             ) : (
                 <div style={{
                     height: "160px", display: "flex", alignItems: "center", justifyContent: "center",
-                    border: "2px dashed var(--ink)", color: "var(--muted)", fontSize: "0.85rem",
+                    border: "var(--border-w) solid var(--ink)", color: "var(--muted)", fontSize: "0.85rem",
                 }}>
                     {t("stockDetail.noPhoto")}
                 </div>
@@ -114,11 +114,11 @@ function InfoCard({ details }: { details: StockItemDetails }): JSX.Element {
     ];
     return (
         <div className="card">
-            <h2 style={{ fontSize: "0.95rem", fontWeight: 700, textTransform: "uppercase", margin: "0 0 0.75rem" }}>
+            <h2 style={SECTION_H2}>
                 {t("stockDetail.infos")}
             </h2>
             {rows.map(([k, v]) => (
-                <div key={k} style={{ display: "flex", justifyContent: "space-between", gap: "1rem", padding: "0.3rem 0", borderBottom: "1px dashed var(--ink)", fontSize: "0.85rem" }}>
+                <div key={k} style={{ display: "flex", justifyContent: "space-between", gap: "1rem", padding: "0.3rem 0", borderBottom: "1px solid var(--ink)", fontSize: "0.85rem" }}>
                     <span className="mono" style={{ color: "var(--muted)", textTransform: "uppercase", fontSize: "0.7rem" }}>{k}</span>
                     <strong>{v}</strong>
                 </div>
@@ -134,13 +134,14 @@ function InfoCard({ details }: { details: StockItemDetails }): JSX.Element {
     );
 }
 
+const SECTION_H2: React.CSSProperties = { fontSize: "1.1rem", fontWeight: 700, textTransform: "uppercase", margin: "0 0 1rem" };
+
 function MovementsCard({ movements }: { movements: StockMovementDetail[] }): JSX.Element {
     const { t } = useTranslation();
     return (
-        <div className="card" style={{ padding: 0, overflow: "hidden" }}>
-            <h2 style={{ fontSize: "0.95rem", fontWeight: 700, textTransform: "uppercase", padding: "1rem 1rem 0.75rem", margin: 0 }}>
-                {t("stockDetail.movements")}
-            </h2>
+        <div>
+            <h2 style={SECTION_H2}>{t("stockDetail.movements")}</h2>
+            <div className="card" style={{ padding: 0, overflow: "hidden" }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
                     <tr>
@@ -174,6 +175,7 @@ function MovementsCard({ movements }: { movements: StockMovementDetail[] }): JSX
                     )}
                 </tbody>
             </table>
+            </div>
         </div>
     );
 }
@@ -181,10 +183,9 @@ function MovementsCard({ movements }: { movements: StockMovementDetail[] }): JSX
 function ReservationsCard({ reservations }: { reservations: StockReservation[] }): JSX.Element {
     const { t } = useTranslation();
     return (
-        <div className="card" style={{ padding: 0, overflow: "hidden" }}>
-            <h2 style={{ fontSize: "0.95rem", fontWeight: 700, textTransform: "uppercase", padding: "1rem 1rem 0.75rem", margin: 0 }}>
-                {t("stockDetail.reservations")}
-            </h2>
+        <div>
+            <h2 style={SECTION_H2}>{t("stockDetail.reservations")}</h2>
+            <div className="card" style={{ padding: 0, overflow: "hidden" }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
                     <tr>
@@ -214,6 +215,7 @@ function ReservationsCard({ reservations }: { reservations: StockReservation[] }
                     )}
                 </tbody>
             </table>
+            </div>
         </div>
     );
 }

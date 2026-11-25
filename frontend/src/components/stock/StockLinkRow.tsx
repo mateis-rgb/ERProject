@@ -12,10 +12,10 @@ interface Props {
     onRemove: (stockItemId: string) => void;
 }
 
-function milestoneLabel(milestones: Milestone[], id: string | null): string {
-    if (id === null) return "Projet entier";
+function milestoneLabel(t: (k: string) => string, milestones: Milestone[], id: string | null): string {
+    if (id === null) return t("stock.wholeProject");
     const m = milestones.find((x) => x.id === id);
-    return m !== undefined ? m.name : "Jalon supprimé";
+    return m !== undefined ? m.name : t("stock.deletedMilestone");
 }
 
 export default function StockLinkRow({ link, label, milestones, canEdit, onAffectation, onRemove }: Props): JSX.Element {
@@ -35,7 +35,7 @@ export default function StockLinkRow({ link, label, milestones, canEdit, onAffec
                         {milestones.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
                     </select>
                 ) : (
-                    <span className="mono" style={{ fontSize: "0.78rem" }}>{milestoneLabel(milestones, link.milestoneId)}</span>
+                    <span className="mono" style={{ fontSize: "0.78rem" }}>{milestoneLabel(t, milestones, link.milestoneId)}</span>
                 )}
             </td>
             <td className="table-cell">

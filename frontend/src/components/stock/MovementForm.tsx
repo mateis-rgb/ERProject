@@ -35,7 +35,7 @@ export default function MovementForm({ items, onCreated }: Props): JSX.Element {
             <div style={{ flex: 1, minWidth: "200px" }}>
                 <label className="label">{t("stock.article")}</label>
                 <select className="select" value={stockItemId} onChange={(e) => setStockItemId(e.target.value)} required>
-                    <option value="">— Choisir —</option>
+                    <option value="">{t("movement.choose")}</option>
                     {items.map((i) => <option key={i.id} value={i.id}>{i.name} ({i.quantity} {i.unit})</option>)}
                 </select>
             </div>
@@ -52,10 +52,10 @@ export default function MovementForm({ items, onCreated }: Props): JSX.Element {
                 <input className="input" type="number" step="0.01" min="0.01" value={quantity} onChange={(e) => setQuantity(e.target.value)} required />
             </div>
             <div style={{ flex: 1, minWidth: "200px" }}>
-                <label className="label">Raison</label>
+                <label className="label">{t("movement.reason")}</label>
                 <input className="input" value={reason} onChange={(e) => setReason(e.target.value)} placeholder={t("movement.reasonPlaceholder")} />
             </div>
-            <button className="btn" type="submit" disabled={busy}>{busy ? "..." : "Enregistrer"}</button>
+            <button className="btn" type="submit" disabled={busy}>{busy ? "..." : t("common.save")}</button>
         </form>
     );
 }

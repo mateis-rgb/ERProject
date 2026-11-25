@@ -122,7 +122,7 @@ export default function Stock(): JSX.Element {
                             onChange={(e) => setSearch(e.target.value)} style={{ maxWidth: "400px" }} />
                         <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.85rem", fontWeight: 700, textTransform: "uppercase" }}>
                             <input type="checkbox" checked={lowOnly} onChange={(e) => setLowOnly(e.target.checked)} />
-                            Stock faible
+                            {t("stock.low")}
                         </label>
                     </div>
                     <StockTable items={items} avail={avail} onChanged={load} canEdit={canEdit} onEdit={setEditing} />

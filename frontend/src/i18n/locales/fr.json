@@ -279,7 +279,7 @@
         "category": "Catégorie",
         "location": "Emplacement",
         "supplier": "Fournisseur",
-        "purchasePrice": "Prix d'achat ()",
+        "purchasePrice": "Prix d'achat (€)",
         "minThreshold": "Seuil min",
         "referenceRequired": "Référence *",
         "quantity": "Quantité",
@@ -299,15 +299,23 @@
         "dispo": "Dispo",
         "unavailable": "INDISPO",
         "newArticle": "+ Nouvel article",
-        "createArticle": "Créer larticle",
+        "createArticle": "Créer l'article",
+        "noItems": "Aucun article",
+        "movementsTitle": "Mouvements récents",
+        "deletedMilestone": "Jalon supprimé",
         "unit": "Unité",
-        "editArticle": "Modifier larticle"
+        "editArticle": "Modifier l'article"
     },
     "movement": {
         "in": "Entrée",
         "out": "Sortie",
         "return": "Retour",
-        "reasonPlaceholder": "Motif..."
+        "reasonPlaceholder": "Motif...",
+        "choose": "— Choisir —",
+        "reason": "Raison",
+        "project": "Projet",
+        "date": "Date",
+        "none": "Aucun mouvement"
     },
     "drive": {
         "root": "Racine",

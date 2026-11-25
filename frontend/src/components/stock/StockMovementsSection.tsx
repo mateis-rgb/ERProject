@@ -1,5 +1,6 @@
 // Section mouvements intégrée dans la page Stock (Power of 10 R4)
 import { useEffect, useState } from "react";
+import { useTranslation } from "../../i18n/I18nContext";
 import { api } from "../../services/api";
 import { StockItem, StockMovement } from "../../types";
 import MovementForm from "./MovementForm";
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export default function StockMovementsSection({ items }: Props): JSX.Element {
+    const { t } = useTranslation();
     const [movements, setMovements] = useState<StockMovement[]>([]);
 
     const load = (): void => {
@@ -23,7 +25,7 @@ export default function StockMovementsSection({ items }: Props): JSX.Element {
     return (
         <div style={{ marginTop: "1.5rem" }}>
             <h2 style={{ fontSize: "1.1rem", fontWeight: 700, textTransform: "uppercase", marginBottom: "1rem" }}>
-                Mouvements récents
+                {t("stock.movementsTitle")}
             </h2>
             <MovementForm items={items} onCreated={load} />
             <div style={{ marginTop: "1rem" }}>

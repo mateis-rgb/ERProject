@@ -8,6 +8,7 @@ import { api } from "../../services/api";
 import { Comment, CommentScope, MentionCandidates } from "../../types";
 
 const MAX_SUGGESTIONS = 8;
+const SECTION_H2: React.CSSProperties = { fontSize: "1.1rem", fontWeight: 700, textTransform: "uppercase", margin: "0 0 1rem" };
 
 function listUrl(scope: CommentScope): string {
     if (scope.kind === "stock") return `/api/stock/${scope.stockItemId}/comments`;
@@ -67,7 +68,7 @@ function CommentItem({ c, canModerate, onChanged }: ItemProps): JSX.Element {
     };
 
     return (
-        <div style={{ border: "2px solid var(--ink)", padding: "0.6rem 0.75rem", background: "var(--bg)", boxShadow: "3px 3px 0 var(--ink)" }}>
+        <div style={{ border: "var(--border-w) solid var(--ink)", padding: "0.6rem 0.75rem", background: "var(--bg)", boxShadow: "var(--shadow-sm)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.5rem" }}>
                 <strong style={{ fontSize: "0.8rem", textTransform: "uppercase" }}>{c.authorName}</strong>
                 <span className="mono" style={{ fontSize: "0.65rem", color: "var(--muted)" }}>
@@ -145,7 +146,7 @@ function MentionDropdown(props: {
     return (
         <div style={{
             position: "absolute", left: 0, right: 0, bottom: "100%", marginBottom: "4px", zIndex: 30,
-            border: "2px solid var(--ink)", background: "var(--surface)", boxShadow: "4px 4px 0 var(--ink)",
+            border: "var(--border-w) solid var(--ink)", background: "var(--surface)", boxShadow: "var(--shadow-sm)",
             maxHeight: "180px", overflowY: "auto",
         }}>
             {props.suggestions.map((s, i) => (
@@ -297,7 +298,7 @@ export default function CommentsSection({ scope }: { scope: CommentScope }): JSX
 
     return (
         <div className="card" style={{ marginTop: "1.25rem" }}>
-            <h2 style={{ fontSize: "0.95rem", fontWeight: 700, textTransform: "uppercase", margin: "0 0 0.75rem" }}>
+            <h2 style={SECTION_H2}>
                 {t("comments.title")} ({comments.length})
             </h2>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", marginBottom: "0.9rem" }}>

@@ -279,7 +279,7 @@
         "category": "Category",
         "location": "Location",
         "supplier": "Supplier",
-        "purchasePrice": "Purchase price ()",
+        "purchasePrice": "Purchase price (€)",
         "minThreshold": "Min threshold",
         "referenceRequired": "Reference *",
         "quantity": "Quantity",
@@ -300,6 +300,9 @@
         "unavailable": "OUT",
         "newArticle": "+ New item",
         "createArticle": "Create item",
+        "noItems": "No item",
+        "movementsTitle": "Recent movements",
+        "deletedMilestone": "Deleted milestone",
         "unit": "Unit",
         "editArticle": "Edit item"
     },
@@ -307,7 +310,12 @@
         "in": "In",
         "out": "Out",
         "return": "Return",
-        "reasonPlaceholder": "Reason..."
+        "reasonPlaceholder": "Reason...",
+        "choose": "— Select —",
+        "reason": "Reason",
+        "project": "Project",
+        "date": "Date",
+        "none": "No movement"
     },
     "drive": {
         "root": "Root",
