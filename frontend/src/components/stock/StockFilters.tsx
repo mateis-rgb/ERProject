@@ -1,6 +1,7 @@
 // Barre de filtres du stock : catégorie, emplacement, disponibilité, stock faible (Power of 10 R4)
 import { useTranslation } from "../../i18n/I18nContext";
 import { DispoFilter } from "../../hooks/useStockQuery";
+import BrutalCheckbox from "../ui/BrutalCheckbox";
 import { FiRotateCcw } from "react-icons/fi";
 
 interface Props {
@@ -50,15 +51,7 @@ export default function StockFilters(p: Props): JSX.Element {
                     <option value="unavailable">{t("stock.outOfStock")}</option>
                 </select>
             </div>
-            <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.85rem", fontWeight: 700, textTransform: "uppercase", paddingBottom: "0.45rem", cursor: "pointer" }}>
-                <input
-                    type="checkbox"
-                    checked={p.lowOnly}
-                    onChange={(e) => p.onLowOnly(e.target.checked)}
-                    style={{ width: "18px", height: "18px", accentColor: "var(--accent)", cursor: "pointer", margin: 0 }}
-                />
-                {t("stock.low")}
-            </label>
+            <BrutalCheckbox checked={p.lowOnly} onChange={p.onLowOnly} label={t("stock.low")} />
             {hasFilter && (
                 <button className="btn-ghost" onClick={p.onReset} style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem", marginBottom: "0.35rem" }}>
                     <FiRotateCcw /> {t("stock.resetFilters")}
