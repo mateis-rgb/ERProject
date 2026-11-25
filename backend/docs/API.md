@@ -1,4 +1,4 @@
-# ERProjects — Documentation API
+# L'Entrepôt — Documentation API
 
 Base URL : `http://localhost:3001` (dev) — préfixe `/api` pour toutes les routes ci-dessous, sauf `/health` et `/uploads/*`.
 

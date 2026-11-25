@@ -81,7 +81,7 @@ function pageBg(doc: Doc): void {
     const savedY = doc.y;
     doc.rect(0, 0, PAGE_W, PAGE_H).fillColor(PAPER).fill();
     doc.fillColor(INK).font("Helvetica").fontSize(8)
-        .text(`ERProjects — export PDF — page ${pageNum}`, MARGIN, 778, { width: PAGE_W - 2 * MARGIN, align: "center" });
+        .text(`L'Entrepôt — export PDF — page ${pageNum}`, MARGIN, 778, { width: PAGE_W - 2 * MARGIN, align: "center" });
     doc.y = savedY;
 }
 

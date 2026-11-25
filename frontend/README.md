@@ -1,4 +1,4 @@
-# ERProjects — Frontend
+# L'Entrepôt — Frontend
 
 Application **React 18 + Vite + TypeScript strict**, design **néo-brutaliste** (bordures épaisses, ombres dures, pas de dégradés), i18n dynamique FR/EN, aucune UI lib externe (CSS custom dans `src/index.css`).
 

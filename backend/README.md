@@ -1,4 +1,4 @@
-# ERProjects — Backend (API)
+# L'Entrepôt — Backend (API)
 
 API REST en **Node.js + Express + Prisma (PostgreSQL)**, TypeScript strict, règles d'ingénierie **Power of 10** appliquées à tout le code (fonctions < 60 lignes, boucles bornées, pas de récursion, assertions, retours vérifiés).
 
@@ -26,7 +26,7 @@ Production (Docker) : voir `../docker-compose.yml` et `../docker/README.md`.
 | `MAX_UPLOAD_SIZE` | `52428800` | taille max d'upload (octets) |
 | `BACKUP_DIR` / `BACKUP_HOUR` | `./backups` / `3` | backups pg_dump automatiques |
 | `HTTPS`, `SSL_KEY_PATH`, `SSL_CERT_PATH` | `false` / — | TLS local (voir `../scripts/setup-https.sh`) |
-| `ADMIN_EMAIL` / `ADMIN_PASSWORD` | `admin@erprojects.local` / `admin123456` | compte admin créé au boot |
+| `ADMIN_EMAIL` / `ADMIN_PASSWORD` | `admin@entrepot.local` / `admin123456` | compte admin créé au boot |
 
 ## Structure
 

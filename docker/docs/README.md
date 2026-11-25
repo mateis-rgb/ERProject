@@ -11,11 +11,11 @@
 
 | Variable | Service | Rôle |
 |---|---|---|
-| `DATABASE_URL` | backend | `postgresql://erProjects:$DB_PASSWORD@db:5432/erProjects` |
+| `DATABASE_URL` | backend | `postgresql://entrepot:$DB_PASSWORD@db:5432/entrepot` |
 | `SESSION_SECRET` | backend | secret de session (≥ 16 caractères) |
-| `UPLOAD_DIR` | backend | `/app/uploads` (volume `erProjects_uploads`) — remplaçable à chaud via `storage_path` |
+| `UPLOAD_DIR` | backend | `/app/uploads` (volume `entrepot_uploads`) — remplaçable à chaud via `storage_path` |
 | `MAX_UPLOAD_SIZE` | backend | octets (défaut 50 Mo) |
-| `BACKUP_DIR` / `BACKUP_HOUR` | backend | backups pg_dump dans le volume `erProjects_backups` |
+| `BACKUP_DIR` / `BACKUP_HOUR` | backend | backups pg_dump dans le volume `entrepot_backups` |
 | `HTTPS` / `SSL_KEY_PATH` / `SSL_CERT_PATH` | backend | TLS (certs générés par `scripts/setup-https.sh`, à monter en volume) |
 
 ## Commandes usuelles
@@ -35,4 +35,4 @@ docker compose down -v           # arrêt + suppression des volumes (⚠ donnée
 
 ## Stockage des fichiers
 
-Par défaut dans le volume `erProjects_uploads` (`/app/uploads`). Un admin peut changer le dossier à chaud (Réglages → Application → Stockage) ; la migration des fichiers existants se fait via le modal dédié (copie bornée + notification de progression).
+Par défaut dans le volume `entrepot_uploads` (`/app/uploads`). Un admin peut changer le dossier à chaud (Réglages → Application → Stockage) ; la migration des fichiers existants se fait via le modal dédié (copie bornée + notification de progression).

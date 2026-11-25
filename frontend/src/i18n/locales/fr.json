@@ -113,11 +113,11 @@
         }
     },
     "about": {
-        "description": "ERProjects est une application self-hosted de gestion de projets (production audiovisuelle) et de stock lié: planning Gantt avec jalons, drive documentaire avec quotas, gestion des utilisateurs et des accès, notifications temps réel.",
+        "description": "L'Entrepôt est une application self-hosted de gestion de projets (production audiovisuelle) et de stock lié: planning Gantt avec jalons, drive documentaire avec quotas, gestion des utilisateurs et des accès, notifications temps réel.",
         "version": "Version courante",
         "authors": "Auteurs",
-        "teamChip": "Équipe ERProjects",
-        "teamModalTitle": "Équipe ERProjects"
+        "teamChip": "Équipe L'Entrepôt",
+        "teamModalTitle": "Équipe L'Entrepôt"
     },
     "status": {
         "serverTitle": "Statut du serveur",
@@ -149,7 +149,7 @@
         "changelog": "Notes de version",
         "step1Title": "Sauvegarder la base de données",
         "step1Desc": "Avant toute mise à jour, exportez la base PostgreSQL.",
-        "step1Cmd": "pg_dump \"$DATABASE_URL\" > erprojects-backup-$(date +%F).sql",
+        "step1Cmd": "pg_dump \"$DATABASE_URL\" > entrepot-backup-$(date +%F).sql",
         "step2Title": "Récupérer la nouvelle version",
         "step2Desc": "Selon votre déploiement (choisissez la bonne commande): Docker Compose, ou git clone.",
         "step2CmdDocker": "docker compose pull && docker compose up -d",
@@ -159,7 +159,7 @@
         "repoChip": "Dépôt git",
         "repoChipHint": "Configurer le dépôt GitHub des mises à jour",
         "repoModalTitle": "Dépôt de mises à jour",
-        "repoModalHint": "Format owner/repo (ex: mateis/erprojects). Le dépôt est vérifié via l/API GitHub à l/enregistrement.",
+        "repoModalHint": "Format owner/repo (ex: mateis/entrepot). Le dépôt est vérifié via l/API GitHub à l/enregistrement.",
         "repoSave": "Enregistrer",
         "step3Title": "Vérifier le redémarrage",
         "step3Desc": "L'API doit répondre ; les migrations Prisma sont appliquées au boot (sinon: npx prisma migrate deploy dans backend/).",

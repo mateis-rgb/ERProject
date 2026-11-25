@@ -12,7 +12,7 @@ export async function seedAdmin(): Promise<void> {
  console.log("[SEED] Des utilisateurs existent déjà, seed ignoré");
  return;
  }
- const email = process.env.ADMIN_EMAIL ?? "admin@erProjects.local";
+ const email = process.env.ADMIN_EMAIL ?? "admin@entrepot.local";
  const envPassword = process.env.ADMIN_PASSWORD;
  if (config.nodeEnv === "production" && (envPassword === undefined || envPassword === DEFAULT_ADMIN_PASSWORD)) {
  throw new Error("[SEED] ADMIN_PASSWORD obligatoire en production (pas de mot de passe par défaut)");

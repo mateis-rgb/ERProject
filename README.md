@@ -1,4 +1,4 @@
-# ERProjects — Gestion de projets & stock (self-hosted)
+# L'Entrepôt — Gestion de projets & stock (self-hosted)
 
 Application web self-hosted pour gérer tes projets (monde de la vidéo) et le stock de matériel associé, en équipe (2–10 personnes).
 
@@ -18,7 +18,7 @@ cp .env.example .env
 ```
 
 **Premier compte admin** (créé automatiquement au démarrage) :
-- Email : valeur de `ADMIN_EMAIL` (défaut: `admin@erProjects.local`)
+- Email : valeur de `ADMIN_EMAIL` (défaut: `admin@entrepot.local`)
 - Mot de passe : valeur de `ADMIN_PASSWORD` (défaut: `admin123456`)
 
 > ⚠️ Change le mot de passe admin après la première connexion.
@@ -119,6 +119,6 @@ Chaque fichier est vérifié automatiquement par le hook `power-of-10:lint`.
 ## 💾 Backups
 
 Un `pg_dump` automatique est exécuté chaque jour à l'heure définie par `BACKUP_HOUR` (défaut 3h).
-Les 30 derniers backups sont conservés dans le volume `erProjects_backups`.
+Les 30 derniers backups sont conservés dans le volume `entrepot_backups`.
 
 Fait avec ❤️ en France 🇫🇷 avec Mistral AI

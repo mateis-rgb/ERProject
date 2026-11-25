@@ -73,11 +73,11 @@ function getSystemTheme(): "dark" | "light" {
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
     const [palette, setPaletteState] = useState<Palette>(() => {
-        const saved = localStorage.getItem("erProjects_palette");
+        const saved = localStorage.getItem("entrepot_palette");
         return (saved as Palette) || "yellow";
     });
     const [theme, setThemeState] = useState<Theme>(() => {
-        const saved = localStorage.getItem("erProjects_theme");
+        const saved = localStorage.getItem("entrepot_theme");
         return (saved as Theme) || "system";
     });
     const [resolvedTheme, setResolvedTheme] = useState<"dark" | "light">(() =>
@@ -89,8 +89,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         setResolvedTheme(apply);
         document.documentElement.setAttribute("data-palette", palette);
         document.documentElement.setAttribute("data-theme", apply);
-        localStorage.setItem("erProjects_palette", palette);
-        localStorage.setItem("erProjects_theme", theme);
+        localStorage.setItem("entrepot_palette", palette);
+        localStorage.setItem("entrepot_theme", theme);
     }, [palette, theme]);
 
     useEffect(() => {

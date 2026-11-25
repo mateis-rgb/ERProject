@@ -8,7 +8,7 @@ const VERSION = "0.1.0";
 
 interface Member { name: string; github: string; role: string }
 
-// Équipe ERProjects (à compléter) — nom + handle GitHub
+// Équipe L'Entrepôt (à compléter) — nom + handle GitHub
 const TEAM: Member[] = [
     { name: "Mat", github: "mateis", role: "Lead dev" },
     { name: "Mistral Vibe", github: "mistralai", role: "Assistant" },
@@ -48,7 +48,7 @@ export default function AboutTab(): JSX.Element {
     return (
         <div style={{ maxWidth: "640px" }}>
             <div className="card" style={{ marginBottom: "1rem" }}>
-                <h2 style={{ margin: "0 0 0.75rem", fontSize: "1.4rem", fontWeight: 700 }}><span className="ic"><FiPenTool /> ERProjects</span></h2>
+                <h2 style={{ margin: "0 0 0.75rem", fontSize: "1.4rem", fontWeight: 700 }}><span className="ic"><FiPenTool /> L'Entrepôt</span></h2>
                 <p style={{ color: "var(--muted)", fontSize: "0.9rem", margin: "0 0 0.75rem" }}>{t("about.description")}</p>
                 <p className="mono" style={{ fontSize: "0.78rem", margin: "0.25rem 0" }}>{t("about.version")} : <strong>{VERSION}</strong></p>
                 <p className="mono" style={{ fontSize: "0.78rem", margin: "0.25rem 0", display: "flex", alignItems: "center", gap: "0.5rem" }}>

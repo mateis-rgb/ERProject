@@ -113,11 +113,11 @@
         }
     },
     "about": {
-        "description": "ERProjects is a self-hosted app for project management (audiovisual production) and related stock: Gantt planning with milestones, document drive with quotas, user & access management, real-time notifications.",
+        "description": "L'Entrepôt is a self-hosted app for project management (audiovisual production) and related stock: Gantt planning with milestones, document drive with quotas, user & access management, real-time notifications.",
         "version": "Current version",
         "authors": "Authors",
-        "teamChip": "ERProjects team",
-        "teamModalTitle": "ERProjects team"
+        "teamChip": "L'Entrepôt team",
+        "teamModalTitle": "L'Entrepôt team"
     },
     "status": {
         "serverTitle": "Server status",
@@ -149,7 +149,7 @@
         "changelog": "Release notes",
         "step1Title": "Back up the database",
         "step1Desc": "Before any update, export the PostgreSQL database.",
-        "step1Cmd": "pg_dump \"$DATABASE_URL\" > erprojects-backup-$(date +%F).sql",
+        "step1Cmd": "pg_dump \"$DATABASE_URL\" > entrepot-backup-$(date +%F).sql",
         "step2Title": "Fetch the new version",
         "step2Desc": "Depending on your deployment (pick the right command): Docker Compose, or git clone.",
         "step2CmdDocker": "docker compose pull && docker compose up -d",
@@ -159,7 +159,7 @@
         "repoChip": "Git repo",
         "repoChipHint": "Configure the GitHub repository used for updates",
         "repoModalTitle": "Update repository",
-        "repoModalHint": "Format owner/repo (e.g. mateis/erprojects). The repo is verified via the GitHub API on save.",
+        "repoModalHint": "Format owner/repo (e.g. mateis/entrepot). The repo is verified via the GitHub API on save.",
         "repoSave": "Save",
         "step3Title": "Check the restart",
         "step3Desc": "The API must respond; Prisma migrations run at boot (otherwise: npx prisma migrate deploy in backend/).",

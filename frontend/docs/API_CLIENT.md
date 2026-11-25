@@ -1,4 +1,4 @@
-# ERProjects — Client API (frontend)
+# L'Entrepôt — Client API (frontend)
 
 Tout passe par `src/services/api.ts` :
 

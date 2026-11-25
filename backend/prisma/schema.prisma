@@ -1,4 +1,4 @@
-// ERProjects - Schéma Prisma PostgreSQL
+// L'Entrepôt - Schéma Prisma PostgreSQL
 // Power of 10 : modèles plats, relations explicites, pas de récursivité
 // IDs en UUID (string) partout pour éviter les énumérations d'URL
 

@@ -4,18 +4,18 @@ services:
     # Base de données PostgreSQL
     db:
         image: postgres:16-alpine
-        container_name: erProjects-db
+        container_name: entrepot-db
         restart: unless-stopped
         environment:
-            POSTGRES_USER: erProjects
-            POSTGRES_PASSWORD: ${DB_PASSWORD:-erProjects_password}
-            POSTGRES_DB: erProjects
+            POSTGRES_USER: entrepot
+            POSTGRES_PASSWORD: ${DB_PASSWORD:-entrepot_password}
+            POSTGRES_DB: entrepot
         volumes:
-            - erProjects_db_data:/var/lib/postgresql/data
+            - entrepot_db_data:/var/lib/postgresql/data
         ports:
             - "5432:5432"
         healthcheck:
-            test: ["CMD-SHELL", "pg_isready -U erProjects -d erProjects"]
+            test: ["CMD-SHELL", "pg_isready -U entrepot -d entrepot"]
             interval: 5s
             timeout: 5s
             retries: 10
@@ -25,7 +25,7 @@ services:
         build:
             context: ./backend
             dockerfile: Dockerfile
-        container_name: erProjects-backend
+        container_name: entrepot-backend
         restart: unless-stopped
         depends_on:
             db:
@@ -33,18 +33,18 @@ services:
         environment:
             PORT: "3001"
             NODE_ENV: production
-            DATABASE_URL: postgresql://erProjects:${DB_PASSWORD:-erProjects_password}@db:5432/erProjects
+            DATABASE_URL: postgresql://entrepot:${DB_PASSWORD:-entrepot_password}@db:5432/entrepot
             SESSION_SECRET: ${SESSION_SECRET:-change-this-secret-min-16-chars}
             SESSION_MAX_AGE: "86400000"
             UPLOAD_DIR: /app/uploads
             MAX_UPLOAD_SIZE: "52428800"
             BACKUP_DIR: /app/backups
             BACKUP_HOUR: "3"
-            ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@erProjects.local}
+            ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@entrepot.local}
             ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123456}
         volumes:
-            - erProjects_uploads:/app/uploads
-            - erProjects_backups:/app/backups
+            - entrepot_uploads:/app/uploads
+            - entrepot_backups:/app/backups
         ports:
             - "3001:3001"
 
@@ -53,7 +53,7 @@ services:
         build:
             context: ./frontend
             dockerfile: Dockerfile
-        container_name: erProjects-frontend
+        container_name: entrepot-frontend
         restart: unless-stopped
         depends_on:
             - backend
@@ -61,6 +61,6 @@ services:
             - "80:80"
 
 volumes:
-    erProjects_db_data:
-    erProjects_uploads:
-    erProjects_backups:
+    entrepot_db_data:
+    entrepot_uploads:
+    entrepot_backups:

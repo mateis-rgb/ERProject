@@ -1,4 +1,4 @@
-// ERProjects Backend - Point d'entrée HTTPS + WebSocket
+// L'Entrepôt Backend - Point d'entrée HTTPS + WebSocket
 // Power of 10 : initialisation linéaire, pas de récursivité
 import express, { Request, Response, NextFunction } from "express";
 import session from "express-session";
@@ -133,7 +133,7 @@ async function bootstrap(): Promise<void> {
     initSocket(server);
     const proto = config.https ? "https" : "http";
     server.listen(config.port, () => {
-        const msg = `[SERVER] ERProjects démarré sur ${proto}://localhost:${config.port} ${config.https ? "🔒" : ""}`;
+        const msg = `[SERVER] L'Entrepôt démarré sur ${proto}://localhost:${config.port} ${config.https ? "🔒" : ""}`;
         console.log(msg);
         log("info", msg);
     });

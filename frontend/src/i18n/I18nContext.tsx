@@ -23,7 +23,7 @@ const I18nContext = createContext<I18nContextType>({
     ready: false,
 });
 
-const STORAGE_KEY = "erProjects_lang";
+const STORAGE_KEY = "entrepot_lang";
 
 function detectLang(): Lang {
     const saved = localStorage.getItem(STORAGE_KEY);

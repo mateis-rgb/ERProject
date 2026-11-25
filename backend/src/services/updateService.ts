@@ -60,7 +60,7 @@ async function fetchLatestRelease(repo: string, current: string): Promise<Update
     const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
     try {
         const res = await fetch(`https://api.github.com/repos/${repo}/releases/latest`, {
-            headers: { Accept: "application/vnd.github+json", "User-Agent": "erprojects-updater" },
+            headers: { Accept: "application/vnd.github+json", "User-Agent": "entrepot-updater" },
             signal: ctrl.signal,
         });
         if (!res.ok) throw new Error(`GitHub API: HTTP ${res.status}`);
@@ -155,7 +155,7 @@ export async function getRepoInfo(force: boolean): Promise<RepoInfo> {
             const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
             try {
                 const res = await fetch(`https://api.github.com/repos/${repo}`, {
-                    headers: { Accept: "application/vnd.github+json", "User-Agent": "erprojects-updater" },
+                    headers: { Accept: "application/vnd.github+json", "User-Agent": "entrepot-updater" },
                     signal: ctrl.signal,
                 });
                 if (res.status === 404) throw new Error("Dépôt introuvable (404)");

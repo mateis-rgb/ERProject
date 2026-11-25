@@ -1,4 +1,4 @@
-# ERProjects — Architecture frontend
+# L'Entrepôt — Architecture frontend
 
 ## Flux général
 

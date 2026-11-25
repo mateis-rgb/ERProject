@@ -32,7 +32,7 @@ export default function Sidebar({ user, onLogout }: Props): JSX.Element {
                 border: "2px solid var(--ink)", padding: "0.6rem 0.75rem", background: "var(--bg)", boxShadow: "4px 4px 0 var(--ink)" }}>
                 <span className="rec-dot" />
                 <span style={{ fontWeight: 700, fontSize: "1.1rem", textTransform: "uppercase", letterSpacing: "-0.02em" }}>
-                    ER<span style={{ color: "var(--accent)" }}>Project</span>
+                    L’<span style={{ color: "var(--accent)" }}>Entrepôt</span>
                 </span>
             </div>
             <nav style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>

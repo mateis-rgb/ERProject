@@ -1,4 +1,4 @@
-# ERProjects — Architecture backend
+# L'Entrepôt — Architecture backend
 
 ## Couches
 

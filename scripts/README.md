@@ -1,4 +1,4 @@
-# ERProjects — Scripts
+# L'Entrepôt — Scripts
 
 Scripts d'administration/déploiement.
 
