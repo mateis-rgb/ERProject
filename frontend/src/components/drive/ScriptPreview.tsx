@@ -13,8 +13,9 @@ function blockStyle(type: ScriptBlock["type"]): React.CSSProperties {
         case "dialogue": return { ...BASE, textAlign: "center", margin: "0 auto", maxWidth: "70%" };
         case "transition": return { ...BASE, textAlign: "right", fontWeight: 700 };
         case "note": return { ...BASE, border: "2px dashed var(--muted)", padding: "0.3rem 0.5rem", color: "var(--muted)", fontSize: "0.78rem" };
+        case "pagebreak": return { ...BASE, textAlign: "center", color: "var(--muted)", margin: "1rem 0" };
         case "empty": return { ...BASE, height: "0.6rem" };
-        default: return { ...BASE, maxWidth: "85%", margin: "0.3rem auto" };
+        default: return { ...BASE, margin: "0.3rem 0" }; // action : pleine largeur, alignée à gauche (pas de retrait)
     }
 }
 
@@ -23,7 +24,7 @@ export default function ScriptPreview({ src }: { src: string }): JSX.Element {
     return (
         <div style={{ padding: "1rem 1.25rem", overflowY: "auto", height: "100%", boxSizing: "border-box" }}>
             {blocks.map((b, i) => (
-                <p key={i} style={blockStyle(b.type)}>{b.text}</p>
+                <p key={i} style={blockStyle(b.type)}>{b.type === "pagebreak" ? "———" : b.text}</p>
             ))}
         </div>
     );

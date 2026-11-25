@@ -69,7 +69,7 @@ export default function TextEditorModal({ attachment, canEdit, onClose, onSaved 
         <Modal title={`${t("editor.title")} — ${attachment.fileName}`} onClose={onClose} maxWidth="1100px">
             <EditorToolbar mode={mode} disabled={!canEdit || tc.loading}
                 canUndo={tc.history.canUndo} canRedo={tc.history.canRedo}
-                onInsert={ed.insert} onUndo={tc.history.undo} onRedo={tc.history.redo} />
+                onInsert={ed.insert} onTab={() => ed.tab(false)} onUndo={tc.history.undo} onRedo={tc.history.redo} />
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", border: "2px solid var(--ink)", marginTop: "0.5rem", height: "55vh" }}>
                 <textarea
                     ref={(el) => { ed.areaRef.current = el; }}

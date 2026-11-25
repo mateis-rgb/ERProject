@@ -1,10 +1,10 @@
-// Barre d'outils de l'éditeur de texte (markdown / script) - insère des balises autour de la sélection (Power of 10 R4)
+// Barre d'outils de l'éditeur - chaque bouton a son label au-dessus et le raccourci en dessous (Power of 10 R4)
 import { useTranslation } from "../../i18n/I18nContext";
 import { EditorMode } from "../../utils/textFiles";
 import {
     FiBold, FiItalic, FiUnderline, FiCode, FiLink, FiImage, FiList, FiType,
     FiMinus, FiGrid, FiMessageSquare, FiFileText, FiCornerDownRight, FiEdit3, FiZap, FiTag,
-    FiRotateCcw, FiRepeat, FiSlash,
+    FiRotateCcw, FiRepeat, FiSlash, FiCornerUpLeft,
 } from "react-icons/fi";
 
 interface Props {
@@ -13,65 +13,92 @@ interface Props {
     canUndo: boolean;
     canRedo: boolean;
     onInsert: (before: string, after: string, placeholder: string) => void;
+    onTab: () => void;
     onUndo: () => void;
     onRedo: () => void;
 }
 
-interface Tool { icon: React.ComponentType<{ size?: number }>; labelKey: string; before: string; after: string; ph: string; mode: EditorMode | "all" }
+interface Tool {
+    icon: React.ComponentType<{ size?: number }>;
+    nameKey: string;
+    shortcut: string; // "" = pas de raccourci
+    before: string;
+    after: string;
+    ph: string;
+}
+
+const mod = (): string => (typeof navigator !== "undefined" && /Mac|iPhone|iPad/i.test(navigator.platform)) ? "Cmd" : "Ctrl";
 
 const MD_TOOLS: Tool[] = [
-    { icon: FiBold, labelKey: "editor.bold", before: "**", after: "**", ph: "gras", mode: "markdown" },
-    { icon: FiItalic, labelKey: "editor.italic", before: "*", after: "*", ph: "italique", mode: "markdown" },
-    { icon: FiUnderline, labelKey: "editor.underline", before: "<u>", after: "</u>", ph: "souligné", mode: "markdown" },
-    { icon: FiSlash, labelKey: "editor.strike", before: "~~", after: "~~", ph: "barré", mode: "markdown" },
-    { icon: FiType, labelKey: "editor.h1", before: "# ", after: "", ph: "Titre 1", mode: "markdown" },
-    { icon: FiType, labelKey: "editor.h2", before: "## ", after: "", ph: "Titre 2", mode: "markdown" },
-    { icon: FiType, labelKey: "editor.h3", before: "### ", after: "", ph: "Titre 3", mode: "markdown" },
-    { icon: FiList, labelKey: "editor.ul", before: "- ", after: "", ph: "élément", mode: "markdown" },
-    { icon: FiList, labelKey: "editor.ol", before: "1. ", after: "", ph: "élément", mode: "markdown" },
-    { icon: FiLink, labelKey: "editor.link", before: "[", after: "](https://)", ph: "texte", mode: "markdown" },
-    { icon: FiImage, labelKey: "editor.image", before: "![", after: "](https://)", ph: "alt", mode: "markdown" },
-    { icon: FiCode, labelKey: "editor.code", before: "`", after: "`", ph: "code", mode: "markdown" },
-    { icon: FiCode, labelKey: "editor.codeBlock", before: "```\n", after: "\n```", ph: "code", mode: "markdown" },
-    { icon: FiMessageSquare, labelKey: "editor.quote", before: "> ", after: "", ph: "citation", mode: "markdown" },
-    { icon: FiGrid, labelKey: "editor.table", before: "| Col | Col |\n|---|---|\n| ", after: " |  |", ph: "cellule", mode: "markdown" },
-    { icon: FiMinus, labelKey: "editor.hr", before: "\n---\n", after: "", ph: "", mode: "markdown" },
+    { icon: FiBold, nameKey: "editor.nBold", shortcut: `${mod()}+B`, before: "**", after: "**", ph: "gras" },
+    { icon: FiItalic, nameKey: "editor.nItalic", shortcut: `${mod()}+I`, before: "*", after: "*", ph: "italique" },
+    { icon: FiUnderline, nameKey: "editor.nUnderline", shortcut: `${mod()}+U`, before: "<u>", after: "</u>", ph: "souligné" },
+    { icon: FiSlash, nameKey: "editor.nStrike", shortcut: "", before: "~~", after: "~~", ph: "barré" },
+    { icon: FiType, nameKey: "editor.nH1", shortcut: "", before: "# ", after: "", ph: "Titre 1" },
+    { icon: FiType, nameKey: "editor.nH2", shortcut: "", before: "## ", after: "", ph: "Titre 2" },
+    { icon: FiType, nameKey: "editor.nH3", shortcut: "", before: "### ", after: "", ph: "Titre 3" },
+    { icon: FiList, nameKey: "editor.nUl", shortcut: "", before: "- ", after: "", ph: "élément" },
+    { icon: FiList, nameKey: "editor.nOl", shortcut: "", before: "1. ", after: "", ph: "élément" },
+    { icon: FiLink, nameKey: "editor.nLink", shortcut: `${mod()}+K`, before: "[", after: "](https://)", ph: "texte" },
+    { icon: FiImage, nameKey: "editor.nImage", shortcut: "", before: "![", after: "](https://)", ph: "alt" },
+    { icon: FiCode, nameKey: "editor.nCode", shortcut: `${mod()}+E`, before: "`", after: "`", ph: "code" },
+    { icon: FiCode, nameKey: "editor.nCodeBlock", shortcut: "", before: "```\n", after: "\n```", ph: "code" },
+    { icon: FiMessageSquare, nameKey: "editor.nQuote", shortcut: "", before: "> ", after: "", ph: "citation" },
+    { icon: FiGrid, nameKey: "editor.nTable", shortcut: "", before: "| Col | Col |\n|---|---|\n| ", after: " |  |", ph: "cellule" },
+    { icon: FiMinus, nameKey: "editor.nHr", shortcut: "", before: "\n---\n", after: "", ph: "" },
 ];
 
 const SCRIPT_TOOLS: Tool[] = [
-    { icon: FiZap, labelKey: "editor.slug", before: "INT. ", after: " - JOUR", ph: "LIEU", mode: "script" },
-    { icon: FiEdit3, labelKey: "editor.character", before: "", after: "\n", ph: "PERSONNAGE", mode: "script" },
-    { icon: FiCornerDownRight, labelKey: "editor.parenthetical", before: "(", after: ")", ph: "didascalie", mode: "script" },
-    { icon: FiMessageSquare, labelKey: "editor.dialogue", before: "", after: "", ph: "dialogue", mode: "script" },
-    { icon: FiFileText, labelKey: "editor.action", before: "", after: "", ph: "action", mode: "script" },
-    { icon: FiCornerDownRight, labelKey: "editor.transition", before: "> ", after: "", ph: "CUT TO:", mode: "script" },
-    { icon: FiTag, labelKey: "editor.note", before: "[[", after: "]]", ph: "note", mode: "script" },
+    { icon: FiZap, nameKey: "editor.nSlug", shortcut: "", before: "INT. ", after: " - JOUR", ph: "LIEU" },
+    { icon: FiEdit3, nameKey: "editor.nCharacter", shortcut: "", before: "", after: "\n", ph: "PERSONNAGE" },
+    { icon: FiCornerDownRight, nameKey: "editor.nParenthetical", shortcut: "", before: "(", after: ")", ph: "didascalie" },
+    { icon: FiMessageSquare, nameKey: "editor.nDialogue", shortcut: "", before: "", after: "", ph: "dialogue" },
+    { icon: FiFileText, nameKey: "editor.nAction", shortcut: "", before: "", after: "", ph: "action" },
+    { icon: FiCornerDownRight, nameKey: "editor.nTransition", shortcut: "", before: "> ", after: "", ph: "CUT TO:" },
+    { icon: FiTag, nameKey: "editor.nNote", shortcut: "", before: "[[", after: "]]", ph: "note" },
 ];
 
-export default function EditorToolbar({ mode, disabled, canUndo, canRedo, onInsert, onUndo, onRedo }: Props): JSX.Element {
+function ToolButton(p: { tool: Tool; disabled: boolean; onClick: () => void }): JSX.Element {
     const { t } = useTranslation();
-    const tools = mode === "script" ? SCRIPT_TOOLS : MD_TOOLS;
+    const Icon = p.tool.icon;
     return (
-        <div style={{ display: "flex", gap: "0.25rem", flexWrap: "wrap", padding: "0.5rem", borderBottom: "2px solid var(--ink)", background: "var(--surface-2)" }}>
-            <button type="button" className="btn-ghost" disabled={disabled || !canUndo} title={t("editor.undo")}
-                style={{ padding: "0.3rem 0.45rem", display: "inline-flex", alignItems: "center" }} onClick={onUndo}>
-                <FiRotateCcw size={15} />
-            </button>
-            <button type="button" className="btn-ghost" disabled={disabled || !canRedo} title={t("editor.redo")}
-                style={{ padding: "0.3rem 0.45rem", display: "inline-flex", alignItems: "center" }} onClick={onRedo}>
-                <FiRepeat size={15} />
-            </button>
-            {tools.map((tool) => {
-                const Icon = tool.icon;
-                return (
-                    <button key={tool.labelKey} type="button" className="btn-ghost" disabled={disabled}
-                        title={t(tool.labelKey)}
-                        style={{ padding: "0.3rem 0.45rem", display: "inline-flex", alignItems: "center" }}
-                        onClick={() => onInsert(tool.before, tool.after, tool.ph)}>
-                        <Icon size={15} />
-                    </button>
-                );
-            })}
+        <button type="button" className="btn-ghost" disabled={p.disabled} title={t(p.tool.nameKey)}
+            style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1px", padding: "0.25rem 0.5rem", minWidth: "46px" }}
+            onClick={p.onClick}>
+            <span style={{ fontSize: "0.55rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.03em", lineHeight: 1 }}>
+                {t(p.tool.nameKey)}
+            </span>
+            <Icon size={15} />
+            <span className="mono" style={{ fontSize: "0.52rem", color: "var(--muted)", lineHeight: 1, minHeight: "0.6em" }}>
+                {p.tool.shortcut}
+            </span>
+        </button>
+    );
+}
+
+export default function EditorToolbar({ mode, disabled, canUndo, canRedo, onInsert, onTab, onUndo, onRedo }: Props): JSX.Element {
+    const tools = mode === "script" ? SCRIPT_TOOLS : MD_TOOLS;
+    const historyTools: Tool[] = [
+        { icon: FiRotateCcw, nameKey: "editor.nUndo", shortcut: `${mod()}+Z`, before: "", after: "", ph: "" },
+        { icon: FiRepeat, nameKey: "editor.nRedo", shortcut: `${mod()}+Shift+Z`, before: "", after: "", ph: "" },
+        { icon: FiCornerUpLeft, nameKey: "editor.nTab", shortcut: "Tab", before: "\t", after: "", ph: "" },
+    ];
+    return (
+        <div style={{ display: "flex", gap: "0.25rem", flexWrap: "wrap", padding: "0.4rem 0.5rem", borderBottom: "2px solid var(--ink)", background: "var(--surface-2)" }}>
+            {historyTools.map((tool) => (
+                <ToolButton key={tool.nameKey} tool={tool}
+                    disabled={disabled || (tool.nameKey === "editor.nUndo" && !canUndo) || (tool.nameKey === "editor.nRedo" && !canRedo)}
+                    onClick={() => {
+                        if (tool.nameKey === "editor.nUndo") onUndo();
+                        else if (tool.nameKey === "editor.nRedo") onRedo();
+                        else onTab();
+                    }} />
+            ))}
+            <span style={{ width: "2px", background: "var(--ink)", margin: "0 0.25rem" }} />
+            {tools.map((tool) => (
+                <ToolButton key={tool.nameKey} tool={tool} disabled={disabled}
+                    onClick={() => onInsert(tool.before, tool.after, tool.ph)} />
+            ))}
         </div>
     );
 }
