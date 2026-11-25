@@ -29,7 +29,7 @@ export default function Login(): JSX.Element {
                     border: "3px solid var(--ink)", background: "var(--surface)", boxShadow: "8px 8px 0 var(--ink)", padding: "0.75rem 1.5rem" }}>
                     <span className="rec-dot" />
                     <h1 style={{ fontSize: "2.4rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "-0.03em", margin: 0 }}>
-                        ER<span style={{ color: "var(--accent)" }}>Project</span>
+                        L’<span style={{ color: "var(--accent)" }}>Entrepôt</span>
                     </h1>
                 </div>
                 <p className="mono" style={{ marginTop: "1rem", fontSize: "0.72rem", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.15em" }}>
