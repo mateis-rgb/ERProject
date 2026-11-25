@@ -15,6 +15,8 @@ interface Props {
     query: string;
     onQuery: (v: string) => void;
     allItems: StockItem[];
+    categories: string[];
+    locations: string[];
     onPickItem: (item: StockItem) => void;
     onPickCategory: (c: string) => void;
     onPickLocation: (l: string) => void;
@@ -27,17 +29,17 @@ function matches(text: string, q: string): boolean {
     return text.toLowerCase().includes(q);
 }
 
-export function buildSuggestions(query: string, allItems: StockItem[]): Suggestion[] {
+export function buildSuggestions(query: string, allItems: StockItem[], categories: string[], locations: string[]): Suggestion[] {
     const q = query.trim().toLowerCase();
     if (q === "") return [];
     const items: Suggestion[] = allItems
         .filter((i) => matches(i.name, q) || matches(i.reference, q))
         .slice(0, MAX_ITEMS)
         .map((i): Suggestion => ({ kind: "item", label: i.name, sub: i.reference, item: i }));
-    const cats = [...new Set(allItems.map((i) => i.category).filter((c) => c !== "" && matches(c, q)))]
+    const cats = categories.filter((c) => matches(c, q))
         .slice(0, MAX_TERMS)
         .map((c): Suggestion => ({ kind: "category", label: c, sub: "" }));
-    const locs = [...new Set(allItems.map((i) => i.location).filter((l) => l !== "" && matches(l, q)))]
+    const locs = locations.filter((l) => matches(l, q))
         .slice(0, MAX_TERMS)
         .map((l): Suggestion => ({ kind: "location", label: l, sub: "" }));
     return [...items, ...cats, ...locs];
@@ -89,12 +91,12 @@ function SuggestionDropdown(p: {
     );
 }
 
-export default function StockSearchBar({ query, onQuery, allItems, onPickItem, onPickCategory, onPickLocation }: Props): JSX.Element {
+export default function StockSearchBar({ query, onQuery, allItems, categories, locations, onPickItem, onPickCategory, onPickLocation }: Props): JSX.Element {
     const { t } = useTranslation();
     const [open, setOpen] = useState(false);
     const [highlight, setHighlight] = useState(0);
     const ref = useRef<HTMLDivElement>(null);
-    const suggestions = buildSuggestions(query, allItems);
+    const suggestions = buildSuggestions(query, allItems, categories, locations);
 
     useEffect(() => {
         const onClick = (e: MouseEvent): void => {

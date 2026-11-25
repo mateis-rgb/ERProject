@@ -14,6 +14,7 @@ import StockSearchBar from "../components/stock/StockSearchBar";
 import StockFilters from "../components/stock/StockFilters";
 import StockMovementsSection from "../components/stock/StockMovementsSection";
 import { useStockQuery } from "../hooks/useStockQuery";
+import { useConfigLists } from "../hooks/useConfigLists";
 
 interface HeaderProps {
     count: number;
@@ -97,8 +98,11 @@ export default function Stock(): JSX.Element {
         if (!enabled("stock")) navigate("/", { replace: true });
     }, [enabled, navigate]);
 
-    const categories = [...new Set(q.allItems.map((i) => i.category).filter((c) => c !== ""))].sort();
-    const locations = [...new Set(q.allItems.map((i) => i.location).filter((l) => l !== ""))].sort();
+    const configs = useConfigLists();
+    const union = (list: string[], existing: string[]): string[] =>
+        [...new Set([...list, ...existing.filter((v) => v !== "")])].sort((a, b) => a.localeCompare(b));
+    const categories = union(configs["stock_categories"] ?? [], q.allItems.map((i) => i.category));
+    const locations = union(configs["stock_locations"] ?? [], q.allItems.map((i) => i.location));
     const resetFilters = (): void => {
         q.setQuery(""); q.setCategory(""); q.setLocation(""); q.setDispo("all"); q.setLowOnly(false);
     };
@@ -117,6 +121,7 @@ export default function Stock(): JSX.Element {
                         onSaved={() => { setShowForm(false); setEditing(null); q.reload(); }} />
                     <div style={{ display: "flex", gap: "1rem", marginBottom: "0.75rem" }}>
                         <StockSearchBar query={q.query} onQuery={q.setQuery} allItems={q.allItems}
+                            categories={categories} locations={locations}
                             onPickItem={(item) => navigate(`/stock/${item.id}`)}
                             onPickCategory={q.setCategory} onPickLocation={q.setLocation} />
                     </div>
