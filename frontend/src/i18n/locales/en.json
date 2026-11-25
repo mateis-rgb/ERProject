@@ -6,7 +6,9 @@
         "planning": "Planning",
         "settings": "Settings",
         "logout": "Log out",
-        "account": "Account settings"
+        "account": "Account settings",
+        "collapse": "Collapse sidebar",
+        "expand": "Expand sidebar"
     },
     "common": {
         "save": "Save",

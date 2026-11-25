@@ -6,7 +6,9 @@
         "planning": "Planning",
         "settings": "Réglages",
         "logout": "Déconnexion",
-        "account": "Réglages du compte"
+        "account": "Réglages du compte",
+        "collapse": "Réduire la barre latérale",
+        "expand": "Déplier la barre latérale"
     },
     "common": {
         "save": "Enregistrer",
