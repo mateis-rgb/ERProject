@@ -2,6 +2,7 @@
 import { useTranslation } from "../../i18n/I18nContext";
 import { DispoFilter } from "../../hooks/useStockQuery";
 import BrutalCheckbox from "../ui/BrutalCheckbox";
+import BrutalSelect, { SelectOption } from "../ui/BrutalSelect";
 import { FiRotateCcw } from "react-icons/fi";
 
 interface Props {
@@ -24,33 +25,39 @@ const FILTER_LABEL: React.CSSProperties = {
     fontSize: "0.72rem", fontWeight: 700, textTransform: "uppercase", color: "var(--muted)", letterSpacing: "0.04em",
 };
 
+function FilterField(p: { label: string; children: React.ReactNode }): JSX.Element {
+    return (
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+            <span style={FILTER_LABEL}>{p.label}</span>
+            {p.children}
+        </div>
+    );
+}
+
 export default function StockFilters(p: Props): JSX.Element {
     const { t } = useTranslation();
     const hasFilter = p.category !== "" || p.location !== "" || p.dispo !== "all" || p.lowOnly;
+    const toOptions = (all: string, values: string[]): SelectOption[] =>
+        [{ value: "", label: all }, ...values.map((v) => ({ value: v, label: v }))];
+    const dispoOptions: SelectOption[] = [
+        { value: "all", label: t("stock.allAvailability") },
+        { value: "available", label: t("stock.available") },
+        { value: "unavailable", label: t("stock.outOfStock") },
+    ];
     return (
         <div style={{ display: "flex", alignItems: "flex-end", gap: "0.75rem", flexWrap: "wrap", marginBottom: "1rem" }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                <span style={FILTER_LABEL}>{t("stock.category")}</span>
-                <select className="select" value={p.category} onChange={(e) => p.onCategory(e.target.value)} style={{ minWidth: "150px", height: "40px" }}>
-                    <option value="">{t("stock.allCategories")}</option>
-                    {p.categories.map((c) => <option key={c} value={c}>{c}</option>)}
-                </select>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                <span style={FILTER_LABEL}>{t("stock.location")}</span>
-                <select className="select" value={p.location} onChange={(e) => p.onLocation(e.target.value)} style={{ minWidth: "150px", height: "40px" }}>
-                    <option value="">{t("stock.allLocations")}</option>
-                    {p.locations.map((l) => <option key={l} value={l}>{l}</option>)}
-                </select>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                <span style={FILTER_LABEL}>{t("stock.dispo")}</span>
-                <select className="select" value={p.dispo} onChange={(e) => p.onDispo(e.target.value as DispoFilter)} style={{ minWidth: "140px", height: "40px" }}>
-                    <option value="all">{t("stock.allAvailability")}</option>
-                    <option value="available">{t("stock.available")}</option>
-                    <option value="unavailable">{t("stock.outOfStock")}</option>
-                </select>
-            </div>
+            <FilterField label={t("stock.category")}>
+                <BrutalSelect value={p.category} onChange={p.onCategory} options={toOptions(t("stock.allCategories"), p.categories)}
+                    ariaLabel={t("stock.category")} minWidth="150px" />
+            </FilterField>
+            <FilterField label={t("stock.location")}>
+                <BrutalSelect value={p.location} onChange={p.onLocation} options={toOptions(t("stock.allLocations"), p.locations)}
+                    ariaLabel={t("stock.location")} minWidth="150px" />
+            </FilterField>
+            <FilterField label={t("stock.dispo")}>
+                <BrutalSelect value={p.dispo} onChange={(v) => p.onDispo(v as DispoFilter)} options={dispoOptions}
+                    ariaLabel={t("stock.dispo")} minWidth="140px" />
+            </FilterField>
             <BrutalCheckbox checked={p.lowOnly} onChange={p.onLowOnly} label={t("stock.low")} />
             {hasFilter && (
                 <button className="btn-ghost" onClick={p.onReset} style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem", marginBottom: "0.35rem" }}>
