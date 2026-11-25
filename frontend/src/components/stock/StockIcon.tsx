@@ -4,11 +4,12 @@ import { stockIconFor } from "../../utils/stockIcon";
 interface Props {
     category: string;
     name: string;
+    reference: string;
     imagePath: string | null;
     size?: number;
 }
 
-export default function StockIcon({ category, name, imagePath, size = 32 }: Props): JSX.Element {
+export default function StockIcon({ category, name, reference, imagePath, size = 32 }: Props): JSX.Element {
     const box: React.CSSProperties = {
         width: size, height: size, flexShrink: 0,
         border: "2px solid var(--ink)",
@@ -23,7 +24,7 @@ export default function StockIcon({ category, name, imagePath, size = 32 }: Prop
             </span>
         );
     }
-    const Icon = stockIconFor(category, name);
+    const Icon = stockIconFor(category, name, reference);
     return (
         <span style={{ ...box, color: "var(--accent)" }} title={name}>
             <Icon size={Math.round(size * 0.6)} />

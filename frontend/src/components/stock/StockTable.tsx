@@ -55,7 +55,7 @@ function StockRow({ item, avail: a, canEdit, onDelete, onEdit }: RowProps): JSX.
             style={{ cursor: "pointer", ...(isLow ? { backgroundColor: "rgba(239,68,68,0.1)" } : {}) }}
         >
             <td className="table-cell">
-                <StockIcon category={item.category} name={item.name} imagePath={item.imagePath} size={30} />
+                <StockIcon category={item.category} name={item.name} reference={item.reference} imagePath={item.imagePath} size={30} />
             </td>
             <td className="table-cell" style={{ fontWeight: 600 }}>{item.name}</td>
             <td className="table-cell">{item.reference}</td>
