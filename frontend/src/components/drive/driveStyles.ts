@@ -12,6 +12,6 @@ export const driveHeaderCell: React.CSSProperties = {
 };
 
 export const driveRowCell: React.CSSProperties = {
-    padding: "0.4rem 0.6rem", fontSize: "0.8rem", borderLeft: "1px solid var(--ink)",
+    padding: "0.28rem 0.6rem", fontSize: "0.8rem", borderLeft: "1px solid var(--ink)",
     overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
 };

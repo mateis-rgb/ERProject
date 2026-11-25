@@ -8,6 +8,12 @@ import { useRowDrag } from "../../hooks/useRowDrag";
 import BrutalSelect from "../ui/BrutalSelect";
 import { isEditableFile } from "../../utils/textFiles";
 
+// Boutons d'action : carrés, même taille fixe pour tous (Power of 10 R4)
+const ACTION_BTN: React.CSSProperties = {
+    width: "26px", height: "26px", padding: 0, flexShrink: 0,
+    display: "inline-flex", alignItems: "center", justifyContent: "center",
+};
+
 interface Props {
     item: Attachment;
     folders: Attachment[];
@@ -67,11 +73,14 @@ export default function DriveRow(props: Props): JSX.Element {
                 </div>
             )}
             {canEdit && (
-                <div style={driveRowCell}>
-                    <button className="btn-ghost" style={{ padding: "0.1rem 0.4rem", fontSize: "0.72rem", marginRight: "0.3rem" }}
-                        onClick={() => onRename(item)}><FiEdit2 /></button>
-                    <button className="btn-danger" style={{ padding: "0.1rem 0.4rem", boxShadow: "2px 2px 0 var(--danger)" }}
-                        onClick={() => onRemove(item)}><FiX /></button>
+                <div style={{ ...driveRowCell, display: "flex", gap: "0.3rem", alignItems: "center" }}>
+                    <button className="btn-ghost" style={ACTION_BTN} title={t("drive.modalRename")} onClick={() => onRename(item)}>
+                        <FiEdit2 size={14} />
+                    </button>
+                    <button className="btn-danger" style={{ ...ACTION_BTN, boxShadow: "2px 2px 0 var(--danger)" }} title={t("drive.modalDelete")}
+                        onClick={() => onRemove(item)}>
+                        <FiX size={14} />
+                    </button>
                 </div>
             )}
         </div>
