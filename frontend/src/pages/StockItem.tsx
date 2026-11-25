@@ -8,6 +8,7 @@ import { api } from "../services/api";
 import { StockItemDetails, StockMovementDetail, StockReservation } from "../types";
 import Modal from "../components/ui/Modal";
 import StockForm from "../components/stock/StockForm";
+import CommentsSection from "../components/projects/CommentsSection";
 
 const TYPE_COLORS: Record<string, string> = {
     IN: "var(--green)",
@@ -258,6 +259,7 @@ export default function StockItemPage(): JSX.Element {
                 <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
                     <ReservationsCard reservations={details.reservations} />
                     <MovementsCard movements={details.movements} />
+                    <CommentsSection scope={{ kind: "stock", stockItemId: itemId }} />
                 </div>
             </div>
             {editing && (

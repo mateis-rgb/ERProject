@@ -1,6 +1,6 @@
 import { FiEdit2, FiX } from "react-icons/fi";
-// Tableau du stock (Power of 10 R4)
-import { Link } from "react-router-dom";
+// Tableau du stock - toute la ligne est cliquable (Power of 10 R4)
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "../../i18n/I18nContext";
 import { StockItem, AvailabilityEntry } from "../../types";
 import { api } from "../../services/api";
@@ -23,13 +23,12 @@ interface RowProps {
 
 function StockRow({ item, avail: a, canEdit, onDelete, onEdit }: RowProps): JSX.Element {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const isLow = item.quantity <= item.minThreshold;
     const unavailable = a !== undefined && a.reserved > 0 && a.available <= 0;
     return (
-        <tr style={isLow ? { backgroundColor: "rgba(239,68,68,0.1)" } : undefined}>
-            <td className="table-cell" style={{ fontWeight: 600 }}>
-                <Link to={`/stock/${item.id}`} style={{ color: "var(--ink)" }}>{item.name}</Link>
-            </td>
+        <tr onClick={() => navigate(`/stock/${item.id}`)} style={{ cursor: "pointer", ...(isLow ? { backgroundColor: "rgba(239,68,68,0.1)" } : {}) }}>
+            <td className="table-cell" style={{ fontWeight: 600 }}>{item.name}</td>
             <td className="table-cell">{item.reference}</td>
             <td className="table-cell">
                 <strong style={isLow ? { color: "var(--danger)" } : undefined}>
@@ -59,7 +58,7 @@ function StockRow({ item, avail: a, canEdit, onDelete, onEdit }: RowProps): JSX.
             <td className="table-cell">{item.minThreshold}</td>
             <td className="table-cell">{item.purchasePrice !== null ? `${item.purchasePrice} €` : "—"}</td>
             {canEdit && (
-                <td className="table-cell">
+                <td className="table-cell" onClick={(e) => e.stopPropagation()}>
                     <span style={{ display: "inline-flex", gap: "0.3rem" }}>
                         <button className="btn-ghost" style={{ padding: "0.125rem 0.5rem", fontSize: "0.75rem" }}
                             title={t("stock.editArticle")} onClick={() => onEdit(item)}><FiEdit2 /></button>

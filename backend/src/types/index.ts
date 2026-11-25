@@ -126,13 +126,26 @@ export interface PlanningDTO {
 
 export interface CommentDTO {
     id: string;
-    projectId: string;
+    projectId: string | null;   // null si commentaire d'article stock
+    stockItemId: string | null; // null si commentaire de projet/jalon
     milestoneId: string | null;
     authorId: string;
     authorName: string;
     content: string;
     createdAt: Date;
     updatedAt: Date;
+}
+
+// Candidats @mention pour l'autocomplétion (scope appliqué côté serveur)
+export interface MentionCandidate {
+    id: string;
+    name: string;
+    email: string;
+}
+
+export interface MentionCandidatesDTO {
+    users: MentionCandidate[];
+    allowAll: boolean; // @all autorisé dans ce contexte
 }
 
 export interface DashboardKPIs {

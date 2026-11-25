@@ -3,6 +3,7 @@ import { useTranslation } from "../../i18n/I18nContext";
 import { useAuth } from "../../context/AppContext";
 import LanguagePicker from "../layout/LanguagePicker";
 import StorageSection from "./StorageSection";
+import MentionScopeSection from "./MentionScopeSection";
 
 export default function AppTab(): JSX.Element {
     const { t } = useTranslation();
@@ -18,6 +19,7 @@ export default function AppTab(): JSX.Element {
                 <LanguagePicker />
             </div>
             {isAdmin && <StorageSection />}
+            {isAdmin && <MentionScopeSection />}
         </div>
     );
 }

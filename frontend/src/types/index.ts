@@ -238,10 +238,11 @@ export interface StockItemDetails {
     availability: AvailabilityEntry;
 }
 
-// Commentaires (GET/POST /api/projects/:projectId/comments, PATCH/DELETE /api/comments/:id)
+// Commentaires (projet/jalon ou article stock)
 export interface Comment {
     id: string;
-    projectId: string;
+    projectId: string | null;   // null si commentaire d'article stock
+    stockItemId: string | null; // null si commentaire de projet/jalon
     milestoneId: string | null;
     authorId: string;
     authorName: string;
@@ -249,3 +250,20 @@ export interface Comment {
     createdAt: string;
     updatedAt: string;
 }
+
+// Candidats @mention pour l'autocomplétion (GET /api/mention-candidates/...)
+export interface MentionCandidate {
+    id: string;
+    name: string;
+    email: string;
+}
+
+export interface MentionCandidates {
+    users: MentionCandidate[];
+    allowAll: boolean;
+}
+
+// Contexte d'une section de commentaires
+export type CommentScope =
+    | { kind: "project"; projectId: string; milestoneId: string | null }
+    | { kind: "stock"; stockItemId: string };

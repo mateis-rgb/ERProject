@@ -75,34 +75,43 @@ interface RowProps {
     conflicted: Set<string>;
 }
 
+const LABEL_STYLE: React.CSSProperties = {
+    width: `${LABEL_W}px`, flexShrink: 0, position: "sticky", left: 0, zIndex: 6,
+    padding: "0.5rem 0.6rem", borderRight: "2px solid var(--ink)", background: "var(--bg)",
+    display: "flex", flexDirection: "column", justifyContent: "center", gap: "0.15rem",
+};
+
+function ProjectLabel({ g }: { g: ProjectGroup }): JSX.Element {
+    return (
+        <div style={LABEL_STYLE}>
+            <Link to={`/projects/${g.projectId}`} style={{ fontWeight: 700, fontSize: "0.8rem", color: "var(--ink)", textDecoration: "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {g.projectName}
+            </Link>
+            <span style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span className="mono" style={{ fontSize: "0.62rem", color: "var(--muted)", textTransform: "uppercase" }}>{g.projectStatus}</span>
+                <span className="badge" style={{ fontSize: "0.62rem" }}>{g.items.length}</span>
+            </span>
+        </div>
+    );
+}
+
 function ProjectRow({ g, r, conflicted }: RowProps): JSX.Element {
     return (
-        <div style={{ display: "flex", borderBottom: "2px solid var(--ink)", minHeight: "44px" }}>
-            <div style={{
-                width: `${LABEL_W}px`, flexShrink: 0, padding: "0.5rem 0.6rem",
-                borderRight: "2px solid var(--ink)", background: "var(--bg)",
-                display: "flex", flexDirection: "column", justifyContent: "center", gap: "0.15rem",
-            }}>
-                <Link to={`/projects/${g.projectId}`} style={{ fontWeight: 700, fontSize: "0.8rem", color: "var(--ink)", textDecoration: "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {g.projectName}
-                </Link>
-                <span className="mono" style={{ fontSize: "0.62rem", color: "var(--muted)", textTransform: "uppercase" }}>{g.projectStatus}</span>
-            </div>
-            <div style={{ position: "relative", flex: 1, minWidth: 0 }}>
+        <div style={{ display: "flex", borderBottom: "2px solid var(--ink)", height: "48px" }}>
+            <ProjectLabel g={g} />
+            <div style={{ position: "relative", width: `${r.width}px`, flexShrink: 0 }}>
                 {g.items.map((m) => {
                     const geom = barGeom(new Date(m.startDate).getTime(), new Date(m.endDate).getTime(), r.pct);
                     const isConflict = conflicted.has(m.id);
                     return (
-                        <div key={m.id} title={`${m.name} (${fmtDate(m.startDate)} - ${fmtDate(m.endDate)})`}
+                        <div key={m.id} title={`${m.name} - ${fmtDate(m.startDate)} - ${fmtDate(m.endDate)}`}
                             style={{
-                                position: "absolute", left: `${geom.left}%`, width: `${geom.width}%`, top: "8px", height: "28px",
+                                position: "absolute", left: `${geom.left}%`, width: `${geom.width}%`, top: "10px", height: "28px",
                                 backgroundColor: m.color, border: isConflict ? "3px solid var(--danger)" : "2px solid var(--ink)",
                                 boxShadow: isConflict ? "3px 3px 0 var(--danger)" : "2px 2px 0 var(--ink)",
-                                display: "flex", alignItems: "center", padding: "0 8px", overflow: "hidden",
-                                fontWeight: 700, fontSize: "0.72rem", color: "#000", whiteSpace: "nowrap", textOverflow: "ellipsis",
+                                display: "flex", alignItems: "center", justifyContent: "center",
                             }}>
-                            {isConflict && <FiAlertTriangle style={{ flexShrink: 0, marginRight: "4px" }} />}
-                            {m.name}
+                            {isConflict && <FiAlertTriangle style={{ color: "#000", flexShrink: 0 }} />}
                         </div>
                     );
                 })}
@@ -152,16 +161,13 @@ function PlanningTimeline({ data, view, onView }: TimelineProps): JSX.Element {
     return (
         <div style={{ flex: 1, minWidth: 0 }}>
             <GanttToolbar view={view} onView={onView} />
-            <div style={{ overflowX: "auto", border: "2px solid var(--ink)", background: "var(--surface)" }}>
-                <div style={{ display: "flex" }}>
-                    <div style={{ width: `${LABEL_W}px`, flexShrink: 0, borderRight: "2px solid var(--ink)", height: "36px", borderBottom: "2px solid var(--ink)", background: "var(--bg)" }} />
-                    <GanttHeader width={r.width} ticks={ticks} pct={r.pct} rangeEnd={rangeEnd} todayPct={todayPct} />
-                </div>
-                <div style={{ display: "flex" }}>
-                    <div style={{ width: `${LABEL_W}px`, flexShrink: 0, borderRight: "2px solid var(--ink)" }} />
-                    <div style={{ position: "relative", width: `${r.width}px`, flexShrink: 0 }}>
-                        {groups.map((g) => <ProjectRow key={g.projectId} g={g} r={r} conflicted={conflicted} />)}
+            <div style={{ overflow: "auto", border: "2px solid var(--ink)", background: "var(--surface)" }}>
+                <div style={{ display: "inline-block", minWidth: "100%" }}>
+                    <div style={{ display: "flex", position: "sticky", top: 0, zIndex: 10 }}>
+                        <div style={{ ...LABEL_STYLE, height: "36px", borderBottom: "2px solid var(--ink)", zIndex: 11 }} />
+                        <GanttHeader width={r.width} ticks={ticks} pct={r.pct} rangeEnd={rangeEnd} todayPct={todayPct} />
                     </div>
+                    {groups.map((g) => <ProjectRow key={g.projectId} g={g} r={r} conflicted={conflicted} />)}
                 </div>
             </div>
         </div>

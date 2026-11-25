@@ -35,7 +35,7 @@ export default function MilestonePanel({ milestone, milestones, projectId, stock
             </p>
             {milestone.description && <p style={{ fontSize: "0.85rem", color: "var(--muted)" }}>{milestone.description}</p>}
             <MilestoneStockList milestoneId={milestone.id} stockItems={stockItems} canEdit={canEdit} onChanged={onChanged} />
-            <CommentsSection projectId={projectId} milestoneId={milestone.id} />
+            <CommentsSection scope={{ kind: "project", projectId, milestoneId: milestone.id }} />
             {canEdit && (
                 <div style={{ display: "flex", gap: "0.5rem", marginTop: "1rem" }}>
                     <button className="btn-ghost" onClick={() => setEditing(true)}>Modifier</button>

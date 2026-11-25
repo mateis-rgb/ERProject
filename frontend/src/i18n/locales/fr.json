@@ -205,7 +205,15 @@
         "migrateFrom": "Depuis",
         "migrateTo": "Vers",
         "migrateConfirm": "Migrer",
-        "migratingTitle": "Migration du stockage en cours"
+        "migratingTitle": "Migration du stockage en cours",
+        "mentionsTitle": "Mentions (@)",
+        "mentionsDesc": "Détermine qui peut être taggé avec @ dans chaque contexte. Les notifications créées par une mention amènent directement au commentaire concerné.",
+        "mentionProject": "Commentaires de projet / jalon",
+        "mentionStock": "Commentaires d'article de stock",
+        "mentionCollaborators": "Collaborateurs du projet uniquement",
+        "mentionAll": "Tous les utilisateurs",
+        "mentionNone": "Personne (mentions désactivées)",
+        "mentionsSaved": "Scopes de mentions enregistrés."
     },
     "appearance": {
         "title": "Apparence",
@@ -409,7 +417,8 @@
         "save": "Enregistrer",
         "cancel": "Annuler",
         "edited": "modifié",
-        "mentionHint": "Astuce : @nom notifie l'utilisateur correspondant"
+        "mentionHint": "Astuce : @nom notifie l'utilisateur correspondant",
+        "allUsers": "tous les utilisateurs"
     },
     "roles": {
         "admin": "Admin",

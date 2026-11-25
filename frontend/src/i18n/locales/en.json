@@ -205,7 +205,15 @@
         "migrateFrom": "From",
         "migrateTo": "To",
         "migrateConfirm": "Migrate",
-        "migratingTitle": "Storage migration in progress"
+        "migratingTitle": "Storage migration in progress",
+        "mentionsTitle": "Mentions (@)",
+        "mentionsDesc": "Defines who can be tagged with @ in each context. Notifications created by a mention lead directly to the related comment.",
+        "mentionProject": "Project / milestone comments",
+        "mentionStock": "Stock item comments",
+        "mentionCollaborators": "Project collaborators only",
+        "mentionAll": "All users",
+        "mentionNone": "No one (mentions disabled)",
+        "mentionsSaved": "Mention scopes saved."
     },
     "appearance": {
         "title": "Appearance",
@@ -409,7 +417,8 @@
         "save": "Save",
         "cancel": "Cancel",
         "edited": "edited",
-        "mentionHint": "Tip: @name notifies the matching user"
+        "mentionHint": "Tip: @name notifies the matching user",
+        "allUsers": "all users"
     },
     "roles": {
         "admin": "Admin",

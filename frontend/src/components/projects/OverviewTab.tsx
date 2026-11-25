@@ -30,7 +30,7 @@ export default function OverviewTab(props: Props): JSX.Element {
                 <AttachmentsSection projectId={pid} attachments={attachments} onChanged={onChanged} />
                 <ActivitySection logs={logs} />
             </div>
-            <CommentsSection projectId={pid} milestoneId={null} />
+            <CommentsSection scope={{ kind: "project", projectId: pid, milestoneId: null }} />
         </div>
     );
 }

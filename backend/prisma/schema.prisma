@@ -107,6 +107,7 @@ model StockItem {
     // Relations
     projectLinks ProjectStock[]
     movements    StockMovement[]
+    comments     Comment[]
 }
 
 // Liaison Projet <-> Stock (allocation souple/stricte + prévisionnel)
@@ -279,14 +280,16 @@ model RefreshToken {
 
 model Comment {
     id          String   @id @default(uuid())
-    projectId   String
+    projectId   String?  // null si commentaire d'article stock
+    stockItemId String?  // null si commentaire de projet/jalon
     milestoneId String?  // null = commentaire projet, sinon commentaire de jalon
     authorId    String
     content     String
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
 
-    project   Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    project   Project?   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    stockItem StockItem? @relation(fields: [stockItemId], references: [id], onDelete: Cascade)
     milestone Milestone? @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
     author    User       @relation(fields: [authorId], references: [id])
 }

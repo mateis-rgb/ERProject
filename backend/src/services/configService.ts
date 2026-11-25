@@ -11,6 +11,8 @@ export const CONFIG_KEYS = {
     ENABLED_MODULES: "enabled_modules",
     STORAGE_PATH: "storage_path",
     UPDATE_REPO: "update_repo",
+    MENTION_SCOPE_PROJECT: "mention_scope_project", // "collaborators" | "all"
+    MENTION_SCOPE_STOCK: "mention_scope_stock",     // "all" | "none"
 } as const;
 
 const DEFAULT_CONFIGS: Record<string, string[]> = {
@@ -22,6 +24,8 @@ const DEFAULT_CONFIGS: Record<string, string[]> = {
     [CONFIG_KEYS.ENABLED_MODULES]: ["gantt", "drive", "stock", "notifications", "export_pdf", "templates"],
     [CONFIG_KEYS.STORAGE_PATH]: [""], // vide = emplacement par défaut (UPLOAD_DIR)
     [CONFIG_KEYS.UPDATE_REPO]: [""], // vide = vérification des mises à jour désactivée
+    [CONFIG_KEYS.MENTION_SCOPE_PROJECT]: ["collaborators"], // @ réservés aux collaborateurs du projet
+    [CONFIG_KEYS.MENTION_SCOPE_STOCK]: ["all"], // @ ouverts à tous sur les articles stock
 };
 
 export async function getConfigValue(key: string): Promise<string[]> {

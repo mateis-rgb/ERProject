@@ -1,20 +1,34 @@
-// Section commentaires d'un projet ou d'un jalon, avec @mentions (Power of 10 R4)
-import { useEffect, useState } from "react";
+// Section commentaires (projet/jalon ou article stock) - autocomplétion @ + @all (Power of 10 R4)
+import { useEffect, useRef, useState } from "react";
 import { FiEdit2, FiSend, FiX } from "react-icons/fi";
 import { useTranslation } from "../../i18n/I18nContext";
 import { useAuth } from "../../context/AppContext";
 import { useNotifications } from "../../context/NotificationContext";
 import { api } from "../../services/api";
-import { Comment } from "../../types";
+import { Comment, CommentScope, MentionCandidates } from "../../types";
 
-interface Props {
-    projectId: string;
-    milestoneId: string | null;
+const MAX_SUGGESTIONS = 8;
+
+function listUrl(scope: CommentScope): string {
+    if (scope.kind === "stock") return `/api/stock/${scope.stockItemId}/comments`;
+    const q = scope.milestoneId !== null ? `?milestoneId=${encodeURIComponent(scope.milestoneId)}` : "";
+    return `/api/projects/${scope.projectId}/comments${q}`;
+}
+
+function candidatesUrl(scope: CommentScope): string {
+    return scope.kind === "stock"
+        ? `/api/mention-candidates/stock/${scope.stockItemId}`
+        : `/api/mention-candidates/project/${scope.projectId}`;
+}
+
+function matchesScope(scope: CommentScope, p: { projectId?: string | null; stockItemId?: string | null }): boolean {
+    if (scope.kind === "stock") return p.stockItemId === scope.stockItemId;
+    return p.projectId === scope.projectId;
 }
 
 // Surligne les @mentions dans le contenu d'un commentaire
 function renderContent(content: string): JSX.Element {
-    const parts = content.split(/(@[\w.\-@]+)/g);
+    const parts = content.split(/(@[^\s@.,;:!?]+)/g);
     return (
         <>
             {parts.map((p, i) =>
@@ -28,13 +42,13 @@ function renderContent(content: string): JSX.Element {
     );
 }
 
-interface CommentItemProps {
+interface ItemProps {
     c: Comment;
     canModerate: boolean;
     onChanged: () => void;
 }
 
-function CommentItem({ c, canModerate, onChanged }: CommentItemProps): JSX.Element {
+function CommentItem({ c, canModerate, onChanged }: ItemProps): JSX.Element {
     const { t } = useTranslation();
     const { user } = useAuth();
     const [editing, setEditing] = useState(false);
@@ -88,30 +102,160 @@ function CommentItem({ c, canModerate, onChanged }: CommentItemProps): JSX.Eleme
     );
 }
 
+interface Suggestion {
+    label: string; // texte inséré après @
+    sub: string;
+}
+
 interface ComposerProps {
-    projectId: string;
-    milestoneId: string | null;
+    scope: CommentScope;
+    candidates: MentionCandidates | null;
     onSent: () => void;
 }
 
-function CommentComposer({ projectId, milestoneId, onSent }: ComposerProps): JSX.Element {
+// Détecte un "@query" en cours de saisie juste avant le curseur
+function activeMention(value: string, cursor: number): { start: number; query: string } | null {
+    const before = value.slice(0, cursor);
+    const m = before.match(/@([^\s@]*)$/);
+    if (m === null || m.index === undefined) return null;
+    return { start: m.index, query: m[1] ?? "" };
+}
+
+function filterSuggestions(candidates: MentionCandidates | null, query: string): Suggestion[] {
+    if (candidates === null) return [];
+    const q = query.toLowerCase();
+    const out: Suggestion[] = [];
+    if (candidates.allowAll && "all".startsWith(q)) out.push({ label: "all", sub: "all" });
+    for (const u of candidates.users) {
+        if (out.length >= MAX_SUGGESTIONS) break;
+        if (u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)) {
+            out.push({ label: u.name, sub: u.email });
+        }
+    }
+    return out;
+}
+
+function MentionDropdown(props: {
+    suggestions: Suggestion[];
+    active: number;
+    onPick: (s: Suggestion) => void;
+}): JSX.Element {
     const { t } = useTranslation();
+    if (props.suggestions.length === 0) return <></>;
+    return (
+        <div style={{
+            position: "absolute", left: 0, right: 0, bottom: "100%", marginBottom: "4px", zIndex: 30,
+            border: "2px solid var(--ink)", background: "var(--surface)", boxShadow: "4px 4px 0 var(--ink)",
+            maxHeight: "180px", overflowY: "auto",
+        }}>
+            {props.suggestions.map((s, i) => (
+                <div key={s.label} onMouseDown={(e) => { e.preventDefault(); props.onPick(s); }}
+                    style={{
+                        padding: "0.4rem 0.6rem", cursor: "pointer", display: "flex", justifyContent: "space-between", gap: "0.5rem",
+                        background: i === props.active ? "var(--accent)" : "transparent", fontSize: "0.8rem",
+                    }}>
+                    <strong>@{s.label}</strong>
+                    <span className="mono" style={{ fontSize: "0.65rem", color: "var(--muted)" }}>
+                        {s.label === "all" ? t("comments.allUsers") : s.sub}
+                    </span>
+                </div>
+            ))}
+        </div>
+    );
+}
+
+// Navigation clavier du dropdown de mentions (retourne true si la touche est consommée)
+function mentionKeyNav(
+    e: React.KeyboardEvent<HTMLTextAreaElement>,
+    open: boolean,
+    suggestions: Suggestion[],
+    active: number,
+    setActive: (n: number) => void,
+    pick: (s: Suggestion) => void,
+    close: () => void
+): boolean {
+    if (!open) return false;
+    if (e.key === "ArrowDown") { e.preventDefault(); setActive((active + 1) % suggestions.length); return true; }
+    if (e.key === "ArrowUp") { e.preventDefault(); setActive((active - 1 + suggestions.length) % suggestions.length); return true; }
+    if (e.key === "Enter" || e.key === "Tab") {
+        e.preventDefault();
+        const s = suggestions[active];
+        if (s !== undefined) pick(s);
+        return true;
+    }
+    if (e.key === "Escape") { e.preventDefault(); close(); return true; }
+    return false;
+}
+
+// État du composer : brouillon + autocomplétion @ + envoi
+function useComposer(scope: CommentScope, candidates: MentionCandidates | null, onSent: () => void): {
+    draft: string; taRef: React.RefObject<HTMLTextAreaElement | null>; open: boolean;
+    suggestions: Suggestion[]; active: number;
+    updateDraft: (v: string, cursor: number) => void;
+    onKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
+    pick: (s: Suggestion) => void;
+    send: () => void;
+} {
     const [draft, setDraft] = useState("");
+    const [mention, setMention] = useState<{ start: number; query: string } | null>(null);
+    const [active, setActive] = useState(0);
+    const taRef = useRef<HTMLTextAreaElement>(null);
+
+    const suggestions = mention !== null ? filterSuggestions(candidates, mention.query) : [];
+    const open = mention !== null && suggestions.length > 0;
+
+    const updateDraft = (value: string, cursor: number): void => {
+        setDraft(value);
+        setMention(activeMention(value, cursor));
+        setActive(0);
+    };
+
+    const pick = (s: Suggestion): void => {
+        if (mention === null) return;
+        const cursor = taRef.current?.selectionStart ?? draft.length;
+        const next = `${draft.slice(0, mention.start)}@${s.label} ${draft.slice(cursor)}`;
+        setDraft(next);
+        setMention(null);
+        const pos = mention.start + s.label.length + 2;
+        requestAnimationFrame(() => {
+            taRef.current?.focus();
+            taRef.current?.setSelectionRange(pos, pos);
+        });
+    };
+
     const send = (): void => {
         const content = draft.trim();
         if (content.length === 0) return;
-        api.post(`/api/projects/${projectId}/comments`, { content, milestoneId }).then((r) => {
-            if (r.success) { setDraft(""); onSent(); }
+        const body = scope.kind === "stock" ? { content } : { content, milestoneId: scope.milestoneId };
+        api.post(listUrl(scope), body).then((r) => {
+            if (r.success) { setDraft(""); setMention(null); onSent(); }
         });
     };
+
+    const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>): void => {
+        if (mentionKeyNav(e, open, suggestions, active, setActive, pick, () => setMention(null))) return;
+        if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+            e.preventDefault();
+            send();
+        }
+    };
+
+    return { draft, taRef, open, suggestions, active, updateDraft, onKeyDown, pick, send };
+}
+
+function CommentComposer({ scope, candidates, onSent }: ComposerProps): JSX.Element {
+    const { t } = useTranslation();
+    const c = useComposer(scope, candidates, onSent);
+
     return (
-        <div>
-            <textarea className="input" rows={3} value={draft} placeholder={t("comments.placeholder")}
-                onChange={(e) => setDraft(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) send(); }} />
+        <div style={{ position: "relative" }}>
+            <MentionDropdown suggestions={c.open ? c.suggestions : []} active={c.active} onPick={c.pick} />
+            <textarea ref={c.taRef as React.RefObject<HTMLTextAreaElement>} className="input" rows={3} value={c.draft} placeholder={t("comments.placeholder")}
+                onChange={(e) => c.updateDraft(e.target.value, e.target.selectionStart)}
+                onKeyDown={c.onKeyDown} />
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "0.5rem", gap: "0.5rem", flexWrap: "wrap" }}>
                 <span className="mono" style={{ fontSize: "0.65rem", color: "var(--muted)" }}>{t("comments.mentionHint")}</span>
-                <button className="btn" onClick={send} disabled={draft.trim().length === 0}>
+                <button className="btn" onClick={c.send} disabled={c.draft.trim().length === 0}>
                     <span className="ic"><FiSend /> {t("comments.send")}</span>
                 </button>
             </div>
@@ -119,27 +263,29 @@ function CommentComposer({ projectId, milestoneId, onSent }: ComposerProps): JSX
     );
 }
 
-export default function CommentsSection({ projectId, milestoneId }: Props): JSX.Element {
+export default function CommentsSection({ scope }: { scope: CommentScope }): JSX.Element {
     const { t } = useTranslation();
     const { user } = useAuth();
     const { socket } = useNotifications();
     const [comments, setComments] = useState<Comment[]>([]);
+    const [candidates, setCandidates] = useState<MentionCandidates | null>(null);
     const canComment = user !== null && user.role !== "VIEWER";
     const canModerate = user !== null && user.role === "ADMIN";
 
     const load = (): void => {
-        const q = milestoneId !== null ? `?milestoneId=${encodeURIComponent(milestoneId)}` : "";
-        api.get<Comment[]>(`/api/projects/${projectId}/comments${q}`).then((r) => {
-            if (r.success) setComments(r.data);
-        });
+        api.get<Comment[]>(listUrl(scope)).then((r) => { if (r.success) setComments(r.data); });
     };
 
-    useEffect(load, [projectId, milestoneId]);
+    useEffect(load, [scope.kind, JSON.stringify(scope)]);
+
+    useEffect(() => {
+        api.get<MentionCandidates>(candidatesUrl(scope)).then((r) => { if (r.success) setCandidates(r.data); });
+    }, [scope.kind, JSON.stringify(scope)]);
 
     useEffect(() => {
         if (socket === null) return;
-        const onEvent = (p: { projectId?: string }): void => {
-            if (p.projectId === undefined || p.projectId === projectId) load();
+        const onEvent = (p: { projectId?: string | null; stockItemId?: string | null }): void => {
+            if (matchesScope(scope, p)) load();
         };
         socket.on("comment:new", onEvent);
         socket.on("comment:deleted", onEvent);
@@ -147,7 +293,7 @@ export default function CommentsSection({ projectId, milestoneId }: Props): JSX.
             socket.off("comment:new", onEvent);
             socket.off("comment:deleted", onEvent);
         };
-    }, [socket, projectId]);
+    }, [socket, scope.kind, JSON.stringify(scope)]);
 
     return (
         <div className="card" style={{ marginTop: "1.25rem" }}>
@@ -158,7 +304,7 @@ export default function CommentsSection({ projectId, milestoneId }: Props): JSX.
                 {comments.length === 0 && <p style={{ color: "var(--muted)", fontSize: "0.85rem", margin: 0 }}>{t("comments.none")}</p>}
                 {comments.map((c) => <CommentItem key={c.id} c={c} canModerate={canModerate} onChanged={load} />)}
             </div>
-            {canComment && <CommentComposer projectId={projectId} milestoneId={milestoneId} onSent={load} />}
+            {canComment && <CommentComposer scope={scope} candidates={candidates} onSent={load} />}
         </div>
     );
 }
