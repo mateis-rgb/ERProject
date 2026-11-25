@@ -42,11 +42,14 @@ function OptionDropdown(p: {
     onPick: (v: string) => void; onHover: (i: number) => void;
 }): JSX.Element {
     return createPortal(
-        <div style={{
-            position: "fixed", top: p.pos.top, left: p.pos.left, width: p.pos.width, zIndex: 1000,
-            background: "var(--surface)", border: "2px solid var(--ink)", boxShadow: "5px 5px 0 var(--ink)",
-            maxHeight: "240px", overflow: "auto",
-        }}>
+        <div
+            data-brutal-select-dropdown="true"
+            style={{
+                position: "fixed", top: p.pos.top, left: p.pos.left, width: p.pos.width, zIndex: 1000,
+                background: "var(--surface)", border: "2px solid var(--ink)", boxShadow: "5px 5px 0 var(--ink)",
+                maxHeight: "240px", overflow: "auto",
+            }}
+        >
             {p.options.map((o, i) => (
                 <OptionRow key={o.value} opt={o} active={i === p.highlight} selected={o.value === p.value}
                     onPick={() => p.onPick(o.value)} onHover={() => p.onHover(i)} />
@@ -85,6 +88,9 @@ function useOutsideClose(ref: React.RefObject<HTMLDivElement | null>, disabled: 
     useEffect(() => {
         if (disabled) return;
         const onClick = (e: MouseEvent): void => {
+            const target = e.target as Element | null;
+            // Le dropdown est rendu en portal (hors de ref) : ne pas le confondre avec un clic extérieur
+            if (target !== null && target.closest("[data-brutal-select-dropdown]") !== null) return;
             if (ref.current !== null && !ref.current.contains(e.target as Node)) setOpen(false);
         };
         document.addEventListener("mousedown", onClick);
@@ -92,11 +98,15 @@ function useOutsideClose(ref: React.RefObject<HTMLDivElement | null>, disabled: 
     }, [disabled, ref, setOpen]);
 }
 
-// Le dropdown est en portal fixed : on le ferme au scroll/resize pour éviter un décrochage visuel
+// Le dropdown est en portal fixed : on le ferme au scroll/resize extérieur (pas au scroll de sa propre liste)
 function useScrollClose(open: boolean, setOpen: (v: boolean) => void): void {
     useEffect(() => {
         if (!open) return;
-        const close = (): void => setOpen(false);
+        const close = (e: Event): void => {
+            const target = e.target as Element | null;
+            if (target !== null && target.closest !== undefined && target.closest("[data-brutal-select-dropdown]") !== null) return;
+            setOpen(false);
+        };
         window.addEventListener("scroll", close, true);
         window.addEventListener("resize", close);
         return () => {
