@@ -127,10 +127,11 @@ function titleLeftPx(scrollLeft: number, geom: { left: number; width: number }, 
 function BarTitle({ name, hasConflict, left, maxW }: { name: string; hasConflict: boolean; left: number; maxW: number }): JSX.Element {
     return (
         <span style={{
-            position: "absolute", left: `${left}px`, top: 0, bottom: 0,
+            position: "absolute", left: `${left}px`, top: "-2px", bottom: "-2px",
             display: "inline-flex", alignItems: "center", gap: "4px",
             maxWidth: `${maxW}px`, padding: "0 8px", boxSizing: "border-box",
             fontWeight: 700, fontSize: "0.72rem", textTransform: "uppercase", color: "var(--ink)",
+            background: "var(--surface)", border: "var(--border-w) solid var(--ink)",
             whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
         }}>
             {hasConflict && <FiAlertTriangle style={{ color: "var(--danger)", flexShrink: 0 }} />}
