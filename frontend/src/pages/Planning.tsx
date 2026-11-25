@@ -127,7 +127,7 @@ function titleLeftPx(scrollLeft: number, geom: { left: number; width: number }, 
 function BarTitle({ name, hasConflict, left, maxW }: { name: string; hasConflict: boolean; left: number; maxW: number }): JSX.Element {
     return (
         <span style={{
-            position: "absolute", left: `${left}px`, top: 0, height: "28px",
+            position: "absolute", left: `${left}px`, top: 0, bottom: 0,
             display: "inline-flex", alignItems: "center", gap: "4px",
             maxWidth: `${maxW}px`, padding: "0 8px", boxSizing: "border-box",
             fontWeight: 700, fontSize: "0.72rem", textTransform: "uppercase", color: "var(--ink)",
@@ -158,6 +158,7 @@ function ProjectBar({ g, r, hasConflict, scrollLeft }: BarProps): JSX.Element | 
         <div title={title}
             style={{
                 position: "absolute", left: `${geom.left}%`, width: `${geom.width}%`, top: "15px", height: "28px",
+                boxSizing: "border-box",
                 backgroundColor: "var(--surface-2)", backgroundImage: PROJECT_HATCH,
                 border: hasConflict ? "3px solid var(--danger)" : "var(--border-w) solid var(--ink)",
                 boxShadow: hasConflict ? "3px 3px 0 var(--danger)" : "var(--shadow-btn)",
