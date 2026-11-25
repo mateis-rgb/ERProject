@@ -307,7 +307,18 @@
         "movementsTitle": "Recent movements",
         "deletedMilestone": "Deleted milestone",
         "unit": "Unit",
-        "editArticle": "Edit item"
+        "editArticle": "Edit item",
+        "allCategories": "All categories",
+        "allLocations": "All locations",
+        "allAvailability": "All availability",
+        "available": "Available",
+        "outOfStock": "Unavailable",
+        "suggestArticle": "Item",
+        "suggestCategory": "Category",
+        "suggestLocation": "Location",
+        "noSuggestion": "No suggestion",
+        "resetFilters": "Reset",
+        "results": "results"
     },
     "movement": {
         "in": "In",

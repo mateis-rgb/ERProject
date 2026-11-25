@@ -307,7 +307,18 @@
         "movementsTitle": "Mouvements récents",
         "deletedMilestone": "Jalon supprimé",
         "unit": "Unité",
-        "editArticle": "Modifier l'article"
+        "editArticle": "Modifier l'article",
+        "allCategories": "Toutes catégories",
+        "allLocations": "Tous emplacements",
+        "allAvailability": "Toutes dispo",
+        "available": "Disponible",
+        "outOfStock": "Indisponible",
+        "suggestArticle": "Article",
+        "suggestCategory": "Catégorie",
+        "suggestLocation": "Emplacement",
+        "noSuggestion": "Aucune suggestion",
+        "resetFilters": "Réinitialiser",
+        "results": "résultats"
     },
     "movement": {
         "in": "Entrée",

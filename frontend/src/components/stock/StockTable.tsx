@@ -1,14 +1,17 @@
-import { FiEdit2, FiX } from "react-icons/fi";
-// Tableau du stock - toute la ligne est cliquable (Power of 10 R4)
+import { FiChevronDown, FiChevronUp, FiEdit2, FiX } from "react-icons/fi";
+// Tableau du stock - lignes cliquables, en-têtes triables (Power of 10 R4)
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "../../i18n/I18nContext";
 import { StockItem, AvailabilityEntry } from "../../types";
+import { StockSort, StockSortKey } from "../../hooks/useStockQuery";
 import { api } from "../../services/api";
 
 interface Props {
     items: StockItem[];
     avail: Record<string, AvailabilityEntry>;
     canEdit: boolean;
+    sort: StockSort;
+    onSort: (k: StockSortKey) => void;
     onChanged: () => void;
     onEdit: (item: StockItem) => void;
 }
@@ -19,6 +22,21 @@ interface RowProps {
     canEdit: boolean;
     onDelete: (id: string) => void;
     onEdit: (item: StockItem) => void;
+}
+
+function SortTh(p: { label: string; k: StockSortKey; sort: StockSort; onSort: (k: StockSortKey) => void }): JSX.Element {
+    const active = p.sort.key === p.k;
+    return (
+        <th className="table-header" style={{ cursor: "pointer", userSelect: "none", whiteSpace: "nowrap" }}
+            onClick={() => p.onSort(p.k)}
+            title={p.label}
+        >
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem", color: active ? "var(--accent)" : undefined }}>
+                {p.label}
+                {active && (p.sort.dir === "asc" ? <FiChevronUp /> : <FiChevronDown />)}
+            </span>
+        </th>
+    );
 }
 
 function StockRow({ item, avail: a, canEdit, onDelete, onEdit }: RowProps): JSX.Element {
@@ -73,7 +91,7 @@ function StockRow({ item, avail: a, canEdit, onDelete, onEdit }: RowProps): JSX.
     );
 }
 
-export default function StockTable({ items, avail, canEdit, onChanged, onEdit }: Props): JSX.Element {
+export default function StockTable({ items, avail, canEdit, sort, onSort, onChanged, onEdit }: Props): JSX.Element {
     const { t } = useTranslation();
     const deleteItem = async (id: string): Promise<void> => {
         if (!confirm(t("stock.deleteConfirm"))) return;
@@ -86,14 +104,14 @@ export default function StockTable({ items, avail, canEdit, onChanged, onEdit }:
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
                     <tr>
-                        <th className="table-header">{t("drive.name")}</th>
-                        <th className="table-header">{t("stock.ref")}</th>
-                        <th className="table-header">{t("stock.qty")}</th>
-                        <th className="table-header">{t("stock.dispo")}</th>
-                        <th className="table-header">{t("stock.category")}</th>
-                        <th className="table-header">{t("stock.location")}</th>
-                        <th className="table-header">{t("stock.minThreshold")}</th>
-                        <th className="table-header">{t("stock.purchasePrice")}</th>
+                        <SortTh label={t("drive.name")} k="name" sort={sort} onSort={onSort} />
+                        <SortTh label={t("stock.ref")} k="reference" sort={sort} onSort={onSort} />
+                        <SortTh label={t("stock.qty")} k="quantity" sort={sort} onSort={onSort} />
+                        <SortTh label={t("stock.dispo")} k="available" sort={sort} onSort={onSort} />
+                        <SortTh label={t("stock.category")} k="category" sort={sort} onSort={onSort} />
+                        <SortTh label={t("stock.location")} k="location" sort={sort} onSort={onSort} />
+                        <SortTh label={t("stock.minThreshold")} k="minThreshold" sort={sort} onSort={onSort} />
+                        <SortTh label={t("stock.purchasePrice")} k="purchasePrice" sort={sort} onSort={onSort} />
                         {canEdit && <th className="table-header"></th>}
                     </tr>
                 </thead>
@@ -103,7 +121,7 @@ export default function StockTable({ items, avail, canEdit, onChanged, onEdit }:
                             onDelete={(id) => void deleteItem(id)} onEdit={onEdit} />
                     ))}
                     {items.length === 0 && (
-                        <tr><td className="table-cell" colSpan={9} style={{ textAlign: "center", color: "var(--muted)" }}>{t("stock.noItems")}</td></tr>
+                        <tr><td className="table-cell" colSpan={canEdit ? 9 : 8} style={{ textAlign: "center", color: "var(--muted)" }}>{t("stock.noItems")}</td></tr>
                     )}
                 </tbody>
             </table>

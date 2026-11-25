@@ -10,7 +10,10 @@ import StockTabs, { StockTabId } from "../components/stock/StockTabs";
 import StockForm from "../components/stock/StockForm";
 import Modal from "../components/ui/Modal";
 import StockTable from "../components/stock/StockTable";
+import StockSearchBar from "../components/stock/StockSearchBar";
+import StockFilters from "../components/stock/StockFilters";
 import StockMovementsSection from "../components/stock/StockMovementsSection";
+import { useStockQuery } from "../hooks/useStockQuery";
 
 interface HeaderProps {
     count: number;
@@ -82,32 +85,27 @@ export default function Stock(): JSX.Element {
     const { t } = useTranslation();
     const { user } = useAuth();
     const [tab, setTab] = useState<StockTabId>("inventory");
-    const [items, setItems] = useState<StockItem[]>([]);
     const avail = useAvailability();
-    const [search, setSearch] = useState("");
-    const [lowOnly, setLowOnly] = useState(false);
+    const q = useStockQuery(avail);
     const [showForm, setShowForm] = useState(false);
     const [editing, setEditing] = useState<StockItem | null>(null);
     const canEdit = user !== null && user.role !== "VIEWER";
-
-    const load = (): void => {
-        let url = "/api/stock?limit=500";
-        if (search) url += `&search=${encodeURIComponent(search)}`;
-        if (lowOnly) url += "&lowStock=true";
-        api.get<StockItem[]>(url).then((r) => { if (r.success) setItems(r.data); });
-    };
-
-    useEffect(load, [search, lowOnly]);
-
     const navigate = useNavigate();
     const { enabled } = useModules();
+
     useEffect(() => {
         if (!enabled("stock")) navigate("/", { replace: true });
     }, [enabled, navigate]);
 
+    const categories = [...new Set(q.allItems.map((i) => i.category).filter((c) => c !== ""))].sort();
+    const locations = [...new Set(q.allItems.map((i) => i.location).filter((l) => l !== ""))].sort();
+    const resetFilters = (): void => {
+        q.setQuery(""); q.setCategory(""); q.setLocation(""); q.setDispo("all"); q.setLowOnly(false);
+    };
+
     return (
         <div>
-            <StockHeader count={items.length} canEdit={canEdit} tab={tab}
+            <StockHeader count={q.items.length} canEdit={canEdit} tab={tab}
                 onOpenForm={() => setShowForm(true)} label={t} />
 
             <StockTabs active={tab} onChange={setTab} />
@@ -116,19 +114,23 @@ export default function Stock(): JSX.Element {
                 <>
                     <StockModals showForm={showForm} editing={editing} canEdit={canEdit}
                         onCloseForm={() => setShowForm(false)} onCloseEdit={() => setEditing(null)}
-                        onSaved={() => { setShowForm(false); setEditing(null); load(); }} />
-                    <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
-                        <input className="input" placeholder={t("stock.searchArticle")} value={search}
-                            onChange={(e) => setSearch(e.target.value)} style={{ maxWidth: "400px" }} />
-                        <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.85rem", fontWeight: 700, textTransform: "uppercase" }}>
-                            <input type="checkbox" checked={lowOnly} onChange={(e) => setLowOnly(e.target.checked)} />
-                            {t("stock.low")}
-                        </label>
+                        onSaved={() => { setShowForm(false); setEditing(null); q.reload(); }} />
+                    <div style={{ display: "flex", gap: "1rem", marginBottom: "0.75rem" }}>
+                        <StockSearchBar query={q.query} onQuery={q.setQuery} allItems={q.allItems}
+                            onPickItem={(item) => navigate(`/stock/${item.id}`)}
+                            onPickCategory={q.setCategory} onPickLocation={q.setLocation} />
                     </div>
-                    <StockTable items={items} avail={avail} onChanged={load} canEdit={canEdit} onEdit={setEditing} />
+                    <StockFilters categories={categories} locations={locations}
+                        category={q.category} onCategory={q.setCategory}
+                        location={q.location} onLocation={q.setLocation}
+                        dispo={q.dispo} onDispo={q.setDispo}
+                        lowOnly={q.lowOnly} onLowOnly={q.setLowOnly}
+                        onReset={resetFilters} resultCount={q.items.length} totalCount={q.allItems.length} />
+                    <StockTable items={q.items} avail={avail} canEdit={canEdit}
+                        sort={q.sort} onSort={q.toggleSort} onChanged={q.reload} onEdit={setEditing} />
                 </>
             )}
-            {tab === "movements" && <StockMovementsSection items={items} />}
+            {tab === "movements" && <StockMovementsSection items={q.allItems} />}
         </div>
     );
 }
