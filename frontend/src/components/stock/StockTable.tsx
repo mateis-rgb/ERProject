@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "../../i18n/I18nContext";
 import { StockItem, AvailabilityEntry } from "../../types";
 import { StockSort, StockSortKey } from "../../hooks/useStockQuery";
+import StockIcon from "./StockIcon";
 import { api } from "../../services/api";
 
 interface Props {
@@ -53,6 +54,9 @@ function StockRow({ item, avail: a, canEdit, onDelete, onEdit }: RowProps): JSX.
             aria-label={item.name}
             style={{ cursor: "pointer", ...(isLow ? { backgroundColor: "rgba(239,68,68,0.1)" } : {}) }}
         >
+            <td className="table-cell">
+                <StockIcon category={item.category} name={item.name} imagePath={item.imagePath} size={30} />
+            </td>
             <td className="table-cell" style={{ fontWeight: 600 }}>{item.name}</td>
             <td className="table-cell">{item.reference}</td>
             <td className="table-cell">
@@ -104,6 +108,7 @@ export default function StockTable({ items, avail, canEdit, sort, onSort, onChan
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
                     <tr>
+                        <th className="table-header"></th>
                         <SortTh label={t("drive.name")} k="name" sort={sort} onSort={onSort} />
                         <SortTh label={t("stock.ref")} k="reference" sort={sort} onSort={onSort} />
                         <SortTh label={t("stock.qty")} k="quantity" sort={sort} onSort={onSort} />
@@ -121,7 +126,7 @@ export default function StockTable({ items, avail, canEdit, sort, onSort, onChan
                             onDelete={(id) => void deleteItem(id)} onEdit={onEdit} />
                     ))}
                     {items.length === 0 && (
-                        <tr><td className="table-cell" colSpan={canEdit ? 9 : 8} style={{ textAlign: "center", color: "var(--muted)" }}>{t("stock.noItems")}</td></tr>
+                        <tr><td className="table-cell" colSpan={canEdit ? 10 : 9} style={{ textAlign: "center", color: "var(--muted)" }}>{t("stock.noItems")}</td></tr>
                     )}
                 </tbody>
             </table>

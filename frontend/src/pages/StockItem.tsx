@@ -8,6 +8,7 @@ import { api } from "../services/api";
 import { StockItemDetails, StockMovementDetail, StockReservation } from "../types";
 import Modal from "../components/ui/Modal";
 import StockForm from "../components/stock/StockForm";
+import StockIcon from "../components/stock/StockIcon";
 import CommentsSection from "../components/projects/CommentsSection";
 
 const TYPE_COLORS: Record<string, string> = {
@@ -38,11 +39,13 @@ function useDetails(id: string): { details: StockItemDetails | null; notFound: b
 interface PhotoProps {
     itemId: string;
     imagePath: string | null;
+    category: string;
+    name: string;
     canEdit: boolean;
     onChanged: () => void;
 }
 
-function PhotoCard({ itemId, imagePath, canEdit, onChanged }: PhotoProps): JSX.Element {
+function PhotoCard({ itemId, imagePath, category, name, canEdit, onChanged }: PhotoProps): JSX.Element {
     const { t } = useTranslation();
     const inputRef = useRef<HTMLInputElement>(null);
     const [error, setError] = useState<string | null>(null);
@@ -70,9 +73,10 @@ function PhotoCard({ itemId, imagePath, canEdit, onChanged }: PhotoProps): JSX.E
                     style={{ width: "100%", maxHeight: "260px", objectFit: "cover", border: "var(--border-w) solid var(--ink)" }} />
             ) : (
                 <div style={{
-                    height: "160px", display: "flex", alignItems: "center", justifyContent: "center",
+                    height: "160px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "0.6rem",
                     border: "var(--border-w) solid var(--ink)", color: "var(--muted)", fontSize: "0.85rem",
                 }}>
+                    <StockIcon category={category} name={name} imagePath={null} size={64} />
                     {t("stockDetail.noPhoto")}
                 </div>
             )}
@@ -259,7 +263,8 @@ export default function StockItemPage(): JSX.Element {
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "320px 1fr", gap: "1.25rem", alignItems: "start" }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-                    <PhotoCard itemId={itemId} imagePath={details.item.imagePath} canEdit={canEdit} onChanged={reload} />
+                    <PhotoCard itemId={itemId} imagePath={details.item.imagePath} category={details.item.category}
+                        name={details.item.name} canEdit={canEdit} onChanged={reload} />
                     <InfoCard details={details} />
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>

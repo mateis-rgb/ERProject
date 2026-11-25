@@ -2,7 +2,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "../../i18n/I18nContext";
 import { StockItem } from "../../types";
-import { FiBox, FiTag, FiMapPin, FiSearch } from "react-icons/fi";
+import { FiTag, FiMapPin, FiSearch } from "react-icons/fi";
+import StockIcon from "./StockIcon";
 
 export interface Suggestion {
     kind: "item" | "category" | "location";
@@ -45,8 +46,15 @@ export function buildSuggestions(query: string, allItems: StockItem[], categorie
     return [...items, ...cats, ...locs];
 }
 
+function SuggestionIcon(p: { s: Suggestion; active: boolean }): JSX.Element {
+    if (p.s.kind === "item" && p.s.item !== undefined) {
+        return <StockIcon category={p.s.item.category} name={p.s.item.name} imagePath={p.s.item.imagePath} size={24} />;
+    }
+    const Icon = p.s.kind === "category" ? FiTag : FiMapPin;
+    return <Icon style={{ flexShrink: 0, color: p.active ? "var(--accent-ink)" : "var(--accent)" }} />;
+}
+
 function SuggestionRow(p: { s: Suggestion; active: boolean; onPick: () => void; onHover: () => void; label: string }): JSX.Element {
-    const Icon = p.s.kind === "item" ? FiBox : p.s.kind === "category" ? FiTag : FiMapPin;
     return (
         <div
             onClick={p.onPick}
@@ -58,7 +66,7 @@ function SuggestionRow(p: { s: Suggestion; active: boolean; onPick: () => void; 
                 borderBottom: "1px solid var(--ink)", fontSize: "0.85rem",
             }}
         >
-            <Icon style={{ flexShrink: 0 }} />
+            <SuggestionIcon s={p.s} active={p.active} />
             <strong style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.s.label}</strong>
             {p.s.sub !== "" && (
                 <span className="mono" style={{ fontSize: "0.72rem", opacity: 0.7, flexShrink: 0 }}>{p.s.sub}</span>
