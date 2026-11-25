@@ -32,11 +32,12 @@ export default function Sidebar({ user, collapsed, onLogout }: Props): JSX.Eleme
             padding: collapsed ? "1rem 0.5rem" : "1.25rem 1rem", overflow: "hidden",
             transition: "padding 0.15s",
         }}>
-            {/* Header : logo (bouton rétracter dans la TopBar globale) */}
+            {/* Header : logo - hauteur fixe identique en mode étendu et rétracté */}
             <div style={{
                 display: "flex", alignItems: "center", gap: "0.625rem", marginBottom: "1.5rem",
                 justifyContent: collapsed ? "center" : "flex-start",
-                border: "2px solid var(--ink)", padding: collapsed ? "0.5rem" : "0.6rem 0.75rem",
+                border: "2px solid var(--ink)", padding: "0 0.75rem",
+                height: "46px", boxSizing: "border-box",
                 background: "var(--bg)", boxShadow: "4px 4px 0 var(--ink)",
             }}>
                 <span className="rec-dot" />
@@ -54,6 +55,7 @@ export default function Sidebar({ user, collapsed, onLogout }: Props): JSX.Eleme
                             display: "flex", alignItems: "center", gap: "0.6rem",
                             justifyContent: collapsed ? "center" : "flex-start",
                             padding: collapsed ? "0.65rem 0" : undefined,
+                            minHeight: "42px", boxSizing: "border-box",
                         }}>
                         <item.icon />
                         {!collapsed && t(item.key)}

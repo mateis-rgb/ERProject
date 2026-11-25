@@ -21,15 +21,16 @@ export default function UserCard({ user, collapsed, onLogout }: Props): JSX.Elem
     const navigate = useNavigate();
     const { t } = useTranslation();
 
+    // Hauteur fixe identique en mode étendu et rétracté (le contenu change, pas la hauteur)
     if (collapsed) {
         return (
             <div style={{ marginTop: "auto", borderTop: "3px solid var(--ink)", paddingTop: "1rem", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.75rem" }}>
                 <button onClick={() => navigate("/settings/security")} title={t("nav.account")} aria-label={t("nav.account")}
-                    className="user-card-btn" style={{ width: "44px", justifyContent: "center", padding: "0.25rem" }}>
+                    className="user-card-btn" style={{ width: "44px", height: "44px", justifyContent: "center", padding: "0.25rem", boxSizing: "border-box" }}>
                     <div style={AVATAR_STYLE}>{user.name.slice(0, 2).toUpperCase()}</div>
                 </button>
                 <button className="btn-ghost" onClick={onLogout} title={t("nav.logout")} aria-label={t("nav.logout")}
-                    style={{ padding: "0.35rem 0.55rem" }}>
+                    style={{ width: "44px", height: "40px", padding: 0, justifyContent: "center", boxSizing: "border-box" }}>
                     <FiLogOut />
                 </button>
             </div>
@@ -42,6 +43,7 @@ export default function UserCard({ user, collapsed, onLogout }: Props): JSX.Elem
                 onClick={() => navigate("/settings/security")}
                 title={t("nav.account")}
                 className="user-card-btn"
+                style={{ height: "52px", boxSizing: "border-box" }}
             >
                 <div style={AVATAR_STYLE}>
                     {user.name.slice(0, 2).toUpperCase()}
@@ -55,8 +57,9 @@ export default function UserCard({ user, collapsed, onLogout }: Props): JSX.Elem
                     </div>
                 </div>
             </button>
-            <button className="btn-ghost" onClick={onLogout} style={{ width: "100%", marginTop: "0.75rem", fontSize: "0.78rem" }}>
-                {t("nav.logout")}
+            <button className="btn-ghost" onClick={onLogout}
+                style={{ width: "100%", marginTop: "0.75rem", fontSize: "0.78rem", height: "40px", boxSizing: "border-box" }}>
+                <span className="ic"><FiLogOut /> {t("nav.logout")}</span>
             </button>
         </div>
     );
