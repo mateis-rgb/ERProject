@@ -3,6 +3,8 @@ import { FiArrowRight } from "react-icons/fi";
 import { useTranslation } from "../../i18n/I18nContext";
 import { Link } from "react-router-dom";
 import { Project } from "../../types";
+import { ProgressBar } from "../ui/ProgressBar";
+import { computeProgress } from "../../utils/progress";
 
 const STATUS_COLORS: Record<string, string> = {
     "En étude": "var(--accent)",
@@ -27,6 +29,7 @@ export default function ProjectTable({ projects }: Props): JSX.Element {
                         <th className="table-header">{t("project.client")}</th>
                         <th className="table-header">{t("project.status")}</th>
                         <th className="table-header">{t("project.type")}</th>
+                        <th className="table-header">{t("common.progress")}</th>
                         <th className="table-header">Budget</th>
                         <th className="table-header"></th>
                     </tr>
@@ -42,6 +45,7 @@ export default function ProjectTable({ projects }: Props): JSX.Element {
                                 </span>
                             </td>
                             <td className="table-cell">{p.type || "—"}</td>
+                            <td className="table-cell"><ProgressBar value={computeProgress(p.startDate, p.endDate, [])} width={80} /></td>
                             <td className="table-cell">{p.budget !== null ? `${p.budget} €` : "—"}</td>
                             <td className="table-cell">
                                 <Link to={`/projects/${p.id}`} style={{ color: "var(--accent)", textDecoration: "none" }}>
@@ -51,7 +55,7 @@ export default function ProjectTable({ projects }: Props): JSX.Element {
                         </tr>
                     ))}
                     {projects.length === 0 && (
-                        <tr><td className="table-cell" colSpan={6} style={{ textAlign: "center", color: "var(--muted)" }}>Aucun projet</td></tr>
+                        <tr><td className="table-cell" colSpan={7} style={{ textAlign: "center", color: "var(--muted)" }}>Aucun projet</td></tr>
                     )}
                 </tbody>
             </table>

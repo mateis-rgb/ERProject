@@ -8,6 +8,8 @@ import { api } from "../services/api";
 import { Planning, PlanningMilestone, PlanningProject, StockConflict } from "../types";
 import GanttHeader from "../components/gantt/GanttHeader";
 import GanttToolbar from "../components/gantt/GanttToolbar";
+import { ProgressBar } from "../components/ui/ProgressBar";
+import { computeProgress } from "../utils/progress";
 import { GanttView, DAY_MS, buildTicks, barGeom, computeGanttRange, GanttRange } from "../components/gantt/ganttUtils";
 
 const MIN_WIDTH = 600;
@@ -25,20 +27,6 @@ interface ProjectGroup {
     progress: number; // 0..100 : basé sur les dates du projet, sinon sur les jalons écoulés
 }
 
-// Avancement : temporel si le projet a des dates, sinon part des jalons terminés
-function projectProgress(p: PlanningProject, items: PlanningMilestone[], now: number): number {
-    if (p.startDate !== null && p.endDate !== null) {
-        const s = new Date(p.startDate).getTime();
-        const e = new Date(p.endDate).getTime();
-        if (e > s) return Math.min(100, Math.max(0, ((now - s) / (e - s)) * 100));
-    }
-    if (items.length > 0) {
-        const done = items.filter((m) => new Date(m.endDate).getTime() <= now).length;
-        return Math.round((done / items.length) * 100);
-    }
-    return 0;
-}
-
 // Un groupe par projet actif ; la barre couvre les dates du projet (fallback: span des jalons)
 function groupByProject(projects: PlanningProject[], milestones: PlanningMilestone[]): ProjectGroup[] {
     return projects.map((p) => {
@@ -53,7 +41,8 @@ function groupByProject(projects: PlanningProject[], milestones: PlanningMilesto
                 if (end === null || e > end) end = e;
             }
         }
-        return { projectId: p.id, projectName: p.name, projectStatus: p.status, items, start, end, progress: projectProgress(p, items, Date.now()) };
+        const progress = computeProgress(p.startDate, p.endDate, items.map((m) => m.endDate)) ?? 0;
+        return { projectId: p.id, projectName: p.name, projectStatus: p.status, items, start, end, progress };
     });
 }
 
@@ -107,29 +96,6 @@ const LABEL_STYLE: React.CSSProperties = {
     overflow: "hidden", boxSizing: "border-box",
 };
 
-// KPI d'avancement : barre néo-brutaliste + pourcentage
-function ProgressKpi({ pct }: { pct: number }): JSX.Element {
-    const { t } = useTranslation();
-    const clamped = Math.min(100, Math.max(0, Math.round(pct)));
-    return (
-        <span style={{ display: "flex", alignItems: "center", gap: "0.4rem", minWidth: 0 }} title={`${t("planning.progress")}: ${clamped}%`}>
-            <span style={{
-                flex: 1, minWidth: 0, height: "10px",
-                border: "var(--border-w) solid var(--ink)", background: "var(--surface)",
-                position: "relative", overflow: "hidden",
-            }}>
-                <span style={{
-                    position: "absolute", left: 0, top: 0, bottom: 0, width: `${clamped}%`,
-                    background: clamped >= 100 ? "var(--green)" : "var(--accent)",
-                }} />
-            </span>
-            <span className="mono" style={{ fontSize: "0.62rem", fontWeight: 700, color: "var(--ink)", flexShrink: 0 }}>
-                {clamped}%
-            </span>
-        </span>
-    );
-}
-
 function ProjectLabel({ g }: { g: ProjectGroup }): JSX.Element {
     const dates = g.start !== null && g.end !== null
         ? `${fmtDate(new Date(g.start).toISOString())} - ${fmtDate(new Date(g.end).toISOString())}`
@@ -144,7 +110,7 @@ function ProjectLabel({ g }: { g: ProjectGroup }): JSX.Element {
                     {g.projectStatus}
                 </span>
             </span>
-            <ProgressKpi pct={g.progress} />
+            <ProgressBar value={g.progress} width={64} />
             <span style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.35rem" }}>
                 <span className="mono" style={{ fontSize: "0.6rem", color: "var(--muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {dates ?? "—"}

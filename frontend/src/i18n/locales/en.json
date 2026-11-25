@@ -26,7 +26,8 @@
         "noResult": "No result.",
         "details": "Details",
         "irreversible": "Irreversible.",
-        "creating": "Creating..."
+        "creating": "Creating...",
+        "progress": "Progress"
     },
     "login": {
         "tagline": "Production control room Projects & Stock",
@@ -385,8 +386,7 @@
         "project": "Project",
         "milestone": "Milestone",
         "quantity": "Reserved qty",
-        "rows": "projects",
-        "progress": "Progress"
+        "rows": "projects"
     },
     "stockDetail": {
         "back": "Back to stock",

@@ -26,7 +26,8 @@
         "noResult": "Aucun résultat.",
         "details": "Détails",
         "irreversible": "Irréversible.",
-        "creating": "Création..."
+        "creating": "Création...",
+        "progress": "Avancement"
     },
     "login": {
         "tagline": "Régie de production Projets & Stock",
@@ -385,8 +386,7 @@
         "project": "Projet",
         "milestone": "Jalon",
         "quantity": "Qté réservée",
-        "rows": "projets",
-        "progress": "Avancement"
+        "rows": "projets"
     },
     "stockDetail": {
         "back": "Retour au stock",

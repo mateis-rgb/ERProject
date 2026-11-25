@@ -5,6 +5,8 @@ import { Milestone, Project, ProjectCollaborator } from "../../types";
 import ProjectMetaChips from "./ProjectMetaChips";
 import ProjectMetaModal, { MetaKind } from "./ProjectMetaModal";
 import ProjectExport from "./ProjectExport";
+import { ProgressBar } from "../ui/ProgressBar";
+import { computeProgress } from "../../utils/progress";
 import { useModules } from "../../context/ModulesContext";
 
 interface Props {
@@ -56,6 +58,9 @@ export default function ProjectHeader(props: Props): JSX.Element {
                         </span>
                     </div>
                     <p style={{ color: "var(--muted)", marginTop: "0.5rem" }}>{project.description || "Aucune description"}</p>
+                    <div style={{ marginTop: "0.6rem" }}>
+                        <ProgressBar value={computeProgress(project.startDate, project.endDate, milestones.map((m) => m.endDate))} width={140} />
+                    </div>
                     <ProjectMetaChips project={project} milestonesCount={milestones.length} onOpen={setMetaKind} />
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "flex-end" }}>
