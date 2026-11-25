@@ -18,8 +18,14 @@ export default function AppTab(): JSX.Element {
                 </h2>
                 <LanguagePicker />
             </div>
-            {isAdmin && <StorageSection />}
-            {isAdmin && <MentionScopeSection />}
+
+			<div style={{ marginBottom: "1rem" }}>
+				{isAdmin && <StorageSection />}
+			</div>
+			
+			<div style={{ marginBottom: "1rem" }}>
+				{isAdmin && <MentionScopeSection />}
+            </div>
         </div>
     );
 }

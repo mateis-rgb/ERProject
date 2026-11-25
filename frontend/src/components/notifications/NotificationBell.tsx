@@ -28,8 +28,12 @@ export default function NotificationBell(): JSX.Element {
 
     return (
         <div ref={ref} style={{ position: "relative" }}>
-            <button className="btn-ghost" onClick={() => setOpen(!open)} style={{ position: "relative", padding: "0.5rem 0.75rem" }}>
-                <span style={{ fontSize: "1rem" }}><FiBell /></span>
+            <button className="btn-ghost" onClick={() => setOpen(!open)} aria-label="Notifications"
+                style={{
+                    position: "relative", width: "40px", height: "40px", padding: 0,
+                    boxSizing: "border-box", display: "inline-flex", alignItems: "center", justifyContent: "center",
+                }}>
+                <FiBell style={{ width: "18px", height: "18px" }} />
                 {unreadCount > 0 && (
                     <span className="mono" style={{
                         position: "absolute", top: "-8px", right: "-8px",

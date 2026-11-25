@@ -459,7 +459,9 @@ svg { vertical-align: middle; }
 
 /* Icône seule dans un bouton/lien : toujours carrée, jamais déformée */
 button > svg:only-child,
-a > svg:only-child {
+a > svg:only-child,
+button > span:only-child > svg:only-child,
+a > span:only-child > svg:only-child {
     width: 18px;
     height: 18px;
     flex-shrink: 0;
