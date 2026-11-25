@@ -11,7 +11,7 @@ import GanttToolbar from "../components/gantt/GanttToolbar";
 import { GanttView, DAY_MS, buildTicks, barGeom, computeGanttRange, GanttRange } from "../components/gantt/ganttUtils";
 
 const MIN_WIDTH = 600;
-const LABEL_W = 190;
+const LABEL_W = "clamp(110px, 20vw, 190px)"; // colonne fluide selon la largeur de fenêtre
 
 type Range = GanttRange;
 
@@ -85,7 +85,7 @@ const PROJECT_HATCH = "repeating-linear-gradient(45deg, var(--muted) 0px, var(--
 
 
 const LABEL_STYLE: React.CSSProperties = {
-    width: `${LABEL_W}px`, flexShrink: 0, position: "sticky", left: 0, zIndex: 6,
+    width: LABEL_W, flexShrink: 0, position: "sticky", left: 0, zIndex: 6,
     padding: "0.5rem 0.6rem", borderRight: "var(--border-w) solid var(--ink)", background: "var(--bg)",
     display: "flex", flexDirection: "column", justifyContent: "center", gap: "0.15rem",
 };
@@ -179,7 +179,7 @@ function PlanningTimeline({ data, view, onView }: TimelineProps): JSX.Element {
     const ticks = buildTicks(r.rangeStart, rangeEnd, view);
     const todayPct = Math.min(100, Math.max(0, r.pct(Date.now())));
     return (
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ flex: "1 1 480px", minWidth: 0 }}>
             <GanttToolbar view={view} onView={onView} />
             <div style={{ overflow: "auto", border: "var(--border-w) solid var(--ink)", background: "var(--surface)" }}>
                 <div style={{ display: "inline-block", minWidth: "100%" }}>
@@ -198,7 +198,7 @@ function PlanningTimeline({ data, view, onView }: TimelineProps): JSX.Element {
 function ConflictsPanel({ conflicts }: { conflicts: StockConflict[] }): JSX.Element {
     const { t } = useTranslation();
     return (
-        <div style={{ width: "320px", flexShrink: 0 }}>
+        <div style={{ flex: "1 1 300px", minWidth: 260, maxWidth: "360px" }}>
             <h2 style={{ fontSize: "0.95rem", fontWeight: 700, textTransform: "uppercase", margin: "0 0 0.75rem" }}>
                 {t("planning.conflictsTitle")} ({conflicts.length})
             </h2>
@@ -244,7 +244,7 @@ export default function PlanningPage(): JSX.Element {
                     <p className="page-subtitle">{t("planning.subtitle")} · {groups.length} {t("planning.rows")}</p>
                 </div>
             </div>
-            <div style={{ display: "flex", gap: "1.25rem", alignItems: "flex-start" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "1.25rem", alignItems: "flex-start" }}>
                 <PlanningTimeline data={data} view={view} onView={setView} />
                 <ConflictsPanel conflicts={data.conflicts} />
             </div>
