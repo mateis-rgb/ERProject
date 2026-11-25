@@ -2,13 +2,14 @@
 import { NavLink } from "react-router-dom";
 import { AuthUser } from "../../types";
 import { useTranslation } from "../../i18n/I18nContext";
-import { useModules } from "../../context/ModulesContext";
+import { useModules, ModuleId } from "../../context/ModulesContext";
 import UserCard from "./UserCard";
 
-const NAV: { to: string; key: string; end?: boolean; module?: "stock" }[] = [
+const NAV: { to: string; key: string; end?: boolean; module?: ModuleId }[] = [
     { to: "/", key: "nav.dashboard", end: true },
     { to: "/projects", key: "nav.projects" },
     { to: "/stock", key: "nav.stock", module: "stock" },
+    { to: "/planning", key: "nav.planning", module: "gantt" },
     { to: "/settings", key: "nav.settings" },
 ];
 

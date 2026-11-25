@@ -1,5 +1,6 @@
 import { FiEdit2, FiX } from "react-icons/fi";
 // Tableau du stock (Power of 10 R4)
+import { Link } from "react-router-dom";
 import { useTranslation } from "../../i18n/I18nContext";
 import { StockItem, AvailabilityEntry } from "../../types";
 import { api } from "../../services/api";
@@ -26,7 +27,9 @@ function StockRow({ item, avail: a, canEdit, onDelete, onEdit }: RowProps): JSX.
     const unavailable = a !== undefined && a.reserved > 0 && a.available <= 0;
     return (
         <tr style={isLow ? { backgroundColor: "rgba(239,68,68,0.1)" } : undefined}>
-            <td className="table-cell" style={{ fontWeight: 600 }}>{item.name}</td>
+            <td className="table-cell" style={{ fontWeight: 600 }}>
+                <Link to={`/stock/${item.id}`} style={{ color: "var(--ink)" }}>{item.name}</Link>
+            </td>
             <td className="table-cell">{item.reference}</td>
             <td className="table-cell">
                 <strong style={isLow ? { color: "var(--danger)" } : undefined}>

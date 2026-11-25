@@ -4,8 +4,10 @@ import { z } from "zod";
 import {
     createStockItem, getStockItemById, listStockItems, updateStockItem,
     deleteStockItem, createMovement, listMovements, getLowStockItems, getStockValue,
-    getAvailabilityMap,
+    getAvailabilityMap, getStockItemDetails, setStockItemImage, clearStockItemImage,
 } from "../services/stockService";
+import multer from "multer";
+import { config } from "../config";
 import { validateBody, validateQuery } from "../middleware/validation";
 import { requireAuth, requireRole } from "../middleware/auth";
 import { requireModule } from "../middleware/modules";
@@ -107,6 +109,40 @@ stockRouter.get("/:id", async (req: Request, res: Response) => {
         return;
     }
     res.json({ success: true, data: item });
+});
+
+// Détail article : mouvements, réservations (projets/jalons), dispo actuelle
+stockRouter.get("/:id/details", async (req: Request, res: Response) => {
+    const id = req.params.id ?? "";
+    const details = await getStockItemDetails(id);
+    if (details === null) {
+        res.status(404).json({ success: false, error: "Article non trouvé" });
+        return;
+    }
+    res.json({ success: true, data: details });
+});
+
+// Photo de l'article (upload image)
+const imageUpload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: Math.min(config.maxUploadSize, 10 * 1024 * 1024), files: 1 },
+});
+
+stockRouter.post("/:id/image", requireRole("EDITOR"), imageUpload.single("image"), async (req: Request, res: Response) => {
+    const id = req.params.id ?? "";
+    const file = req.file;
+    if (file === undefined) {
+        res.status(400).json({ success: false, error: "Image manquante" });
+        return;
+    }
+    const rel = await setStockItemImage(id, file.buffer, file.mimetype);
+    res.status(201).json({ success: true, data: { imagePath: rel } });
+});
+
+stockRouter.delete("/:id/image", requireRole("EDITOR"), async (req: Request, res: Response) => {
+    const id = req.params.id ?? "";
+    await clearStockItemImage(id);
+    res.json({ success: true, data: { message: "Photo supprimée" } });
 });
 
 stockRouter.patch("/:id", requireRole("EDITOR"), validateBody(stockItemUpdateSchema), async (req: Request, res: Response) => {

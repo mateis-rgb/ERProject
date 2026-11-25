@@ -38,6 +38,7 @@ export interface StockItem {
     purchasePrice: number | null;
     location: string;
     minThreshold: number;
+    imagePath: string | null;
     createdAt: string;
     updatedAt: string;
 }
@@ -173,6 +174,78 @@ export interface ProjectTemplate {
     milestones: TemplateMilestone[];
     folders: string[];
     collaboratorIds: string[];
+    createdAt: string;
+    updatedAt: string;
+}
+
+// Planning global cross-projets (GET /api/planning)
+export interface PlanningMilestone {
+    id: string;
+    projectId: string;
+    projectName: string;
+    projectStatus: string;
+    name: string;
+    startDate: string;
+    endDate: string;
+    color: string;
+    parentId: string | null;
+}
+
+export interface ConflictSide {
+    projectId: string;
+    projectName: string;
+    milestoneId: string;
+    milestoneName: string;
+}
+
+export interface StockConflict {
+    stockItemId: string;
+    stockItemName: string;
+    reference: string;
+    quantity: number;
+    overlapStart: string;
+    overlapEnd: string;
+    a: ConflictSide;
+    b: ConflictSide;
+}
+
+export interface Planning {
+    milestones: PlanningMilestone[];
+    conflicts: StockConflict[];
+}
+
+// Page détail d'un article (GET /api/stock/:id/details)
+export interface StockReservation {
+    projectId: string;
+    projectName: string;
+    milestoneId: string | null;
+    milestoneName: string | null;
+    allocatedQuantity: number;
+    consumedQuantity: number;
+    forecastQuantity: number;
+    forecastDate: string | null;
+}
+
+export interface StockMovementDetail extends StockMovement {
+    userName: string;
+    projectName: string | null;
+}
+
+export interface StockItemDetails {
+    item: StockItem;
+    movements: StockMovementDetail[];
+    reservations: StockReservation[];
+    availability: AvailabilityEntry;
+}
+
+// Commentaires (GET/POST /api/projects/:projectId/comments, PATCH/DELETE /api/comments/:id)
+export interface Comment {
+    id: string;
+    projectId: string;
+    milestoneId: string | null;
+    authorId: string;
+    authorName: string;
+    content: string;
     createdAt: string;
     updatedAt: string;
 }

@@ -1,8 +1,11 @@
 // Service Stock - Power of 10 : fonctions courtes, boucles bornées, assertions
+import fs from "fs";
+import path from "path";
 import { getPrisma } from "../config/prisma";
+import { getStorageDir } from "./storageService";
 import { assert, boundedForEach, MAX_ITERATIONS } from "../utils/power10";
 import { earliestReturnsByProject, sumReserved, toReservationLink, ReservationLink } from "../utils/availability";
-import { StockItemDTO, StockMovementDTO, ProjectStockDTO, AvailabilityEntry } from "../types";
+import { StockItemDTO, StockMovementDTO, ProjectStockDTO, AvailabilityEntry, StockItemDetailsDTO } from "../types";
 import { MovementType } from "@prisma/client";
 import { logActivity } from "./activityService";
 import { emitGlobal } from "./socketService";
@@ -23,13 +26,13 @@ interface StockItemInput {
 function toStockDTO(s: {
     id: string; name: string; reference: string; quantity: number;
     unit: string; category: string; supplier: string; purchasePrice: number | null;
-    location: string; minThreshold: number; createdAt: Date; updatedAt: Date;
+    location: string; minThreshold: number; imagePath: string | null; createdAt: Date; updatedAt: Date;
 }): StockItemDTO {
     return {
         id: s.id, name: s.name, reference: s.reference, quantity: s.quantity,
         unit: s.unit, category: s.category, supplier: s.supplier,
         purchasePrice: s.purchasePrice, location: s.location,
-        minThreshold: s.minThreshold, createdAt: s.createdAt, updatedAt: s.updatedAt,
+        minThreshold: s.minThreshold, imagePath: s.imagePath, createdAt: s.createdAt, updatedAt: s.updatedAt,
     };
 }
 
@@ -365,4 +368,92 @@ export async function getAvailabilityMap(at: Date): Promise<AvailabilityEntry[]>
             available: Math.max(0, it.quantity - reserved),
         };
     });
+}
+
+// ============================================================
+// DÉTAIL ARTICLE (mouvements, réservations, dispo) + PHOTO
+// ============================================================
+
+export async function getStockItemDetails(id: string): Promise<StockItemDetailsDTO | null> {
+    assert(id.length > 0, "getStockItemDetails: invalid id");
+    const prisma = getPrisma();
+    const item = await prisma.stockItem.findUnique({ where: { id } });
+    if (item === null) return null;
+
+    const [movements, links] = await Promise.all([
+        prisma.stockMovement.findMany({
+            where: { stockItemId: id },
+            include: { user: { select: { name: true } }, project: { select: { name: true } } },
+            orderBy: { date: "desc" },
+            take: MAX_ITERATIONS,
+        }),
+        prisma.projectStock.findMany({
+            where: { stockItemId: id },
+            include: {
+                project: { select: { id: true, name: true } },
+                milestone: { select: { id: true, name: true } },
+            },
+            take: MAX_ITERATIONS,
+        }),
+    ]);
+    const avail = (await getAvailabilityMap(new Date())).find((a) => a.stockItemId === id) ?? {
+        stockItemId: id, totalQuantity: item.quantity, reserved: 0, available: item.quantity,
+    };
+    return {
+        item: toStockDTO(item),
+        movements: movements.map((m) => ({
+            ...toMovementDTO(m),
+            userName: m.user.name,
+            projectName: m.project?.name ?? null,
+        })),
+        reservations: links.map((l) => ({
+            projectId: l.projectId,
+            projectName: l.project.name,
+            milestoneId: l.milestoneId,
+            milestoneName: l.milestone?.name ?? null,
+            allocatedQuantity: l.allocatedQuantity,
+            consumedQuantity: l.consumedQuantity,
+            forecastQuantity: l.forecastQuantity,
+            forecastDate: l.forecastDate,
+        })),
+        availability: avail,
+    };
+}
+
+const IMAGE_EXTS: Record<string, string> = {
+    "image/jpeg": ".jpg",
+    "image/png": ".png",
+    "image/webp": ".webp",
+    "image/gif": ".gif",
+};
+
+function removeOldImage(imagePath: string | null): void {
+    if (imagePath === null) return;
+    const old = path.resolve(getStorageDir(), imagePath);
+    if (fs.existsSync(old)) fs.unlinkSync(old);
+}
+
+export async function setStockItemImage(id: string, buffer: Buffer, mimetype: string): Promise<string> {
+    assert(id.length > 0, "setStockItemImage: invalid id");
+    const ext = IMAGE_EXTS[mimetype];
+    if (ext === undefined) throw new Error("Format image non supporté (jpg, png, webp, gif)");
+    const prisma = getPrisma();
+    const item = await prisma.stockItem.findUnique({ where: { id }, select: { imagePath: true } });
+    if (item === null) throw new Error("Article introuvable");
+    const dir = path.join(getStorageDir(), "stock");
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    removeOldImage(item.imagePath);
+    const rel = path.join("stock", `${id}${ext}`);
+    fs.writeFileSync(path.join(getStorageDir(), rel), buffer);
+    await prisma.stockItem.update({ where: { id }, data: { imagePath: rel } });
+    return rel;
+}
+
+export async function clearStockItemImage(id: string): Promise<void> {
+    assert(id.length > 0, "clearStockItemImage: invalid id");
+    const prisma = getPrisma();
+    const item = await prisma.stockItem.findUnique({ where: { id }, select: { imagePath: true } });
+    if (item === null) throw new Error("Article introuvable");
+    removeOldImage(item.imagePath);
+    await prisma.stockItem.update({ where: { id }, data: { imagePath: null } });
 }

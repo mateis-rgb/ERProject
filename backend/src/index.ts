@@ -22,10 +22,13 @@ import { adminRouter } from "./routes/adminRoutes";
 import { featureRouter } from "./routes/featureRoutes";
 import { milestoneRouter } from "./routes/milestoneRoutes";
 import { templateRouter } from "./routes/templateRoutes";
+import { planningRouter } from "./routes/planningRoutes";
+import { commentRouter } from "./routes/commentRoutes";
 import { errorHandler, notFoundHandler } from "./middleware/validation";
 import { seedDefaultConfigs } from "./services/configService";
 import { seedAdmin } from "./utils/seed";
 import { startBackupScheduler } from "./services/backupService";
+import { startAlertJob } from "./services/alertService";
 import { checkAndNotify } from "./services/updateService";
 import { log } from "./services/logService";
 import { runAutoMigrate } from "./utils/migrate";
@@ -80,6 +83,8 @@ app.use("/api/admin", adminRouter);
 app.use("/api", milestoneRouter);
 app.use("/api/templates", templateRouter);
 app.use("/api", miscRouter);
+app.use("/api/planning", planningRouter);
+app.use("/api", commentRouter);
 
 // Error handler global : toute erreur (ex: validation métier) -> JSON 400/500, ne fait jamais tomber le process
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
@@ -121,6 +126,7 @@ async function bootstrap(): Promise<void> {
     await resolveStorageDir();
     await seedAdmin();
     startBackupScheduler();
+    startAlertJob(); // alertes proactives (jalons J-3/J-1/retard, conflits stock, seuils) toutes les heures
     void checkAndNotify(true); // check de mise à jour au boot (notifie les admins si dispo)
 
     const server = createServer();

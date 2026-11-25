@@ -38,6 +38,7 @@ model User {
     activityLogs       ActivityLog[]
     timeEntries        TimeEntry[]
     refreshTokens      RefreshToken[]
+    comments           Comment[]
     notifications      Notification[]
 }
 
@@ -70,6 +71,7 @@ model Project {
     activityLogs   ActivityLog[]
     timeEntries    TimeEntry[]
     milestones     Milestone[]
+    comments       Comment[]
 }
 
 model ProjectCollaborator {
@@ -98,6 +100,7 @@ model StockItem {
     purchasePrice Float?
     location      String   @default("")
     minThreshold  Float    @default(0)
+    imagePath     String?  // photo de l'article (chemin relatif sous UPLOAD_DIR)
     createdAt     DateTime @default(now())
     updatedAt     DateTime @updatedAt
 
@@ -170,6 +173,7 @@ model Milestone {
     parent     Milestone?     @relation("SubMilestones", fields: [parentId], references: [id])
     children   Milestone[]    @relation("SubMilestones")
     stockLinks ProjectStock[]
+    comments  Comment[]
 }
 
 // ============================================================
@@ -268,6 +272,24 @@ model RefreshToken {
 // ============================================================
 // NOTIFICATIONS IN-APP
 // ============================================================
+
+// ============================================================
+// COMMENTAIRES (projet ou jalon, avec @mentions)
+// ============================================================
+
+model Comment {
+    id          String   @id @default(uuid())
+    projectId   String
+    milestoneId String?  // null = commentaire projet, sinon commentaire de jalon
+    authorId    String
+    content     String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    project   Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    milestone Milestone? @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+    author    User       @relation(fields: [authorId], references: [id])
+}
 
 model Notification {
     id        String   @id @default(uuid())

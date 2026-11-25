@@ -4,6 +4,7 @@ import StockLinksSection from "../stock/StockLinksSection";
 import TimeSection from "./TimeSection";
 import ActivitySection from "./ActivitySection";
 import AttachmentsSection from "./AttachmentsSection";
+import CommentsSection from "./CommentsSection";
 
 interface Props {
     pid: string;
@@ -29,6 +30,7 @@ export default function OverviewTab(props: Props): JSX.Element {
                 <AttachmentsSection projectId={pid} attachments={attachments} onChanged={onChanged} />
                 <ActivitySection logs={logs} />
             </div>
+            <CommentsSection projectId={pid} milestoneId={null} />
         </div>
     );
 }

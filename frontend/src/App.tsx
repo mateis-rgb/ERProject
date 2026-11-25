@@ -7,6 +7,8 @@ import Dashboard from "./pages/Dashboard";
 import Projects from "./pages/Projects";
 import ProjectDetail from "./pages/ProjectDetail";
 import Stock from "./pages/Stock";
+import StockItem from "./pages/StockItem";
+import PlanningPage from "./pages/Planning";
 import Movements from "./pages/Movements";
 import Settings from "./pages/Settings";
 import Admin from "./pages/Admin";
@@ -40,6 +42,8 @@ export default function App(): JSX.Element {
                 <Route path="/projects/:id" element={<ProjectDetail />} />
                 <Route path="/projects/:id/:tab" element={<ProjectDetail />} />
                 <Route path="/stock" element={<Stock />} />
+                <Route path="/stock/:id" element={<StockItem />} />
+                <Route path="/planning" element={<PlanningPage />} />
                 <Route path="/movements" element={<Movements />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/settings/:tab" element={<Settings />} />
