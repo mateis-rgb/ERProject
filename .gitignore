@@ -1,4 +1,4 @@
-# ERProjects - .gitignore
+# L'Entrepôt - .gitignore
 node_modules/
 dist/
 .env
