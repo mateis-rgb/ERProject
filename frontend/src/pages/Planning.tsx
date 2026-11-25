@@ -72,17 +72,7 @@ interface RowProps {
 // Bande "projet" : couvre toute la durée du projet, les jalons passent dans la ligne du dessous
 const PROJECT_HATCH = "repeating-linear-gradient(45deg, var(--muted) 0px, var(--muted) 2px, transparent 2px, transparent 7px)";
 
-function ProjectBand({ g, r }: { g: ProjectGroup; r: Range }): JSX.Element {
-    const geom = barGeom(g.start, g.end, r.pct);
-    return (
-        <div title={`${g.projectName} - ${fmtDate(new Date(g.start).toISOString())} - ${fmtDate(new Date(g.end).toISOString())}`}
-            style={{
-                position: "absolute", left: `${geom.left}%`, width: `${geom.width}%`, top: "5px", height: "12px",
-                backgroundColor: "var(--surface-2)", backgroundImage: PROJECT_HATCH,
-                border: "var(--border-w) solid var(--ink)",
-            }} />
-    );
-}
+
 
 const LABEL_STYLE: React.CSSProperties = {
     width: `${LABEL_W}px`, flexShrink: 0, position: "sticky", left: 0, zIndex: 6,
@@ -105,26 +95,22 @@ function ProjectLabel({ g }: { g: ProjectGroup }): JSX.Element {
 }
 
 function ProjectRow({ g, r, conflicted, last }: RowProps): JSX.Element {
+    const hasConflict = g.items.some((m) => conflicted.has(m.id));
+    const geom = barGeom(g.start, g.end, r.pct);
     return (
-        <div style={{ display: "flex", borderBottom: last ? "none" : "var(--border-w) solid var(--ink)", height: "62px" }}>
+        <div style={{ display: "flex", borderBottom: last ? "none" : "var(--border-w) solid var(--ink)", height: "44px" }}>
             <ProjectLabel g={g} />
             <div style={{ position: "relative", width: `${r.width}px`, flexShrink: 0 }}>
-                <ProjectBand g={g} r={r} />
-                {g.items.map((m) => {
-                    const geom = barGeom(new Date(m.startDate).getTime(), new Date(m.endDate).getTime(), r.pct);
-                    const isConflict = conflicted.has(m.id);
-                    return (
-                        <div key={m.id} title={`${m.name} - ${fmtDate(m.startDate)} - ${fmtDate(m.endDate)}`}
-                            style={{
-                                position: "absolute", left: `${geom.left}%`, width: `${geom.width}%`, top: "26px", height: "28px",
-                                backgroundColor: m.color, border: isConflict ? "3px solid var(--danger)" : "var(--border-w) solid var(--ink)",
-                                boxShadow: isConflict ? "3px 3px 0 var(--danger)" : "var(--shadow-btn)",
-                                display: "flex", alignItems: "center", justifyContent: "center",
-                            }}>
-                            {isConflict && <FiAlertTriangle style={{ color: "#000", flexShrink: 0 }} />}
-                        </div>
-                    );
-                })}
+                <div title={`${g.projectName} - ${fmtDate(new Date(g.start).toISOString())} - ${fmtDate(new Date(g.end).toISOString())}`}
+                    style={{
+                        position: "absolute", left: `${geom.left}%`, width: `${geom.width}%`, top: "8px", height: "28px",
+                        backgroundColor: "var(--surface-2)", backgroundImage: PROJECT_HATCH,
+                        border: hasConflict ? "3px solid var(--danger)" : "var(--border-w) solid var(--ink)",
+                        boxShadow: hasConflict ? "3px 3px 0 var(--danger)" : "var(--shadow-btn)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                    }}>
+                    {hasConflict && <FiAlertTriangle style={{ color: "var(--danger)", flexShrink: 0 }} />}
+                </div>
             </div>
         </div>
     );
