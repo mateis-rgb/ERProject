@@ -37,15 +37,21 @@ function OptionRow(p: { opt: SelectOption; active: boolean; selected: boolean; o
     );
 }
 
+interface DropdownPos { top: number; bottom: number; left: number; width: number; up: boolean; }
+
 function OptionDropdown(p: {
-    options: SelectOption[]; value: string; highlight: number; pos: { top: number; left: number; width: number };
+    options: SelectOption[]; value: string; highlight: number; pos: DropdownPos;
     onPick: (v: string) => void; onHover: (i: number) => void;
 }): JSX.Element {
     return createPortal(
         <div
             data-brutal-select-dropdown="true"
             style={{
-                position: "fixed", top: p.pos.top, left: p.pos.left, width: p.pos.width, zIndex: 1000,
+                position: "fixed",
+                ...(p.pos.up
+                    ? { bottom: p.pos.bottom, top: "auto" }
+                    : { top: p.pos.top, bottom: "auto" }),
+                left: p.pos.left, width: p.pos.width, zIndex: 1000,
                 background: "var(--surface)", border: "2px solid var(--ink)", boxShadow: "5px 5px 0 var(--ink)",
                 maxHeight: "240px", overflow: "auto",
             }}
@@ -118,15 +124,29 @@ function useScrollClose(open: boolean, setOpen: (v: boolean) => void): void {
 
 interface SelectState {
     ref: React.MutableRefObject<HTMLDivElement | null>;
-    open: boolean; highlight: number; pos: { top: number; left: number; width: number };
+    open: boolean; highlight: number; pos: DropdownPos;
     toggle: () => void; setOpen: (v: boolean) => void; setHighlight: (v: number) => void;
     pick: (v: string) => void; onKey: (e: React.KeyboardEvent) => void;
+}
+
+// Position du dropdown : vers le bas, ou vers le HAUT si pas assez de place en dessous de l'écran
+function computePos(rect: DOMRect, optionCount: number): DropdownPos {
+    const estHeight = Math.min(240, optionCount * 38 + 4);
+    const below = window.innerHeight - rect.bottom - 8;
+    const up = below < estHeight && rect.top - 8 > below;
+    return {
+        top: rect.bottom + 4,
+        bottom: window.innerHeight - rect.top + 4,
+        left: rect.left,
+        width: rect.width,
+        up,
+    };
 }
 
 function useSelectState(value: string, onChange: (v: string) => void, options: SelectOption[], disabled: boolean): SelectState {
     const [open, setOpen] = useState(false);
     const [highlight, setHighlight] = useState(0);
-    const [pos, setPos] = useState({ top: 0, left: 0, width: 0 });
+    const [pos, setPos] = useState<DropdownPos>({ top: 0, bottom: 0, left: 0, width: 0, up: false });
     const ref = useRef<HTMLDivElement>(null);
     useOutsideClose(ref, disabled, setOpen);
     useScrollClose(open, setOpen);
@@ -139,8 +159,7 @@ function useSelectState(value: string, onChange: (v: string) => void, options: S
     const toggle = (): void => {
         if (disabled) return;
         if (!open && ref.current !== null) {
-            const r = ref.current.getBoundingClientRect();
-            setPos({ top: r.bottom + 4, left: r.left, width: r.width });
+            setPos(computePos(ref.current.getBoundingClientRect(), options.length));
         }
         setOpen(!open);
     };
