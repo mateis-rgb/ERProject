@@ -88,6 +88,7 @@ const LABEL_STYLE: React.CSSProperties = {
     width: LABEL_W, flexShrink: 0, position: "sticky", left: 0, zIndex: 6,
     padding: "0.5rem 0.6rem", borderRight: "var(--border-w) solid var(--ink)", background: "var(--bg)",
     display: "flex", flexDirection: "column", justifyContent: "center", gap: "0.15rem",
+    overflow: "hidden", boxSizing: "border-box",
 };
 
 function ProjectLabel({ g }: { g: ProjectGroup }): JSX.Element {
@@ -117,7 +118,7 @@ function ProjectBar({ g, r, hasConflict }: { g: ProjectGroup; r: Range; hasConfl
     return (
         <div title={title}
             style={{
-                position: "absolute", left: `${geom.left}%`, width: `${geom.width}%`, top: "8px", height: "28px",
+                position: "absolute", left: `${geom.left}%`, width: `${geom.width}%`, top: "15px", height: "28px",
                 backgroundColor: "var(--surface-2)", backgroundImage: PROJECT_HATCH,
                 border: hasConflict ? "3px solid var(--danger)" : "var(--border-w) solid var(--ink)",
                 boxShadow: hasConflict ? "3px 3px 0 var(--danger)" : "var(--shadow-btn)",
@@ -128,13 +129,34 @@ function ProjectBar({ g, r, hasConflict }: { g: ProjectGroup; r: Range; hasConfl
     );
 }
 
+// Titre du projet épinglé sur la barre : sticky à gauche, reste visible pendant le scroll horizontal
+function StickyTitle({ name }: { name: string }): JSX.Element {
+    return (
+        <div style={{
+            position: "sticky", left: `calc(${LABEL_W} + 8px)`, marginTop: "15px", height: "28px",
+            width: "fit-content", maxWidth: "70%",
+            display: "flex", alignItems: "center", zIndex: 4, pointerEvents: "none",
+        }}>
+            <span style={{
+                fontWeight: 700, fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.04em",
+                background: "var(--surface)", border: "var(--border-w) solid var(--ink)",
+                boxShadow: "var(--shadow-btn)", padding: "2px 8px", color: "var(--ink)",
+                whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "100%",
+            }}>
+                {name}
+            </span>
+        </div>
+    );
+}
+
 function ProjectRow({ g, r, conflicted, last }: RowProps): JSX.Element {
     const hasConflict = g.items.some((m) => conflicted.has(m.id));
     return (
-        <div style={{ display: "flex", borderBottom: last ? "none" : "var(--border-w) solid var(--ink)", height: "44px" }}>
+        <div style={{ display: "flex", borderBottom: last ? "none" : "var(--border-w) solid var(--ink)", height: "58px" }}>
             <ProjectLabel g={g} />
             <div style={{ position: "relative", width: `${r.width}px`, flexShrink: 0 }}>
                 <ProjectBar g={g} r={r} hasConflict={hasConflict} />
+                <StickyTitle name={g.projectName} />
             </div>
         </div>
     );
