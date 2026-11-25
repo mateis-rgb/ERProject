@@ -1,7 +1,7 @@
 // Styles partagés du bloc drive (header/content façon Gantt) - constantes, pas de macros (Power of 10 R8)
 export function driveCols(canEdit: boolean): string {
     // nom en 1fr = complète le reste de la ligne ; autres colonnes au minimum (actions = 2 boutons de 26px)
-    const base = "minmax(0,1fr) 70px 110px 90px";
+    const base = "minmax(0,1fr) 70px 110px 110px"; // date JJ/MM/AAAA en mono à l'aise
     return canEdit ? `${base} 140px 96px` : base; // tailles optimales avec léger gap ; le nom (1fr) absorbe le reste
 }
 
