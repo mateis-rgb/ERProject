@@ -1,9 +1,11 @@
 import { FiAlertTriangle, FiCheckCircle, FiClipboard, FiExternalLink, FiSettings, FiUpload, FiXCircle } from "react-icons/fi";
 // Section Mises à jour (settings/about) - check GitHub releases + procédure guidée (rien n'est exécuté auto) (Power of 10 R4)
+// shortcut: système de mise à jour mocké (check GitHub + étapes manuelles, aucun destructeur), à remplacer par un vrai mécanisme quand demandé
 import { useEffect, useState } from "react";
 import { api } from "../../services/api";
 import { useTranslation } from "../../i18n/I18nContext";
-import Toast, { ToastData } from "../ui/Toast";
+import Toast from "../ui/Toast";
+import { useLocalToast } from "../../hooks/useLocalToast";
 
 export interface UpdateInfo {
     enabled: boolean;
@@ -207,17 +209,17 @@ export default function UpdateSection(): JSX.Element {
     const { t } = useTranslation();
     const [info, setInfo] = useState<UpdateInfo | null>(null);
     const [checking, setChecking] = useState(false);
-    const [toast, setToast] = useState<ToastData | null>(null);
     const [modalOpen, setModalOpen] = useState(false);
+    const { toast, showToast, dismissToast } = useLocalToast();
 
     const check = (): void => {
         setChecking(true);
         api.get<UpdateInfo>("/api/update/check?force=true").then((r) => {
             setChecking(false);
-            if (!r.success) { setToast({ kind: "error", msg: r.error }); return; }
+            if (!r.success) { showToast({ kind: "error", msg: r.error }); return; }
             setInfo(r.data);
             if (r.data.available && r.data.latest !== null) {
-                setToast({ kind: "success", msg: `${t("update.toastAvailable")} : ${r.data.latest}` });
+                showToast({ kind: "success", msg: `${t("update.toastAvailable")} : ${r.data.latest}` });
             }
         });
     };
@@ -245,7 +247,7 @@ export default function UpdateSection(): JSX.Element {
                 </div>
             )}
             <p style={{ color: "var(--muted)", fontSize: "0.78rem", marginTop: "0.6rem", marginBottom: 0 }}>{t("update.hint")}</p>
-            <Toast toast={toast} onDismiss={() => setToast(null)} />
+            <Toast toast={toast} onDismiss={dismissToast} />
             {modalOpen && info !== null && <UpdateModal info={info} steps={steps} onClose={() => setModalOpen(false)} />}
         </div>
     );

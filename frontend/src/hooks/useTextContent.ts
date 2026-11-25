@@ -37,6 +37,7 @@ export function useTextContent(attachmentId: string): TextContentState {
         });
     }, [attachmentId]);
 
+    // shortcut: édition simultanée d'un fichier = dernier écrivain gagne (pas de verrou/CRDT), à upgrader si co-édition requise
     const save = useCallback(async (): Promise<boolean> => {
         setSaving(true);
         const r = await api.put(`/api/attachments/content/${attachmentId}`, { content });

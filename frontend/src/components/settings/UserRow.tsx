@@ -6,6 +6,7 @@ import { api } from "../../services/api";
 import { AuthUser, UserRole } from "../../types";
 import UserAvatar from "../layout/UserAvatar";
 import BrutalSelect from "../ui/BrutalSelect";
+import ConfirmModal from "../ui/ConfirmModal";
 
 interface Props {
     user: AuthUser;
@@ -22,6 +23,7 @@ const ROLE_COLORS: Record<UserRole, string> = {
 export default function UserRow({ user, isSelf, onChanged }: Props): JSX.Element {
     const { t } = useTranslation();
     const [busy, setBusy] = useState(false);
+    const [confirming, setConfirming] = useState(false);
 
     const changeRole = async (role: UserRole): Promise<void> => {
         setBusy(true);
@@ -30,8 +32,8 @@ export default function UserRow({ user, isSelf, onChanged }: Props): JSX.Element
         onChanged();
     };
 
-    const remove = async (): Promise<void> => {
-        if (!confirm(`${t("common.delete")} ${user.name} ? ${t("common.irreversible")}`)) return;
+    const doRemove = async (): Promise<void> => {
+        setConfirming(false);
         setBusy(true);
         await api.delete(`/api/admin/users/${user.id}`);
         setBusy(false);
@@ -39,6 +41,7 @@ export default function UserRow({ user, isSelf, onChanged }: Props): JSX.Element
     };
 
     return (
+        <>
         <tr>
             <td className="table-cell">
                 <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
@@ -65,8 +68,15 @@ export default function UserRow({ user, isSelf, onChanged }: Props): JSX.Element
                     ]} />
             </td>
             <td className="table-cell">
-                {!isSelf && <button className="btn-danger" onClick={remove} disabled={busy}><FiX /></button>}
+                {!isSelf && <button className="btn-danger" onClick={() => setConfirming(true)} disabled={busy}><FiX /></button>}
             </td>
         </tr>
+        {confirming && (
+            <ConfirmModal danger busy={busy}
+                title={`${t("common.delete")} ${user.name}`}
+                message={t("common.irreversible")}
+                onConfirm={() => void doRemove()} onCancel={() => setConfirming(false)} />
+        )}
+        </>
     );
 }

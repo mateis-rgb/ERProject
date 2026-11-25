@@ -1,7 +1,9 @@
 import { FiChevronDown, FiChevronUp, FiEdit2, FiX } from "react-icons/fi";
 // Tableau du stock - lignes cliquables, en-têtes triables (Power of 10 R4)
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useTranslation } from "../../i18n/I18nContext";
+import ConfirmModal from "../ui/ConfirmModal";
 import { StockItem, AvailabilityEntry } from "../../types";
 import { StockSort, StockSortKey } from "../../hooks/useStockQuery";
 import StockIcon from "./StockIcon";
@@ -97,8 +99,12 @@ function StockRow({ item, avail: a, canEdit, onDelete, onEdit }: RowProps): JSX.
 
 export default function StockTable({ items, avail, canEdit, sort, onSort, onChanged, onEdit }: Props): JSX.Element {
     const { t } = useTranslation();
-    const deleteItem = async (id: string): Promise<void> => {
-        if (!confirm(t("stock.deleteConfirm"))) return;
+    const [pendingDelete, setPendingDelete] = useState<string | null>(null);
+
+    const confirmDelete = async (): Promise<void> => {
+        if (pendingDelete === null) return;
+        const id = pendingDelete;
+        setPendingDelete(null);
         await api.delete(`/api/stock/${id}`);
         onChanged();
     };
@@ -123,13 +129,19 @@ export default function StockTable({ items, avail, canEdit, sort, onSort, onChan
                 <tbody>
                     {items.map((item) => (
                         <StockRow key={item.id} item={item} avail={avail[item.id]} canEdit={canEdit}
-                            onDelete={(id) => void deleteItem(id)} onEdit={onEdit} />
+                            onDelete={setPendingDelete} onEdit={onEdit} />
                     ))}
                     {items.length === 0 && (
                         <tr><td className="table-cell" colSpan={canEdit ? 10 : 9} style={{ textAlign: "center", color: "var(--muted)" }}>{t("stock.noItems")}</td></tr>
                     )}
                 </tbody>
             </table>
+            {pendingDelete !== null && (
+                <ConfirmModal danger
+                    title={t("stock.deleteConfirm")}
+                    message={t("common.irreversible")}
+                    onConfirm={() => void confirmDelete()} onCancel={() => setPendingDelete(null)} />
+            )}
         </div>
     );
 }

@@ -53,6 +53,7 @@ function OptionDropdown(p: {
                     : { top: p.pos.top, bottom: "auto" }),
                 left: p.pos.left, width: p.pos.width, zIndex: 1000,
                 background: "var(--surface)", border: "2px solid var(--ink)", boxShadow: "5px 5px 0 var(--ink)",
+                // shortcut: dropdown capé à 240px, tronqué si ni haut ni bas dispo — upgrader vers popover scrollable externe si besoin
                 maxHeight: "240px", overflow: "auto",
             }}
         >

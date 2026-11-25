@@ -27,7 +27,7 @@ function patchDates(id: string, start: Date, end: Date): Promise<void> {
     }).then(() => undefined);
 }
 
-export function useMilestoneActions(project: Project, milestones: Milestone[], reload: () => void, confirmDelete: (name: string) => boolean) {
+export function useMilestoneActions(project: Project, milestones: Milestone[], reload: () => void) {
     const find = (id: string): Milestone | undefined => milestones.find((x) => x.id === id);
 
     const move = async (id: string, dayOffset: number): Promise<void> => {
@@ -58,8 +58,8 @@ export function useMilestoneActions(project: Project, milestones: Milestone[], r
         reload();
     };
 
-    const remove = async (id: string, name: string): Promise<void> => {
-        if (!confirmDelete(name)) return;
+    // La confirmation est gérée par l'appelant (ConfirmModal) avant d'appeler remove
+    const remove = async (id: string): Promise<void> => {
         await api.delete(`/api/milestones/${id}`);
         reload();
     };

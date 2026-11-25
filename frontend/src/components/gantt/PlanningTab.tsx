@@ -4,6 +4,7 @@ import { api } from "../../services/api";
 import { Milestone, StockItem, Project } from "../../types";
 import { useTranslation } from "../../i18n/I18nContext";
 import PlanningView from "./PlanningView";
+import ConfirmModal from "../ui/ConfirmModal";
 import { useDatesModal } from "../../hooks/useDatesModal";
 import { useMilestoneActions } from "../../hooks/useMilestoneActions";
 
@@ -21,6 +22,7 @@ export default function PlanningTab({ projectId, project, canEdit, onUpdated }: 
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [creating, setCreating] = useState(false);
     const [editMode, setEditMode] = useState(false);
+    const [pendingDelete, setPendingDelete] = useState<{ id: string; name: string } | null>(null);
 
     const hasDates = project.startDate !== null && project.endDate !== null;
     const datesModal = useDatesModal(hasDates);
@@ -33,17 +35,22 @@ export default function PlanningTab({ projectId, project, canEdit, onUpdated }: 
     useEffect(load, [projectId]);
 
     const selected = milestones.find((m) => m.id === selectedId) ?? null;
-    const actions = useMilestoneActions(project, milestones, load,
-        (name) => confirm(`${t("gantt.deleteConfirm")} "${name}" ?`));
+    const actions = useMilestoneActions(project, milestones, load);
 
     const deleteSelected = (): void => {
-        if (selected !== null) void actions.remove(selected.id, selected.name);
+        if (selected !== null) setPendingDelete({ id: selected.id, name: selected.name });
         setSelectedId(null);
+    };
+
+    const confirmDelete = (): void => {
+        if (pendingDelete !== null) void actions.remove(pendingDelete.id);
+        setPendingDelete(null);
     };
 
     const onSaved = (): void => { setCreating(false); load(); };
 
     return (
+        <>
         <PlanningView projectId={projectId} milestones={milestones} stockItems={stockItems}
             selectedId={selectedId} creating={creating} canEdit={canEdit} editMode={editMode}
             projectStart={project.startDate} projectEnd={project.endDate}
@@ -55,5 +62,12 @@ export default function PlanningTab({ projectId, project, canEdit, onUpdated }: 
             onDatesSaved={() => { datesModal.closeDatesModal(); onUpdated(); load(); }}
             onCloseDatesModal={datesModal.closeDatesModal}
             onOpenDatesModal={datesModal.openDatesModal} />
+        {pendingDelete !== null && (
+            <ConfirmModal danger
+                title={`${t("gantt.deleteConfirm")} "${pendingDelete.name}" ?`}
+                message={t("common.irreversible")}
+                onConfirm={confirmDelete} onCancel={() => setPendingDelete(null)} />
+        )}
+        </>
     );
 }

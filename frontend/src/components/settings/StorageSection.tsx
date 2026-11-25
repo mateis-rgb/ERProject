@@ -5,6 +5,7 @@ import { api } from "../../services/api";
 import { AppNotification } from "../../context/NotificationContext";
 import ConfirmModal from "../ui/ConfirmModal";
 import Toast, { ToastData } from "../ui/Toast";
+import { useLocalToast } from "../../hooks/useLocalToast";
 
 interface StorageInfo {
     configured: string;
@@ -119,13 +120,13 @@ export default function StorageSection(): JSX.Element {
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [busy, setBusy] = useState(false);
     const [notifId, setNotifId] = useState<string | null>(null);
-    const [toast, setToast] = useState<ToastData | null>(null);
+    const { toast, showToast, dismissToast } = useLocalToast();
 
     const onDone = useCallback((n: AppNotification): void => {
         setNotifId(null);
-        setToast({ kind: n.type === "success" ? "success" : "error", msg: `${n.title} — ${n.message}` });
+        showToast({ kind: n.type === "success" ? "success" : "error", msg: `${n.title} — ${n.message}` });
         load();
-    }, [load]);
+    }, [load, showToast]);
 
     const progress = useMigrationPoll(notifId, onDone);
 
@@ -136,7 +137,7 @@ export default function StorageSection(): JSX.Element {
         void api.post<{ notifId: string }>("/api/storage/migrate", { to: target }).then((r) => {
             setBusy(false);
             if (!r.success) {
-                setToast({ kind: "error", msg: r.error });
+                showToast({ kind: "error", msg: r.error });
                 return;
             }
             setConfirmOpen(false);
@@ -148,7 +149,7 @@ export default function StorageSection(): JSX.Element {
         <StorageView
             info={info} path={path} busy={busy} confirmOpen={confirmOpen}
             notifId={notifId} progress={progress} toast={toast} target={target}
-            onToastDismiss={() => setToast(null)}
+            onToastDismiss={dismissToast}
             onPath={setPath}
             onSaveClick={() => setConfirmOpen(true)}
             onConfirm={startMigration}
