@@ -22,6 +22,21 @@ interface ProjectGroup {
     items: PlanningMilestone[];
     start: number | null; // dates propres du projet, sinon min/max des jalons, sinon null (pas de barre)
     end: number | null;
+    progress: number; // 0..100 : basé sur les dates du projet, sinon sur les jalons écoulés
+}
+
+// Avancement : temporel si le projet a des dates, sinon part des jalons terminés
+function projectProgress(p: PlanningProject, items: PlanningMilestone[], now: number): number {
+    if (p.startDate !== null && p.endDate !== null) {
+        const s = new Date(p.startDate).getTime();
+        const e = new Date(p.endDate).getTime();
+        if (e > s) return Math.min(100, Math.max(0, ((now - s) / (e - s)) * 100));
+    }
+    if (items.length > 0) {
+        const done = items.filter((m) => new Date(m.endDate).getTime() <= now).length;
+        return Math.round((done / items.length) * 100);
+    }
+    return 0;
 }
 
 // Un groupe par projet actif ; la barre couvre les dates du projet (fallback: span des jalons)
@@ -38,7 +53,7 @@ function groupByProject(projects: PlanningProject[], milestones: PlanningMilesto
                 if (end === null || e > end) end = e;
             }
         }
-        return { projectId: p.id, projectName: p.name, projectStatus: p.status, items, start, end };
+        return { projectId: p.id, projectName: p.name, projectStatus: p.status, items, start, end, progress: projectProgress(p, items, Date.now()) };
     });
 }
 
@@ -92,6 +107,29 @@ const LABEL_STYLE: React.CSSProperties = {
     overflow: "hidden", boxSizing: "border-box",
 };
 
+// KPI d'avancement : barre néo-brutaliste + pourcentage
+function ProgressKpi({ pct }: { pct: number }): JSX.Element {
+    const { t } = useTranslation();
+    const clamped = Math.min(100, Math.max(0, Math.round(pct)));
+    return (
+        <span style={{ display: "flex", alignItems: "center", gap: "0.4rem", minWidth: 0 }} title={`${t("planning.progress")}: ${clamped}%`}>
+            <span style={{
+                flex: 1, minWidth: 0, height: "10px",
+                border: "var(--border-w) solid var(--ink)", background: "var(--surface)",
+                position: "relative", overflow: "hidden",
+            }}>
+                <span style={{
+                    position: "absolute", left: 0, top: 0, bottom: 0, width: `${clamped}%`,
+                    background: clamped >= 100 ? "var(--green)" : "var(--accent)",
+                }} />
+            </span>
+            <span className="mono" style={{ fontSize: "0.62rem", fontWeight: 700, color: "var(--ink)", flexShrink: 0 }}>
+                {clamped}%
+            </span>
+        </span>
+    );
+}
+
 function ProjectLabel({ g }: { g: ProjectGroup }): JSX.Element {
     const dates = g.start !== null && g.end !== null
         ? `${fmtDate(new Date(g.start).toISOString())} - ${fmtDate(new Date(g.end).toISOString())}`
@@ -99,13 +137,18 @@ function ProjectLabel({ g }: { g: ProjectGroup }): JSX.Element {
     return (
         <div style={LABEL_STYLE}>
             <span style={{ display: "flex", alignItems: "baseline", gap: "0.35rem", minWidth: 0 }}>
-                <Link to={`/projects/${g.projectId}`} style={{ fontWeight: 700, fontSize: "0.8rem", color: "var(--ink)", textDecoration: "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                <Link to={`/projects/${g.projectId}`} style={{ fontWeight: 700, fontSize: "0.85rem", color: "var(--ink)", textDecoration: "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {g.projectName}
                 </Link>
-                <span className="mono" style={{ fontSize: "0.62rem", color: "var(--muted)", textTransform: "uppercase", flexShrink: 0 }}>{g.projectStatus}</span>
+                <span className="mono" style={{ fontSize: "0.6rem", color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.06em", flexShrink: 0, fontWeight: 700 }}>
+                    {g.projectStatus}
+                </span>
             </span>
+            <ProgressKpi pct={g.progress} />
             <span style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.35rem" }}>
-                <span className="mono" style={{ fontSize: "0.6rem", color: "var(--muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{dates ?? "—"}</span>
+                <span className="mono" style={{ fontSize: "0.6rem", color: "var(--muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {dates ?? "—"}
+                </span>
                 <span className="badge" style={{ fontSize: "0.62rem", flexShrink: 0 }}>{g.items.length}</span>
             </span>
         </div>
@@ -157,7 +200,7 @@ function ProjectBar({ g, r, hasConflict, scrollLeft }: BarProps): JSX.Element | 
     return (
         <div title={title}
             style={{
-                position: "absolute", left: `${geom.left}%`, width: `${geom.width}%`, top: "15px", height: "28px",
+                position: "absolute", left: `${geom.left}%`, width: `${geom.width}%`, top: "18px", height: "28px",
                 boxSizing: "border-box",
                 backgroundColor: "var(--surface-2)", backgroundImage: PROJECT_HATCH,
                 border: hasConflict ? "3px solid var(--danger)" : "var(--border-w) solid var(--ink)",
@@ -174,7 +217,7 @@ function ProjectBar({ g, r, hasConflict, scrollLeft }: BarProps): JSX.Element | 
 function ProjectRow({ g, r, conflicted, last, scrollLeft }: RowProps): JSX.Element {
     const hasConflict = g.items.some((m) => conflicted.has(m.id));
     return (
-        <div style={{ display: "flex", borderBottom: last ? "none" : "var(--border-w) solid var(--ink)", height: "58px" }}>
+        <div style={{ display: "flex", borderBottom: last ? "none" : "var(--border-w) solid var(--ink)", height: "64px" }}>
             <ProjectLabel g={g} />
             <div style={{ position: "relative", width: `${r.width}px`, flexShrink: 0 }}>
                 <ProjectBar g={g} r={r} hasConflict={hasConflict} scrollLeft={scrollLeft} />

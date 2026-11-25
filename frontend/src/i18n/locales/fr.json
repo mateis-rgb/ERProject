@@ -385,7 +385,8 @@
         "project": "Projet",
         "milestone": "Jalon",
         "quantity": "Qté réservée",
-        "rows": "projets"
+        "rows": "projets",
+        "progress": "Avancement"
     },
     "stockDetail": {
         "back": "Retour au stock",

@@ -385,7 +385,8 @@
         "project": "Project",
         "milestone": "Milestone",
         "quantity": "Reserved qty",
-        "rows": "projects"
+        "rows": "projects",
+        "progress": "Progress"
     },
     "stockDetail": {
         "back": "Back to stock",
