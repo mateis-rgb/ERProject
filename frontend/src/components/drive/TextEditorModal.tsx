@@ -61,6 +61,7 @@ export default function TextEditorModal({ attachment, canEdit, onClose, onSaved 
     const [draft, setDraft] = useState("");
     useEffect(() => { if (!tc.loading) setDraft(tc.content); }, [tc.loading, tc.content]);
     const previewSrc = useDebounce(draft, 120);
+    const dirty = draft !== tc.original; // vrai "modifié" = écart au dernier contenu chargé/sauvegardé
     const ed = useEditorInsert(draft, (v) => { tc.history.noteChange(draft); setDraft(v); tc.setContent(v); });
     const save = (): void => { void tc.save().then((ok) => { if (ok) onSaved(); }); };
 
@@ -76,7 +77,7 @@ export default function TextEditorModal({ attachment, canEdit, onClose, onSaved 
                     readOnly={!canEdit || tc.loading}
                     value={tc.loading ? t("editor.loading") : draft}
                     onChange={(e) => { tc.history.noteChange(draft); setDraft(e.target.value); tc.setContent(e.target.value); }}
-                    onKeyDown={(e) => ed.onKeyDown(e, { canEdit, mode, dirty: draft !== tc.content, saving: tc.saving, save, history: tc.history })}
+                    onKeyDown={(e) => ed.onKeyDown(e, { canEdit, mode, dirty, saving: tc.saving, save, history: tc.history })}
                     spellCheck={false}
                     style={{
                         border: "none", borderRadius: 0, boxShadow: "none", resize: "none",
@@ -93,7 +94,7 @@ export default function TextEditorModal({ attachment, canEdit, onClose, onSaved 
                     </div>
                 </div>
             </div>
-            <EditorFooter tc={tc} canEdit={canEdit} onSave={save} draft={draft} dirty={draft !== tc.content} />
+            <EditorFooter tc={tc} canEdit={canEdit} onSave={save} draft={draft} dirty={dirty} />
         </Modal>
     );
 }

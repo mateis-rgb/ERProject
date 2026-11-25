@@ -5,6 +5,7 @@ import { useUndoHistory, UndoHistory } from "./useUndoHistory";
 
 export interface TextContentState {
     content: string;
+    original: string;
     setContent: (v: string) => void;
     loading: boolean;
     saving: boolean;
@@ -48,5 +49,5 @@ export function useTextContent(attachmentId: string): TextContentState {
         return true;
     }, [attachmentId, content]);
 
-    return { content, setContent, loading, saving, error, dirty: content !== original, save, history };
+    return { content, original, setContent, loading, saving, error, dirty: content !== original, save, history };
 }
