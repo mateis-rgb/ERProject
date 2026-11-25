@@ -7,6 +7,6 @@ uploads/
 backups/
 *.log
 .DS_Store
-
+cspell.json
 .dev/
 graphify-out/
