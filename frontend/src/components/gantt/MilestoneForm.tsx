@@ -4,6 +4,7 @@ import { useTranslation } from "../../i18n/I18nContext";
 import { useState, FormEvent } from "react";
 import { api } from "../../services/api";
 import { Milestone } from "../../types";
+import BrutalSelect from "../ui/BrutalSelect";
 
 interface Props {
     projectId: string;
@@ -109,12 +110,11 @@ export default function MilestoneForm({ projectId, milestone, milestones, onSave
             </div>
             <div>
                 <label className="label">{t("gantt.parentMilestone")}</label>
-                <select className="select" value={parentId ?? ""} onChange={(e) => setParentId(e.target.value === "" ? null : e.target.value)}>
-                    <option value="">{t("gantt.rootMilestone")}</option>
-                    {milestones.filter((m) => m.id !== milestone?.id).map((m) => (
-                        <option key={m.id} value={m.id}>{m.name}</option>
-                    ))}
-                </select>
+                <BrutalSelect value={parentId ?? ""} onChange={(v) => setParentId(v === "" ? null : v)}
+                    options={[
+                        { value: "", label: t("gantt.rootMilestone") },
+                        ...milestones.filter((m) => m.id !== milestone?.id).map((m) => ({ value: m.id, label: m.name })),
+                    ]} />
             </div>
             <div>
                 <label className="label">{t("project.description")}</label>

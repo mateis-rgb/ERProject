@@ -11,6 +11,8 @@ interface Props {
     ariaLabel?: string;
     minWidth?: string;
     height?: string;
+    width?: string;
+    disabled?: boolean;
 }
 
 function OptionRow(p: { opt: SelectOption; active: boolean; selected: boolean; onPick: () => void; onHover: () => void }): JSX.Element {
@@ -51,19 +53,45 @@ function OptionDropdown(p: {
     );
 }
 
-export default function BrutalSelect({ value, onChange, options, ariaLabel, minWidth = "150px", height = "40px" }: Props): JSX.Element {
+function SelectButton(p: {
+    label: string; open: boolean; disabled: boolean; height: string; ariaLabel?: string;
+    onClick: () => void; onKey: (e: React.KeyboardEvent) => void;
+}): JSX.Element {
+    return (
+        <button
+            type="button"
+            aria-label={p.ariaLabel}
+            aria-expanded={p.open}
+            disabled={p.disabled}
+            onClick={p.onClick}
+            onKeyDown={p.onKey}
+            className="select"
+            style={{
+                width: "100%", height: p.height, display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem",
+                cursor: p.disabled ? "not-allowed" : "pointer", textTransform: "none", letterSpacing: 0,
+                backgroundImage: "none", paddingRight: "0.7rem", opacity: p.disabled ? 0.6 : 1,
+            }}
+        >
+            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.label}</span>
+            <FiChevronDown size={18} style={{ flexShrink: 0, transform: p.open ? "rotate(180deg)" : undefined, transition: "transform 0.15s ease" }} />
+        </button>
+    );
+}
+
+export default function BrutalSelect({ value, onChange, options, ariaLabel, minWidth = "150px", height = "40px", width, disabled = false }: Props): JSX.Element {
     const [open, setOpen] = useState(false);
     const [highlight, setHighlight] = useState(0);
     const ref = useRef<HTMLDivElement>(null);
     const current = options.find((o) => o.value === value);
 
     useEffect(() => {
+        if (disabled) return;
         const onClick = (e: MouseEvent): void => {
             if (ref.current !== null && !ref.current.contains(e.target as Node)) setOpen(false);
         };
         document.addEventListener("mousedown", onClick);
         return () => document.removeEventListener("mousedown", onClick);
-    }, []);
+    }, [disabled]);
 
     useEffect(() => {
         const i = options.findIndex((o) => o.value === value);
@@ -87,22 +115,14 @@ export default function BrutalSelect({ value, onChange, options, ariaLabel, minW
     };
 
     return (
-        <div ref={ref} style={{ position: "relative", minWidth }}>
-            <button
-                type="button"
-                aria-label={ariaLabel}
-                aria-expanded={open}
-                onClick={() => setOpen(!open)}
-                onKeyDown={onKey}
-                className="select"
-                style={{ width: "100%", height, display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem", cursor: "pointer", textTransform: "none", letterSpacing: 0, backgroundImage: "none", paddingRight: "0.7rem" }}
-            >
-                <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {current !== undefined ? current.label : value}
-                </span>
-                <FiChevronDown size={18} style={{ flexShrink: 0, transform: open ? "rotate(180deg)" : undefined, transition: "transform 0.15s ease" }} />
-            </button>
-            {open && (
+        <div ref={ref} style={{ position: "relative", minWidth, width }}>
+            <SelectButton
+                label={current !== undefined ? current.label : value}
+                open={open} disabled={disabled} height={height} ariaLabel={ariaLabel}
+                onClick={() => { if (!disabled) setOpen(!open); }}
+                onKey={onKey}
+            />
+            {open && !disabled && (
                 <OptionDropdown options={options} value={value} highlight={highlight} onPick={pick} onHover={setHighlight} />
             )}
         </div>

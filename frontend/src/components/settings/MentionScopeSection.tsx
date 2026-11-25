@@ -4,6 +4,7 @@ import { FiLock } from "react-icons/fi";
 import { useTranslation } from "../../i18n/I18nContext";
 import { api } from "../../services/api";
 import { useConfigLists } from "../../hooks/useConfigLists";
+import BrutalSelect from "../ui/BrutalSelect";
 
 const PROJECT_KEY = "mention_scope_project";
 const STOCK_KEY = "mention_scope_stock";
@@ -18,11 +19,10 @@ interface ScopeSelectProps {
 function ScopeSelect({ label, value, options, onChange }: ScopeSelectProps): JSX.Element {
     const { t } = useTranslation();
     return (
-        <div style={{ marginBottom: "0.9rem" }}>
+        <div style={{ marginBottom: "0.9rem", maxWidth: "420px" }}>
             <p className="label">{label}</p>
-            <select className="select" value={value} onChange={(e) => onChange(e.target.value)} style={{ width: "100%", maxWidth: "420px" }}>
-                {options.map((o) => <option key={o.v} value={o.v}>{t(o.key)}</option>)}
-            </select>
+            <BrutalSelect value={value} onChange={onChange} width="100%" minWidth="100%"
+                options={options.map((o) => ({ value: o.v, label: t(o.key) }))} />
         </div>
     );
 }

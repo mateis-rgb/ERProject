@@ -6,6 +6,7 @@ import ProjectMetaChips from "./ProjectMetaChips";
 import ProjectMetaModal, { MetaKind } from "./ProjectMetaModal";
 import ProjectExport from "./ProjectExport";
 import { ProgressBar } from "../ui/ProgressBar";
+import BrutalSelect from "../ui/BrutalSelect";
 import { computeProgress } from "../../utils/progress";
 import { useModules } from "../../context/ModulesContext";
 
@@ -65,9 +66,8 @@ export default function ProjectHeader(props: Props): JSX.Element {
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "flex-end" }}>
                     {canEdit && (
-                        <select className="select" value={status} onChange={(e) => changeStatus(e.target.value)} style={{ width: "auto" }}>
-                            {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-                        </select>
+                        <BrutalSelect value={status} onChange={(v) => void changeStatus(v)} width="auto" minWidth="140px"
+                            options={STATUSES.map((s) => ({ value: s, label: s }))} />
                     )}
                     {exportEnabled && <ProjectExport projectId={project.id} />}
                 </div>

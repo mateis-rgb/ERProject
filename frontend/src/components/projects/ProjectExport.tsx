@@ -2,6 +2,7 @@ import { FiFileText } from "react-icons/fi";
 // Bloc d'export PDF de l'en-tête projet - mode complet / prévisionnel / définitif (Power of 10 R4)
 import { useState } from "react";
 import { useTranslation } from "../../i18n/I18nContext";
+import BrutalSelect from "../ui/BrutalSelect";
 
 type ExportMode = "complet" | "previsionnel" | "definitif";
 
@@ -19,10 +20,8 @@ export default function ProjectExport({ projectId }: { projectId: string }): JSX
     };
     return (
         <div style={{ display: "flex", gap: "0.4rem", alignItems: "center", flexShrink: 0 }}>
-            <select className="select" value={mode} style={{ width: "auto" }}
-                onChange={(e) => setMode(e.target.value as ExportMode)}>
-                {MODES.map((m) => <option key={m.v} value={m.v}>{t(m.key)}</option>)}
-            </select>
+            <BrutalSelect value={mode} onChange={(v) => setMode(v as ExportMode)} width="auto" minWidth="150px"
+                options={MODES.map((m) => ({ value: m.v, label: t(m.key) }))} />
             <button className="btn-ghost" style={{ whiteSpace: "nowrap" }} onClick={doExport} title={t("projectHeader.export.title")}>
                 <FiFileText /> {t("projectHeader.export.button")}
             </button>

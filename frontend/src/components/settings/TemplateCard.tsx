@@ -5,6 +5,7 @@ import { api } from "../../services/api";
 import { useTranslation } from "../../i18n/I18nContext";
 import { Project, ProjectTemplate } from "../../types";
 import ConfirmModal from "../ui/ConfirmModal";
+import BrutalSelect from "../ui/BrutalSelect";
 
 interface Props {
     tpl: ProjectTemplate;
@@ -20,10 +21,11 @@ function ApplyBar({ tpl, projects, onDone }: { tpl: ProjectTemplate; projects: P
     const [applyProject, setApplyProject] = useState("");
     return (
         <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
-            <select className="select" style={{ width: "auto" }} value={applyProject} onChange={(e) => setApplyProject(e.target.value)}>
-                <option value="">{t("templates.chooseProject")}</option>
-                {projects.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
-            </select>
+            <BrutalSelect value={applyProject} onChange={setApplyProject} width="auto" minWidth="180px"
+                options={[
+                    { value: "", label: t("templates.chooseProject") },
+                    ...projects.map((p) => ({ value: p.id, label: p.name })),
+                ]} />
             <button className="btn" style={{ padding: "0.3rem 0.7rem", fontSize: "0.78rem" }} disabled={applyProject === ""}
                 onClick={() => {
                     void api.post(`/api/templates/${tpl.id}/apply`, { projectId: applyProject }).then((r) => {

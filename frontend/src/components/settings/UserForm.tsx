@@ -3,6 +3,7 @@ import { useTranslation } from "../../i18n/I18nContext";
 import { useState, FormEvent } from "react";
 import { api } from "../../services/api";
 import { AuthUser, UserRole } from "../../types";
+import BrutalSelect from "../ui/BrutalSelect";
 
 interface Props {
     onCreated: () => void;
@@ -49,9 +50,8 @@ export default function UserForm({ onCreated, onError }: Props): JSX.Element {
             </div>
             <div>
                 <label className="label">{t("access.role")}</label>
-                <select className="select" value={role} onChange={(e) => setRole(e.target.value as UserRole)}>
-                    {ROLES.map((r) => <option key={r.id} value={r.id}>{t(r.labelKey)} — {t(r.descKey)}</option>)}
-                </select>
+                <BrutalSelect value={role} onChange={(v) => setRole(v as UserRole)}
+                    options={ROLES.map((r) => ({ value: r.id, label: `${t(r.labelKey)} — ${t(r.descKey)}` }))} />
             </div>
             <div style={{ gridColumn: "1 / -1" }}>
                 <button className="btn" type="submit" disabled={busy}>{busy ? "Création..." : "Créer l'utilisateur"}</button>

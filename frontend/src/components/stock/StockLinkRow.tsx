@@ -2,6 +2,7 @@ import { FiX } from "react-icons/fi";
 // Ligne du tableau des liaisons stock (Power of 10 R4)
 import { useTranslation } from "../../i18n/I18nContext";
 import { ProjectStockLink, Milestone } from "../../types";
+import BrutalSelect from "../ui/BrutalSelect";
 
 interface Props {
     link: ProjectStockLink;
@@ -28,12 +29,12 @@ export default function StockLinkRow({ link, label, milestones, canEdit, onAffec
             <td className="table-cell mono">{link.forecastQuantity}</td>
             <td className="table-cell">
                 {canEdit ? (
-                    <select className="select" style={{ width: "auto", fontSize: "0.78rem" }}
-                        value={link.milestoneId ?? ""}
-                        onChange={(e) => onAffectation(link, e.target.value === "" ? null : e.target.value)}>
-                        <option value="">{t("stock.wholeProject")}</option>
-                        {milestones.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
-                    </select>
+                    <BrutalSelect value={link.milestoneId ?? ""} width="auto" minWidth="130px" height="30px"
+                        onChange={(v) => onAffectation(link, v === "" ? null : v)}
+                        options={[
+                            { value: "", label: t("stock.wholeProject") },
+                            ...milestones.map((m) => ({ value: m.id, label: m.name })),
+                        ]} />
                 ) : (
                     <span className="mono" style={{ fontSize: "0.78rem" }}>{milestoneLabel(t, milestones, link.milestoneId)}</span>
                 )}

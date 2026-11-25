@@ -5,6 +5,7 @@ import { Attachment } from "../../types";
 import { formatSize } from "./DriveTab";
 import { driveCols, driveRowCell } from "./driveStyles";
 import { useRowDrag } from "../../hooks/useRowDrag";
+import BrutalSelect from "../ui/BrutalSelect";
 
 interface Props {
     item: Attachment;
@@ -49,14 +50,12 @@ export default function DriveRow(props: Props): JSX.Element {
             <div style={{ ...driveRowCell }} className="mono">{new Date(item.uploadedAt).toLocaleDateString("fr-FR")}</div>
             {canEdit && (
                 <div style={driveRowCell}>
-                    <select className="select" style={{ width: "auto", fontSize: "0.72rem" }}
-                        value={item.parentId ?? ""}
-                        onChange={(e) => onMove(item, e.target.value === "" ? null : e.target.value)}>
-                        <option value="">{t("drive.root")}</option>
-                        {folders.filter((f) => f.id !== item.id).map((f) => (
-                            <option key={f.id} value={f.id}>{f.fileName}</option>
-                        ))}
-                    </select>
+                    <BrutalSelect value={item.parentId ?? ""} width="auto" minWidth="130px" height="30px"
+                        onChange={(v) => onMove(item, v === "" ? null : v)}
+                        options={[
+                            { value: "", label: t("drive.root") },
+                            ...folders.filter((f) => f.id !== item.id).map((f) => ({ value: f.id, label: f.fileName })),
+                        ]} />
                 </div>
             )}
             {canEdit && (

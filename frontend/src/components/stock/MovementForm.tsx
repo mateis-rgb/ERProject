@@ -3,6 +3,7 @@ import { useTranslation } from "../../i18n/I18nContext";
 import { useState, FormEvent } from "react";
 import { api } from "../../services/api";
 import { StockItem } from "../../types";
+import BrutalSelect from "../ui/BrutalSelect";
 
 interface Props {
     items: StockItem[];
@@ -34,18 +35,20 @@ export default function MovementForm({ items, onCreated }: Props): JSX.Element {
         <form className="card" onSubmit={submit} style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "end" }}>
             <div style={{ flex: 1, minWidth: "200px" }}>
                 <label className="label">{t("stock.article")}</label>
-                <select className="select" value={stockItemId} onChange={(e) => setStockItemId(e.target.value)} required>
-                    <option value="">{t("movement.choose")}</option>
-                    {items.map((i) => <option key={i.id} value={i.id}>{i.name} ({i.quantity} {i.unit})</option>)}
-                </select>
+                <BrutalSelect value={stockItemId} onChange={setStockItemId} width="100%" minWidth="100%"
+                    options={[
+                        { value: "", label: t("movement.choose") },
+                        ...items.map((i) => ({ value: i.id, label: `${i.name} (${i.quantity} ${i.unit})` })),
+                    ]} />
             </div>
             <div style={{ width: "120px" }}>
                 <label className="label">{t("project.type")}</label>
-                <select className="select" value={type} onChange={(e) => setType(e.target.value as "IN" | "OUT" | "RETURN")}>
-                    <option value="IN">{t("movement.in")}</option>
-                    <option value="OUT">{t("movement.out")}</option>
-                    <option value="RETURN">{t("movement.return")}</option>
-                </select>
+                <BrutalSelect value={type} onChange={(v) => setType(v as "IN" | "OUT" | "RETURN")} width="100%" minWidth="100%"
+                    options={[
+                        { value: "IN", label: t("movement.in") },
+                        { value: "OUT", label: t("movement.out") },
+                        { value: "RETURN", label: t("movement.return") },
+                    ]} />
             </div>
             <div style={{ width: "100px" }}>
                 <label className="label">{t("stock.quantity")}</label>

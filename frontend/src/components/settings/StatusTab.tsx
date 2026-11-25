@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { api } from "../../services/api";
 import { useTranslation } from "../../i18n/I18nContext";
 import { getFrontLogs, clearFrontLogs, FrontLog } from "../../services/frontLogger";
+import BrutalSelect from "../ui/BrutalSelect";
 
 interface ServerStatus {
     version: string;
@@ -101,12 +102,14 @@ function ServerLogs(): JSX.Element {
         <div className="card" style={{ marginBottom: "1rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem", gap: "0.5rem", flexWrap: "wrap" }}>
                 <h3 style={{ margin: 0, fontSize: "1rem", fontWeight: 700, textTransform: "uppercase" }}>{t("status.serverLogs")}</h3>
-                <select className="select" value={filter} onChange={(e) => setFilter(e.target.value)} style={{ width: "auto" }}>
-                    <option value="all">{t("status.filterAll")}</option>
-                    <option value="info">info</option>
-                    <option value="warn">warn</option>
-                    <option value="error">error</option>
-                </select>
+                <BrutalSelect value={filter} onChange={setFilter} width="auto" minWidth="120px"
+                    ariaLabel={t("status.serverLogs")}
+                    options={[
+                        { value: "all", label: t("status.filterAll") },
+                        { value: "info", label: "info" },
+                        { value: "warn", label: "warn" },
+                        { value: "error", label: "error" },
+                    ]} />
             </div>
             <LogList entries={visible} emptyLabel={t("status.emptyLogs")} />
         </div>

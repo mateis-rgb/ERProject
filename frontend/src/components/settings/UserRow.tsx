@@ -5,6 +5,7 @@ import { useState } from "react";
 import { api } from "../../services/api";
 import { AuthUser, UserRole } from "../../types";
 import UserAvatar from "../layout/UserAvatar";
+import BrutalSelect from "../ui/BrutalSelect";
 
 interface Props {
     user: AuthUser;
@@ -55,13 +56,13 @@ export default function UserRow({ user, isSelf, onChanged }: Props): JSX.Element
                 </span>
             </td>
             <td className="table-cell">
-                <select className="select" value={user.role} disabled={busy || isSelf}
-                    onChange={(e) => changeRole(e.target.value as UserRole)}
-                    style={{ width: "auto", minWidth: "110px", padding: "0.3rem 1.9rem 0.3rem 0.55rem", fontSize: "0.8rem" }}>
-                    <option value="ADMIN">{t("roles.admin")}</option>
-                    <option value="EDITOR">{t("roles.editor")}</option>
-                    <option value="VIEWER">{t("roles.viewer")}</option>
-                </select>
+                <BrutalSelect value={user.role} disabled={busy || isSelf} width="auto" minWidth="110px" height="32px"
+                    onChange={(v) => changeRole(v as UserRole)}
+                    options={[
+                        { value: "ADMIN", label: t("roles.admin") },
+                        { value: "EDITOR", label: t("roles.editor") },
+                        { value: "VIEWER", label: t("roles.viewer") },
+                    ]} />
             </td>
             <td className="table-cell">
                 {!isSelf && <button className="btn-danger" onClick={remove} disabled={busy}><FiX /></button>}

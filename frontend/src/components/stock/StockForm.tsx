@@ -4,6 +4,7 @@ import { useState, FormEvent, ReactNode } from "react";
 import { api } from "../../services/api";
 import { StockItem } from "../../types";
 import { useConfigLists } from "../../hooks/useConfigLists";
+import BrutalSelect from "../ui/BrutalSelect";
 
 interface Props {
     initial?: StockItem | null; // null/undefined = création, sinon édition (PATCH)
@@ -56,10 +57,11 @@ function ConfigSelect({ label, value, options, allowEmpty, onChange }: {
     const opts = value !== "" && !options.includes(value) ? [value, ...options] : options;
     return (
         <Field label={label}>
-            <select className="select" value={value} onChange={(e) => onChange(e.target.value)}>
-                {allowEmpty && <option value="">—</option>}
-                {opts.map((o) => <option key={o} value={o}>{o}</option>)}
-            </select>
+            <BrutalSelect value={value} onChange={onChange}
+                options={[
+                    ...(allowEmpty ? [{ value: "", label: "—" }] : []),
+                    ...opts.map((o) => ({ value: o, label: o })),
+                ]} />
         </Field>
     );
 }

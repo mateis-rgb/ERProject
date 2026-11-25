@@ -5,6 +5,7 @@ import { api } from "../../services/api";
 import { Project, ProjectTemplate } from "../../types";
 import { useModules } from "../../context/ModulesContext";
 import { useConfigLists } from "../../hooks/useConfigLists";
+import BrutalSelect from "../ui/BrutalSelect";
 
 interface Props {
     onCreated: () => void;
@@ -68,18 +69,17 @@ export default function ProjectForm({ onCreated, onError }: Props): JSX.Element 
             </div>
             <div>
                 <label className="label">{t("settings.lists.projectTypes")}</label>
-                <select className="select" value={type} onChange={(e) => setType(e.target.value)}>
-                    <option value="">—</option>
-                    {typeOptions.map((o) => <option key={o} value={o}>{o}</option>)}
-                </select>
+                <BrutalSelect value={type} onChange={setType}
+                    options={[{ value: "", label: "—" }, ...typeOptions.map((o) => ({ value: o, label: o }))]} />
             </div>
             {templatesOn && (
                 <div>
                     <label className="label">{t("project.template")}</label>
-                    <select className="select" value={templateId} onChange={(e) => setTemplateId(e.target.value)}>
-                        <option value="">{t("project.noTemplate")}</option>
-                        {templates.map((tpl) => <option key={tpl.id} value={tpl.id}>{tpl.name}</option>)}
-                    </select>
+                    <BrutalSelect value={templateId} onChange={setTemplateId}
+                        options={[
+                            { value: "", label: t("project.noTemplate") },
+                            ...templates.map((tpl) => ({ value: tpl.id, label: tpl.name })),
+                        ]} />
                 </div>
             )}
             <button className="btn" type="submit" disabled={busy}>{busy ? t("common.creating") : t("projects.createProject")}</button>

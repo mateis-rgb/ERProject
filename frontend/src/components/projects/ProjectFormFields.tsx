@@ -1,6 +1,7 @@
 // Champs du formulaire de réglages projet (Power of 10 R4)
 import { useTranslation } from "../../i18n/I18nContext";
 import type { ProjectFormState } from "./ProjectSettingsTab";
+import BrutalSelect from "../ui/BrutalSelect";
 
 interface Props {
     form: ProjectFormState;
@@ -34,17 +35,14 @@ export default function ProjectFormFields({ form, statuses, types, canEdit, onCh
             </Field>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                 <Field label={t("project.status")}>
-                    <select className="select" value={form.status} disabled={dis}
-                        onChange={(e) => onChange("status", e.target.value)}>
-                        {statuses.map((s) => <option key={s} value={s}>{s}</option>)}
-                    </select>
+                    <BrutalSelect value={form.status} disabled={dis}
+                        onChange={(v) => onChange("status", v)}
+                        options={statuses.map((s) => ({ value: s, label: s }))} />
                 </Field>
                 <Field label={t("project.type")}>
-                    <select className="select" value={form.type} disabled={dis}
-                        onChange={(e) => onChange("type", e.target.value)}>
-                        <option value="">—</option>
-                        {types.map((t) => <option key={t} value={t}>{t}</option>)}
-                    </select>
+                    <BrutalSelect value={form.type} disabled={dis}
+                        onChange={(v) => onChange("type", v)}
+                        options={[{ value: "", label: "—" }, ...types.map((x) => ({ value: x, label: x }))]} />
                 </Field>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
