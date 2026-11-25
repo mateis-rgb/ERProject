@@ -21,6 +21,29 @@ export function pxPerDay(view: GanttView): number {
     return 1.2;                        // ~440 px / an
 }
 
+export interface GanttRange {
+    rangeStart: number;
+    rangeMs: number;
+    width: number;
+    pct: (ts: number) => number;
+    pctPerDay: number;
+}
+
+// Plage = [début période(min) - padUnits, début de la période suivant fin(max)]
+// => la dernière case affichée est la période contenant la fin (ex: fin 01/01/2027 -> case "janv. 2027")
+export function computeGanttRange(minTs: number, maxTs: number, view: GanttView, padUnits: number, minWidth = 600): GanttRange {
+    const rangeStart = addPeriod(floorPeriod(minTs, view), -padUnits, view);
+    const rangeEnd = addPeriod(floorPeriod(maxTs, view), 1, view);
+    const rangeMs = rangeEnd - rangeStart;
+    return {
+        rangeStart,
+        rangeMs,
+        width: Math.max(minWidth, Math.ceil((rangeMs / DAY_MS) * pxPerDay(view))),
+        pct: (ts: number): number => ((ts - rangeStart) / rangeMs) * 100,
+        pctPerDay: (100 / rangeMs) * DAY_MS,
+    };
+}
+
 // Début de la période (lundi / 1er du mois / 1er janvier) contenant t
 export function floorPeriod(t: number, view: GanttView): number {
     const d = new Date(t);

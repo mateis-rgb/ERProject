@@ -7,6 +7,7 @@ import {
 } from "../services/commentService";
 import { validateBody, validateQuery } from "../middleware/validation";
 import { requireAuth, requireRole } from "../middleware/auth";
+import { requireModule } from "../middleware/modules";
 
 export const commentRouter = Router();
 
@@ -51,14 +52,14 @@ commentRouter.post("/projects/:projectId/comments", requireRole("EDITOR"), valid
     res.status(201).json({ success: true, data: comment });
 });
 
-// Liste des commentaires d'un article de stock
-commentRouter.get("/stock/:stockItemId/comments", async (req: Request, res: Response) => {
+// Liste des commentaires d'un article de stock (module stock)
+commentRouter.get("/stock/:stockItemId/comments", requireModule("stock"), async (req: Request, res: Response) => {
     const comments = await listStockComments(req.params.stockItemId ?? "");
     res.json({ success: true, data: comments });
 });
 
-// Ajouter un commentaire sur un article de stock
-commentRouter.post("/stock/:stockItemId/comments", requireRole("EDITOR"), validateBody(stockCommentSchema), async (req: Request, res: Response) => {
+// Ajouter un commentaire sur un article de stock (module stock)
+commentRouter.post("/stock/:stockItemId/comments", requireModule("stock"), requireRole("EDITOR"), validateBody(stockCommentSchema), async (req: Request, res: Response) => {
     const userId = authUserId(req, res);
     if (userId === null) return;
     const body = req.body as { content: string };
@@ -72,7 +73,7 @@ commentRouter.get("/mention-candidates/project/:projectId", async (req: Request,
     res.json({ success: true, data });
 });
 
-commentRouter.get("/mention-candidates/stock/:stockItemId", async (req: Request, res: Response) => {
+commentRouter.get("/mention-candidates/stock/:stockItemId", requireModule("stock"), async (req: Request, res: Response) => {
     const data = await getMentionCandidates("stock", req.params.stockItemId ?? "");
     res.json({ success: true, data });
 });

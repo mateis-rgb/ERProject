@@ -27,6 +27,29 @@ async function rawRequest(url: string, options?: RequestInit): Promise<Response>
     });
 }
 
+// Upload multipart (FormData) : pas de Content-Type JSON, mais même refresh 401
+async function rawForm(url: string, fd: FormData, retried = false): Promise<Response> {
+    const res = await fetch(url, { method: "POST", credentials: "include", body: fd });
+    if (res.status === 401 && !retried && !url.includes("/auth/")) {
+        if (await doRefresh()) return rawForm(url, fd, true);
+    }
+    return res;
+}
+
+async function formRequest<T>(url: string, fd: FormData): Promise<ApiResult<T>> {
+    try {
+        const res = await rawForm(url, fd);
+        const data = (await res.json()) as ApiResult<T>;
+        if (!res.ok) {
+            return { success: false, error: data.success === false ? data.error : `HTTP ${res.status}` };
+        }
+        return data;
+    } catch (err) {
+        const msg = err instanceof Error ? err.message : "Erreur réseau";
+        return { success: false, error: msg };
+    }
+}
+
 async function request<T>(url: string, options?: RequestInit, retried = false): Promise<ApiResult<T>> {
     try {
         const res = await rawRequest(url, options);
@@ -54,4 +77,5 @@ export const api = {
     put: <T>(url: string, body: unknown) =>
         request<T>(url, { method: "PUT", body: JSON.stringify(body) }),
     delete: <T>(url: string) => request<T>(url, { method: "DELETE" }),
+    postForm: <T>(url: string, fd: FormData) => formRequest<T>(url, fd),
 };

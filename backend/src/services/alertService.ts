@@ -10,6 +10,7 @@ import { getPlanning } from "./planningService";
 const INTERVAL_MS = 60 * 60 * 1000; // toutes les heures
 const DAY_MS = 24 * 3600 * 1000;
 const ACTIVE_STATUS = "En cours";
+const MAX_NOTIFY = 100; // borne dure de notifyMany (assert interne)
 
 let started = false;
 
@@ -65,7 +66,7 @@ async function notifyMilestone(
     if (ms === null) return;
     const recipients = await milestoneRecipients(prisma, ms.projectId);
     const targets: string[] = [];
-    for (const uid of recipients.slice(0, MAX_ITERATIONS)) {
+    for (const uid of recipients.slice(0, MAX_NOTIFY)) { // borne notifyMany (assert <= 100)
         if (!(await wasNotified(prisma, uid, key, hours))) targets.push(uid);
     }
     if (targets.length > 0) {

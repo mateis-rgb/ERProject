@@ -28,12 +28,17 @@ const DEFAULT_CONFIGS: Record<string, string[]> = {
     [CONFIG_KEYS.MENTION_SCOPE_STOCK]: ["all"], // @ ouverts à tous sur les articles stock
 };
 
+// Valeur par défaut d'une clé (sans toucher à la BDD) - fallback si la valeur stockée est vide
+export function defaultConfigValue(key: string): string[] {
+    return DEFAULT_CONFIGS[key] ?? [];
+}
+
 export async function getConfigValue(key: string): Promise<string[]> {
     assert(key.length > 0 && key.length <= 100, "getConfigValue: invalid key");
     const prisma = getPrisma();
     const entry = await prisma.config.findUnique({ where: { key } });
     if (entry === null) {
-        return DEFAULT_CONFIGS[key] ?? [];
+        return defaultConfigValue(key);
     }
     return safeJsonParse<string[]>(entry.value, []);
 }

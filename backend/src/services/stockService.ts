@@ -442,10 +442,11 @@ export async function setStockItemImage(id: string, buffer: Buffer, mimetype: st
     if (item === null) throw new Error("Article introuvable");
     const dir = path.join(getStorageDir(), "stock");
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    removeOldImage(item.imagePath);
     const rel = path.join("stock", `${id}${ext}`);
+    // Écrit d'abord, met à jour la BDD ensuite, puis nettoie : si l'écriture échoue, l'ancienne image reste valide
     fs.writeFileSync(path.join(getStorageDir(), rel), buffer);
     await prisma.stockItem.update({ where: { id }, data: { imagePath: rel } });
+    if (item.imagePath !== null && item.imagePath !== rel) removeOldImage(item.imagePath);
     return rel;
 }
 

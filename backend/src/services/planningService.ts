@@ -2,40 +2,11 @@
 import { Prisma } from "@prisma/client";
 import { getPrisma } from "../config/prisma";
 import { MAX_ITERATIONS } from "../utils/power10";
+import { PlanningMilestoneDTO, StockConflictDTO, PlanningDTO } from "../types";
 
 const INACTIVE_STATUSES = ["Archivé", "Annulé"];
 const MAX_CONFLICTS = 200;
 const MAX_RES_PER_ITEM = 50; // borne O(n²) par article (R2)
-
-export interface PlanningMilestone {
-    id: string;
-    projectId: string;
-    projectName: string;
-    projectStatus: string;
-    name: string;
-    startDate: Date;
-    endDate: Date;
-    color: string;
-    parentId: string | null;
-}
-
-export interface ConflictSide {
-    projectId: string;
-    projectName: string;
-    milestoneId: string;
-    milestoneName: string;
-}
-
-export interface StockConflict {
-    stockItemId: string;
-    stockItemName: string;
-    reference: string;
-    quantity: number;
-    overlapStart: Date;
-    overlapEnd: Date;
-    a: ConflictSide;
-    b: ConflictSide;
-}
 
 interface Res {
     stockItemId: string;
@@ -50,7 +21,7 @@ interface Res {
     quantity: number;
 }
 
-export async function listPlanningMilestones(): Promise<PlanningMilestone[]> {
+export async function listPlanningMilestones(): Promise<PlanningMilestoneDTO[]> {
     const prisma = getPrisma();
     const rows = await prisma.milestone.findMany({
         where: { project: { status: { notIn: INACTIVE_STATUSES } } },
@@ -77,8 +48,8 @@ function effectiveEndOf(r: Res, returnByProject: Map<string, Date>): Date {
 }
 
 // Paaires de réservations de projets différents dont les périodes se chevauchent (borné R2)
-function findConflicts(resByItem: Map<string, Res[]>, returnsByItem: Map<string, Map<string, Date>>): StockConflict[] {
-    const out: StockConflict[] = [];
+function findConflicts(resByItem: Map<string, Res[]>, returnsByItem: Map<string, Map<string, Date>>): StockConflictDTO[] {
+    const out: StockConflictDTO[] = [];
     for (const [stockItemId, list] of resByItem) {
         if (out.length >= MAX_CONFLICTS) break;
         const returns = returnsByItem.get(stockItemId) ?? new Map<string, Date>();
@@ -167,7 +138,7 @@ function buildReturnsMap(
     return out;
 }
 
-export async function getPlanning(): Promise<{ milestones: PlanningMilestone[]; conflicts: StockConflict[] }> {
+export async function getPlanning(): Promise<PlanningDTO> {
     const prisma = getPrisma();
     const [milestones, links, returns] = await Promise.all([
         listPlanningMilestones(),

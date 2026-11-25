@@ -5,7 +5,7 @@ import { useTranslation } from "../../i18n/I18nContext";
 import GanttBar from "./GanttBar";
 import GanttHeader from "./GanttHeader";
 import GanttToolbar from "./GanttToolbar";
-import { GanttView, DAY_MS, pxPerDay, buildTicks, floorPeriod, addPeriod, orderMilestones } from "./ganttUtils";
+import { GanttView, buildTicks, orderMilestones, computeGanttRange, GanttRange } from "./ganttUtils";
 import type { ResizeSide } from "../../hooks/useResizeDrag";
 
 interface Props {
@@ -22,31 +22,13 @@ interface Props {
 const PAD_UNITS = 1; // marge d'une unité de vue avant le début
 const MIN_WIDTH = 600;
 
-interface Range {
-    rangeStart: number;
-    rangeMs: number;
-    width: number;
-    pct: (ts: number) => number;
-    pctPerDay: number;
-}
+type Range = GanttRange;
 
-// Plage = [début période(min) - 1 unité, début période suivante après fin(max)]
-// => la dernière case affichée est la période contenant la fin (ex: fin 01/01/2027 -> case "janv. 2027")
 function computeRange(milestones: Milestone[], view: GanttView, minDate?: string | null, maxDate?: string | null): Range {
     const bounded = minDate != null && maxDate != null && minDate !== "" && maxDate !== "";
     const starts = bounded ? [new Date(minDate as string).getTime()] : milestones.map((m) => new Date(m.startDate).getTime());
     const ends = bounded ? [new Date(maxDate as string).getTime()] : milestones.map((m) => new Date(m.endDate).getTime());
-    const rangeStart = addPeriod(floorPeriod(Math.min(...starts), view), -PAD_UNITS, view);
-    const rangeEnd = addPeriod(floorPeriod(Math.max(...ends), view), 1, view);
-    const rangeMs = rangeEnd - rangeStart;
-    const width = Math.max(MIN_WIDTH, Math.ceil((rangeMs / DAY_MS) * pxPerDay(view)));
-    return {
-        rangeStart,
-        rangeMs,
-        width,
-        pct: (ts: number): number => ((ts - rangeStart) / rangeMs) * 100,
-        pctPerDay: (100 / rangeMs) * DAY_MS,
-    };
+    return computeGanttRange(Math.min(...starts), Math.max(...ends), view, PAD_UNITS, MIN_WIDTH);
 }
 
 export default function GanttChart(props: Props): JSX.Element {

@@ -45,12 +45,15 @@ interface PhotoProps {
 function PhotoCard({ itemId, imagePath, canEdit, onChanged }: PhotoProps): JSX.Element {
     const { t } = useTranslation();
     const inputRef = useRef<HTMLInputElement>(null);
+    const [error, setError] = useState<string | null>(null);
 
     const upload = (file: File): void => {
         const fd = new FormData();
         fd.append("image", file);
-        fetch(`/api/stock/${itemId}/image`, { method: "POST", credentials: "include", body: fd })
-            .then((r) => { if (r.ok) onChanged(); });
+        api.postForm<{ imagePath: string }>(`/api/stock/${itemId}/image`, fd).then((r) => {
+            if (r.success) { setError(null); onChanged(); }
+            else setError(r.error);
+        });
     };
 
     const remove = (): void => {
@@ -91,6 +94,7 @@ function PhotoCard({ itemId, imagePath, canEdit, onChanged }: PhotoProps): JSX.E
                     )}
                 </div>
             )}
+            {error !== null && <p style={{ color: "var(--danger)", fontSize: "0.78rem", margin: "0.5rem 0 0" }}>{error}</p>}
         </div>
     );
 }

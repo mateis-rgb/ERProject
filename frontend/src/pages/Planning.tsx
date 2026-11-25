@@ -8,30 +8,17 @@ import { api } from "../services/api";
 import { Planning, PlanningMilestone, StockConflict } from "../types";
 import GanttHeader from "../components/gantt/GanttHeader";
 import GanttToolbar from "../components/gantt/GanttToolbar";
-import { GanttView, DAY_MS, pxPerDay, buildTicks, floorPeriod, addPeriod, barGeom } from "../components/gantt/ganttUtils";
+import { GanttView, buildTicks, barGeom, computeGanttRange, GanttRange } from "../components/gantt/ganttUtils";
 
 const MIN_WIDTH = 600;
 const LABEL_W = 190;
 
-interface Range {
-    rangeStart: number;
-    rangeMs: number;
-    width: number;
-    pct: (ts: number) => number;
-}
+type Range = GanttRange;
 
 function computeRange(milestones: PlanningMilestone[], view: GanttView): Range {
     const starts = milestones.map((m) => new Date(m.startDate).getTime());
     const ends = milestones.map((m) => new Date(m.endDate).getTime());
-    const rangeStart = addPeriod(floorPeriod(Math.min(...starts), view), -1, view);
-    const rangeEnd = addPeriod(floorPeriod(Math.max(...ends), view), 1, view);
-    const rangeMs = rangeEnd - rangeStart;
-    return {
-        rangeStart,
-        rangeMs,
-        width: Math.max(MIN_WIDTH, Math.ceil((rangeMs / DAY_MS) * pxPerDay(view))),
-        pct: (ts: number): number => ((ts - rangeStart) / rangeMs) * 100,
-    };
+    return computeGanttRange(Math.min(...starts), Math.max(...ends), view, 1, MIN_WIDTH);
 }
 
 interface ProjectGroup {

@@ -5,7 +5,7 @@ import { CommentDTO, MentionCandidatesDTO } from "../types";
 import { logActivity } from "./activityService";
 import { notifyMany } from "./notificationService";
 import { emitGlobal } from "./socketService";
-import { getConfigValue, CONFIG_KEYS } from "./configService";
+import { getConfigValue, defaultConfigValue, CONFIG_KEYS } from "./configService";
 
 const MAX_MENTIONS = 20;
 const MAX_USERS = 200;
@@ -66,7 +66,7 @@ function parseMentions(content: string): string[] {
 async function mentionScope(kind: CommentKind): Promise<string> {
     const key = kind === "project" ? CONFIG_KEYS.MENTION_SCOPE_PROJECT : CONFIG_KEYS.MENTION_SCOPE_STOCK;
     const values = await getConfigValue(key);
-    return values[0] ?? (kind === "project" ? "collaborators" : "all");
+    return values[0] ?? defaultConfigValue(key)[0] ?? "all";
 }
 
 // IDs des membres d'un projet = créateur + collaborateurs
@@ -143,7 +143,8 @@ async function createRow(
     const c = await prisma.comment.create({ data: { ...data, authorId, content: content.trim() }, include: { author: { select: { name: true } } } });
     const author = await prisma.user.findUnique({ where: { id: authorId }, select: { name: true } });
     await logActivity(authorId, "comment", { kind, refId, milestoneId, preview: content.slice(0, 80) }, kind === "project" ? refId : null);
-    void notifyMentions(kind, refId, milestoneId, authorId, author?.name ?? "?", content);
+    // best-effort : une panne de notif ne doit pas faire échouer la création du commentaire
+    notifyMentions(kind, refId, milestoneId, authorId, author?.name ?? "?", content).catch(() => undefined);
     const dto = toDTO(c);
     emitGlobal("comment:new", { kind, projectId: dto.projectId, stockItemId: dto.stockItemId, milestoneId, comment: dto });
     return dto;

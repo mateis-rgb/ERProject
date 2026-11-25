@@ -1,5 +1,5 @@
 // Routes Jalons (milestones) d'un projet + stock réservé par jalon
-import { Router, Request, Response } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import { z } from "zod";
 import {
     createMilestone, listMilestones, updateMilestone, deleteMilestone,
@@ -12,7 +12,15 @@ import { requireModule } from "../middleware/modules";
 export const milestoneRouter = Router();
 
 milestoneRouter.use(requireAuth);
-milestoneRouter.use(["/projects", "/milestones", "/stock"], requireModule("gantt"));
+// Gate "gantt" uniquement sur les chemins jalons (sinon il bloquerait ex. /stock/:id/comments du commentRouter)
+const GANTT_PATH = /^\/(milestones|projects\/[^/]+\/milestones|stock\/[^/]+\/availability)/;
+milestoneRouter.use((req: Request, _res: Response, next: NextFunction) => {
+    if (GANTT_PATH.test(req.path)) {
+        void requireModule("gantt")(req, _res, next);
+        return;
+    }
+    next();
+});
 
 // Accepte datetime ISO complet ou date seule YYYY-MM-DD (input type=date)
 const dateSchema = z.union([

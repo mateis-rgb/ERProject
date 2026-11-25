@@ -27,7 +27,14 @@ function StockRow({ item, avail: a, canEdit, onDelete, onEdit }: RowProps): JSX.
     const isLow = item.quantity <= item.minThreshold;
     const unavailable = a !== undefined && a.reserved > 0 && a.available <= 0;
     return (
-        <tr onClick={() => navigate(`/stock/${item.id}`)} style={{ cursor: "pointer", ...(isLow ? { backgroundColor: "rgba(239,68,68,0.1)" } : {}) }}>
+        <tr
+            onClick={() => navigate(`/stock/${item.id}`)}
+            onKeyDown={(e) => { if (e.key === "Enter") navigate(`/stock/${item.id}`); }}
+            tabIndex={0}
+            role="link"
+            aria-label={item.name}
+            style={{ cursor: "pointer", ...(isLow ? { backgroundColor: "rgba(239,68,68,0.1)" } : {}) }}
+        >
             <td className="table-cell" style={{ fontWeight: 600 }}>{item.name}</td>
             <td className="table-cell">{item.reference}</td>
             <td className="table-cell">
