@@ -129,7 +129,7 @@ export default function StockSearchBar({ query, onQuery, allItems, categories, l
                 <FiSearch style={{ position: "absolute", left: "0.6rem", top: "50%", transform: "translateY(-50%)", color: "var(--muted)", pointerEvents: "none" }} />
                 <input
                     className="input"
-                    style={{ paddingLeft: "2rem" }}
+                    style={{ paddingLeft: "2rem", height: "40px", boxSizing: "border-box" }}
                     placeholder={t("stock.searchArticle")}
                     value={query}
                     onChange={(e) => { onQuery(e.target.value); setOpen(true); setHighlight(0); }}
