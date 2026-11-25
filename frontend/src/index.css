@@ -505,3 +505,13 @@ a > span:only-child > svg:only-child {
 .markdown-body hr { border: none; border-top: 2px solid var(--ink); margin: 1rem 0; }
 .markdown-body img { max-width: 100%; border: 2px solid var(--ink); }
 .markdown-body strong { font-weight: 700; }
+
+/* ===== Highlight.js dans l'aperçu markdown (thème néo-brutaliste custom) ===== */
+.markdown-body .hljs { background: transparent; color: var(--text); }
+.markdown-body .hljs-comment, .markdown-body .hljs-quote { color: var(--muted); font-style: italic; }
+.markdown-body .hljs-keyword, .markdown-body .hljs-selector-tag, .markdown-body .hljs-doctag { color: var(--accent); font-weight: 700; }
+.markdown-body .hljs-string, .markdown-body .hljs-regexp, .markdown-body .hljs-attr { color: var(--green); }
+.markdown-body .hljs-number, .markdown-body .hljs-literal { color: var(--danger); font-weight: 700; }
+.markdown-body .hljs-title, .markdown-body .hljs-title.function_, .markdown-body .hljs-built_in { color: var(--accent); }
+.markdown-body .hljs-name, .markdown-body .hljs-tag { color: var(--text); }
+.markdown-body .hljs-meta, .markdown-body .hljs-meta .hljs-keyword { color: var(--muted); }

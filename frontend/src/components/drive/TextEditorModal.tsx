@@ -2,12 +2,12 @@
 import { useTranslation } from "../../i18n/I18nContext";
 import { Attachment } from "../../types";
 import { editorModeFor, EditorMode } from "../../utils/textFiles";
-import { renderMarkdown } from "../../utils/markdown";
 import { useTextContent } from "../../hooks/useTextContent";
 import { useEditorInsert } from "../../hooks/useEditorInsert";
 import Modal from "../ui/Modal";
 import EditorToolbar from "./EditorToolbar";
 import ScriptPreview from "./ScriptPreview";
+import MarkdownPreview from "./MarkdownPreview";
 import { FiSave, FiEye } from "react-icons/fi";
 
 interface Props {
@@ -20,12 +20,7 @@ interface Props {
 function PreviewPane(p: { mode: EditorMode; src: string }): JSX.Element {
     const { t } = useTranslation();
     if (p.mode === "script") return <ScriptPreview src={p.src} />;
-    if (p.mode === "markdown") {
-        return (
-            <div className="markdown-body" style={{ padding: "1rem 1.25rem", overflowY: "auto", height: "100%", boxSizing: "border-box" }}
-                dangerouslySetInnerHTML={{ __html: renderMarkdown(p.src) }} />
-        );
-    }
+    if (p.mode === "markdown") return <MarkdownPreview src={p.src} />;
     return (
         <pre style={{ margin: 0, padding: "1rem 1.25rem", overflowY: "auto", height: "100%", boxSizing: "border-box", fontFamily: "var(--font-mono)", fontSize: "0.85rem", whiteSpace: "pre-wrap" }}>
             {p.src || t("editor.emptyDoc")}
@@ -64,15 +59,17 @@ export default function TextEditorModal({ attachment, canEdit, onClose, onSaved 
 
     return (
         <Modal title={`${t("editor.title")} — ${attachment.fileName}`} onClose={onClose} maxWidth="1100px">
-            <EditorToolbar mode={mode} disabled={!canEdit || tc.loading} onInsert={ed.insert} />
+            <EditorToolbar mode={mode} disabled={!canEdit || tc.loading}
+                canUndo={tc.history.canUndo} canRedo={tc.history.canRedo}
+                onInsert={ed.insert} onUndo={tc.history.undo} onRedo={tc.history.redo} />
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", border: "2px solid var(--ink)", marginTop: "0.5rem", height: "55vh" }}>
                 <textarea
                     ref={(el) => { ed.areaRef.current = el; }}
                     className="input"
                     readOnly={!canEdit || tc.loading}
                     value={tc.loading ? t("editor.loading") : tc.content}
-                    onChange={(e) => tc.setContent(e.target.value)}
-                    onKeyDown={(e) => ed.onKeyDown(e, { canEdit, mode, dirty: tc.dirty, saving: tc.saving, save })}
+                    onChange={(e) => { tc.history.noteChange(tc.content); tc.setContent(e.target.value); }}
+                    onKeyDown={(e) => ed.onKeyDown(e, { canEdit, mode, dirty: tc.dirty, saving: tc.saving, save, history: tc.history })}
                     spellCheck={false}
                     style={{
                         border: "none", borderRadius: 0, boxShadow: "none", resize: "none",

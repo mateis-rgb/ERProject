@@ -1,5 +1,7 @@
-// Select custom néo-brutaliste : bouton façon .select + liste déroulante bordée/ombrée (Power of 10 R4)
+// Select custom néo-brutaliste : bouton façon .select + liste déroulante en PORTAL (fixed, z-index haut)
+// pour ne pas être clippée par les conteneurs scrollables (tableaux, cards overflow hidden) (Power of 10 R4)
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { FiCheck, FiChevronDown } from "react-icons/fi";
 
 export interface SelectOption { value: string; label: string; }
@@ -36,12 +38,12 @@ function OptionRow(p: { opt: SelectOption; active: boolean; selected: boolean; o
 }
 
 function OptionDropdown(p: {
-    options: SelectOption[]; value: string; highlight: number;
+    options: SelectOption[]; value: string; highlight: number; pos: { top: number; left: number; width: number };
     onPick: (v: string) => void; onHover: (i: number) => void;
 }): JSX.Element {
-    return (
+    return createPortal(
         <div style={{
-            position: "absolute", top: "calc(100% + 4px)", left: 0, right: 0, zIndex: 300,
+            position: "fixed", top: p.pos.top, left: p.pos.left, width: p.pos.width, zIndex: 1000,
             background: "var(--surface)", border: "2px solid var(--ink)", boxShadow: "5px 5px 0 var(--ink)",
             maxHeight: "240px", overflow: "auto",
         }}>
@@ -49,7 +51,8 @@ function OptionDropdown(p: {
                 <OptionRow key={o.value} opt={o} active={i === p.highlight} selected={o.value === p.value}
                     onPick={() => p.onPick(o.value)} onHover={() => p.onHover(i)} />
             ))}
-        </div>
+        </div>,
+        document.body
     );
 }
 
@@ -78,12 +81,7 @@ function SelectButton(p: {
     );
 }
 
-export default function BrutalSelect({ value, onChange, options, ariaLabel, minWidth = "150px", height = "40px", width, disabled = false }: Props): JSX.Element {
-    const [open, setOpen] = useState(false);
-    const [highlight, setHighlight] = useState(0);
-    const ref = useRef<HTMLDivElement>(null);
-    const current = options.find((o) => o.value === value);
-
+function useOutsideClose(ref: React.RefObject<HTMLDivElement | null>, disabled: boolean, setOpen: (v: boolean) => void): void {
     useEffect(() => {
         if (disabled) return;
         const onClick = (e: MouseEvent): void => {
@@ -91,12 +89,51 @@ export default function BrutalSelect({ value, onChange, options, ariaLabel, minW
         };
         document.addEventListener("mousedown", onClick);
         return () => document.removeEventListener("mousedown", onClick);
-    }, [disabled]);
+    }, [disabled, ref, setOpen]);
+}
+
+// Le dropdown est en portal fixed : on le ferme au scroll/resize pour éviter un décrochage visuel
+function useScrollClose(open: boolean, setOpen: (v: boolean) => void): void {
+    useEffect(() => {
+        if (!open) return;
+        const close = (): void => setOpen(false);
+        window.addEventListener("scroll", close, true);
+        window.addEventListener("resize", close);
+        return () => {
+            window.removeEventListener("scroll", close, true);
+            window.removeEventListener("resize", close);
+        };
+    }, [open, setOpen]);
+}
+
+interface SelectState {
+    ref: React.MutableRefObject<HTMLDivElement | null>;
+    open: boolean; highlight: number; pos: { top: number; left: number; width: number };
+    toggle: () => void; setOpen: (v: boolean) => void; setHighlight: (v: number) => void;
+    pick: (v: string) => void; onKey: (e: React.KeyboardEvent) => void;
+}
+
+function useSelectState(value: string, onChange: (v: string) => void, options: SelectOption[], disabled: boolean): SelectState {
+    const [open, setOpen] = useState(false);
+    const [highlight, setHighlight] = useState(0);
+    const [pos, setPos] = useState({ top: 0, left: 0, width: 0 });
+    const ref = useRef<HTMLDivElement>(null);
+    useOutsideClose(ref, disabled, setOpen);
+    useScrollClose(open, setOpen);
 
     useEffect(() => {
         const i = options.findIndex((o) => o.value === value);
         setHighlight(i >= 0 ? i : 0);
     }, [value, options]);
+
+    const toggle = (): void => {
+        if (disabled) return;
+        if (!open && ref.current !== null) {
+            const r = ref.current.getBoundingClientRect();
+            setPos({ top: r.bottom + 4, left: r.left, width: r.width });
+        }
+        setOpen(!open);
+    };
 
     const pick = (v: string): void => {
         onChange(v);
@@ -104,26 +141,33 @@ export default function BrutalSelect({ value, onChange, options, ariaLabel, minW
     };
 
     const onKey = (e: React.KeyboardEvent): void => {
-        if (e.key === "ArrowDown") { e.preventDefault(); setOpen(true); setHighlight((h) => Math.min(h + 1, options.length - 1)); }
-        if (e.key === "ArrowUp") { e.preventDefault(); setOpen(true); setHighlight((h) => Math.max(h - 1, 0)); }
+        if (e.key === "ArrowDown") { e.preventDefault(); toggle(); setHighlight((h) => Math.min(h + 1, options.length - 1)); }
+        if (e.key === "ArrowUp") { e.preventDefault(); toggle(); setHighlight((h) => Math.max(h - 1, 0)); }
         if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
             if (open && options[highlight] !== undefined) pick(options[highlight].value);
-            else setOpen(!open);
+            else toggle();
         }
         if (e.key === "Escape") setOpen(false);
     };
 
+    return { ref, open, highlight, pos, toggle, setOpen, setHighlight, pick, onKey };
+}
+
+export default function BrutalSelect({ value, onChange, options, ariaLabel, minWidth = "150px", height = "40px", width, disabled = false }: Props): JSX.Element {
+    const s = useSelectState(value, onChange, options, disabled);
+    const current = options.find((o) => o.value === value);
     return (
-        <div ref={ref} style={{ position: "relative", minWidth, width }}>
+        <div ref={(el) => { s.ref.current = el; }} style={{ minWidth, width }}>
             <SelectButton
                 label={current !== undefined ? current.label : value}
-                open={open} disabled={disabled} height={height} ariaLabel={ariaLabel}
-                onClick={() => { if (!disabled) setOpen(!open); }}
-                onKey={onKey}
+                open={s.open} disabled={disabled} height={height} ariaLabel={ariaLabel}
+                onClick={s.toggle}
+                onKey={s.onKey}
             />
-            {open && !disabled && (
-                <OptionDropdown options={options} value={value} highlight={highlight} onPick={pick} onHover={setHighlight} />
+            {s.open && !disabled && (
+                <OptionDropdown options={options} value={value} highlight={s.highlight} pos={s.pos}
+                    onPick={s.pick} onHover={s.setHighlight} />
             )}
         </div>
     );

@@ -1,6 +1,7 @@
 // Chargement / sauvegarde du contenu texte d'une pièce jointe (Power of 10 R4)
 import { useCallback, useEffect, useState } from "react";
 import { api } from "../services/api";
+import { useUndoHistory, UndoHistory } from "./useUndoHistory";
 
 export interface TextContentState {
     content: string;
@@ -10,6 +11,7 @@ export interface TextContentState {
     error: string | null;
     dirty: boolean;
     save: () => Promise<boolean>;
+    history: UndoHistory;
 }
 
 export function useTextContent(attachmentId: string): TextContentState {
@@ -18,6 +20,7 @@ export function useTextContent(attachmentId: string): TextContentState {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const history = useUndoHistory(content, setContent);
 
     useEffect(() => {
         setLoading(true);
@@ -45,5 +48,5 @@ export function useTextContent(attachmentId: string): TextContentState {
         return true;
     }, [attachmentId, content]);
 
-    return { content, setContent, loading, saving, error, dirty: content !== original, save };
+    return { content, setContent, loading, saving, error, dirty: content !== original, save, history };
 }
