@@ -1,5 +1,5 @@
 // Page Planning global - timeline cross-projets + panneau des conflits de stock (Power of 10 R4)
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FiAlertTriangle, FiArrowRight } from "react-icons/fi";
 import { useTranslation } from "../i18n/I18nContext";
@@ -81,7 +81,6 @@ interface RowProps {
     r: Range;
     conflicted: Set<string>;
     last: boolean;
-    scrollLeft: number;
 }
 
 // Bande "projet" : couvre toute la durée du projet, les jalons passent dans la ligne du dessous
@@ -123,54 +122,16 @@ function ProjectLabel({ g }: { g: ProjectGroup }): JSX.Element {
 
 // Titre du projet dans la barre : sticky (scroll horizontal) mais contraint par la barre
 // => il suit le scroll tant que la barre est visible, et reste dans la barre sinon
-// Position du titre dans la barre (en px, coordonnées de la cellule) :
-// épinglé à scrollLeft+8 tant que la barre est visible, mais jamais hors de la barre
-function titleLeftPx(scrollLeft: number, geom: { left: number; width: number }, r: Range, titleW: number): number {
-    const barLeft = (geom.left / 100) * r.width;
-    const barW = (geom.width / 100) * r.width;
-    const maxW = Math.max(0, barW - 16); // largeur réellement dispo pour le titre dans la barre
-    const effW = Math.min(titleW, maxW);
-    const min = barLeft + 8;
-    const max = Math.max(min, barLeft + barW - effW - 8);
-    return Math.min(Math.max(scrollLeft + 8, min), max);
-}
-
-function BarTitle({ name, hasConflict, left, maxW }: { name: string; hasConflict: boolean; left: number; maxW: number }): JSX.Element {
-    return (
-        <span style={{
-            position: "absolute", left: `${left}px`, top: "-2px", bottom: "-2px",
-            display: "inline-flex", alignItems: "center", gap: "4px",
-            maxWidth: `${maxW}px`, padding: "0 8px", boxSizing: "border-box",
-            fontWeight: 700, fontSize: "0.72rem", textTransform: "uppercase", color: "var(--ink)",
-            background: "var(--surface)", border: "var(--border-w) solid var(--ink)",
-            whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
-        }}>
-            {hasConflict && <FiAlertTriangle style={{ color: "var(--danger)", flexShrink: 0 }} />}
-            {name}
-        </span>
-    );
-}
-
 interface BarProps {
     g: ProjectGroup;
     r: Range;
     hasConflict: boolean;
-    scrollLeft: number;
 }
 
-function ProjectBar({ g, r, hasConflict, scrollLeft }: BarProps): JSX.Element | null {
-    const [titleW, setTitleW] = useState(120);
-    const measureRef = useRef<HTMLSpanElement>(null);
-    useLayoutEffect(() => {
-        const w = measureRef.current?.offsetWidth ?? 120;
-        setTitleW((prev) => (Math.abs(prev - w) < 2 ? prev : w)); // guard anti-boucle de re-render
-    }, [g.projectName, hasConflict]);
+function ProjectBar({ g, r, hasConflict }: BarProps): JSX.Element | null {
     if (g.start === null || g.end === null) return null;
     const geom = barGeom(g.start, g.end, r.pct);
-    const barWpx = (geom.width / 100) * r.width;
-    const maxW = Math.max(0, barWpx - 16); // jamais plus large que la barre
     const title = `${g.projectName} - ${fmtDate(new Date(g.start).toISOString())} - ${fmtDate(new Date(g.end).toISOString())}`;
-    const left = titleLeftPx(scrollLeft, geom, r, titleW);
     return (
         <div title={title}
             style={{
@@ -179,22 +140,17 @@ function ProjectBar({ g, r, hasConflict, scrollLeft }: BarProps): JSX.Element | 
                 backgroundColor: "var(--surface-2)", backgroundImage: PROJECT_HATCH,
                 border: hasConflict ? "3px solid var(--danger)" : "var(--border-w) solid var(--ink)",
                 boxShadow: hasConflict ? "3px 3px 0 var(--danger)" : "var(--shadow-btn)",
-            }}>
-            <span ref={measureRef} style={{ position: "absolute", visibility: "hidden", whiteSpace: "nowrap", fontWeight: 700, fontSize: "0.72rem", padding: "0 8px" }}>
-                {hasConflict ? "! " : ""}{g.projectName}
-            </span>
-            {maxW >= 24 && <BarTitle name={g.projectName} hasConflict={hasConflict} left={left} maxW={maxW} />}
-        </div>
+            }} />
     );
 }
 
-function ProjectRow({ g, r, conflicted, last, scrollLeft }: RowProps): JSX.Element {
+function ProjectRow({ g, r, conflicted, last }: RowProps): JSX.Element {
     const hasConflict = g.items.some((m) => conflicted.has(m.id));
     return (
         <div style={{ display: "flex", borderBottom: last ? "none" : "var(--border-w) solid var(--ink)", height: "64px" }}>
             <ProjectLabel g={g} />
             <div style={{ position: "relative", width: `${r.width}px`, flexShrink: 0 }}>
-                <ProjectBar g={g} r={r} hasConflict={hasConflict} scrollLeft={scrollLeft} />
+                <ProjectBar g={g} r={r} hasConflict={hasConflict} />
             </div>
         </div>
     );
@@ -238,19 +194,17 @@ function PlanningTimeline({ data, view, onView }: TimelineProps): JSX.Element {
     const rangeEnd = r.rangeStart + r.rangeMs;
     const ticks = buildTicks(r.rangeStart, rangeEnd, view);
     const todayPct = Math.min(100, Math.max(0, r.pct(Date.now())));
-    const [scrollLeft, setScrollLeft] = useState(0);
     return (
         <div style={{ flex: "1 1 480px", minWidth: 0 }}>
             <GanttToolbar view={view} onView={onView} />
-            <div onScroll={(e) => setScrollLeft(e.currentTarget.scrollLeft)}
-                style={{ overflow: "auto", border: "var(--border-w) solid var(--ink)", background: "var(--surface)" }}>
+            <div style={{ overflow: "auto", border: "var(--border-w) solid var(--ink)", background: "var(--surface)" }}>
                 <div style={{ display: "inline-block", minWidth: "100%" }}>
                     <div style={{ display: "flex", position: "sticky", top: 0, zIndex: 10 }}>
                         <div style={{ ...LABEL_STYLE, height: "36px", borderBottom: "var(--border-w) solid var(--ink)", zIndex: 11 }} />
                         <GanttHeader width={r.width} ticks={ticks} pct={r.pct} rangeEnd={rangeEnd} todayPct={todayPct} />
 					</div>
                     
-                    {groups.map((g, i) => <ProjectRow key={g.projectId} g={g} r={r} conflicted={conflicted} last={i === groups.length - 1} scrollLeft={scrollLeft} />)}
+                    {groups.map((g, i) => <ProjectRow key={g.projectId} g={g} r={r} conflicted={conflicted} last={i === groups.length - 1} />)}
                 </div>
             </div>
         </div>
