@@ -432,8 +432,6 @@
         },
         "milestoneName": "Milestone name",
         "color": "Color",
-        "newMilestone": "New milestone",
-        "editMilestone": "Edit milestone",
         "noCurrent": "No current step"
     },
     "planning": {

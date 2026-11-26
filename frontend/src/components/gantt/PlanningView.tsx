@@ -8,7 +8,7 @@ import Modal from "../ui/Modal";
 import MilestoneModal from "./MilestoneModal";
 import ProjectDatesModal from "../projects/ProjectDatesModal";
 import type { ResizeSide } from "../../hooks/useResizeDrag";
-import { currentMilestone } from "./ganttUtils";
+import { currentMilestone, milestonePath } from "./ganttUtils";
 
 interface Props {
     projectId: string;
@@ -42,7 +42,8 @@ export default function PlanningView(props: Props): JSX.Element {
     const selected = milestones.find((m) => m.id === selectedId) ?? null;
     const noDates = projectStart === null || projectEnd === null;
     const editing = canEdit && editMode;
-    const current = currentMilestone(milestones, new Date())?.name ?? null;
+    const cur = currentMilestone(milestones, new Date());
+    const current = cur !== null ? milestonePath(milestones, cur).map((m) => m.name).join(" / ") : null;
     return (
         <div style={{ marginTop: "1.25rem" }}>
             <div className="card">

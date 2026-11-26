@@ -99,11 +99,8 @@ export default function MilestoneForm({ projectId, milestone, milestones, onSave
     };
 
     return (
-        <form className="card" onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-            <h3 style={{ margin: 0, fontSize: "1rem", fontWeight: 700, textTransform: "uppercase" }}>
-                {milestone === null ? t("gantt.newMilestone") : t("gantt.editMilestone")}
-            </h3>
-            {error !== null && <p style={{ color: "var(--danger)", fontFamily: "var(--font-mono)", fontSize: "0.78rem", margin: 0 }}><span className="ic"><FiAlertTriangle /> {error}</span></p>}
+        <form onSubmit={submit}>
+            {error !== null && <p className="span2" style={{ color: "var(--danger)", fontFamily: "var(--font-mono)", fontSize: "0.78rem", margin: 0 }}><span className="ic"><FiAlertTriangle /> {error}</span></p>}
             <div>
                 <label className="label">{t("gantt.milestoneName")}</label>
                 <input className="input" value={name} onChange={(e) => setName(e.target.value)} required />
@@ -116,15 +113,19 @@ export default function MilestoneForm({ projectId, milestone, milestones, onSave
                         ...milestones.filter((m) => m.id !== milestone?.id).map((m) => ({ value: m.id, label: m.name })),
                     ]} />
             </div>
-            <div>
+            <div className="span2">
                 <label className="label">{t("project.description")}</label>
                 <textarea className="input" value={description} onChange={(e) => setDescription(e.target.value)} rows={2} />
             </div>
-            <DateFields startDate={startDate} endDate={endDate} onStart={setStartDate} onEnd={setEndDate} />
-            <ColorPicker color={color} onChange={setColor} />
-            <div style={{ display: "flex", gap: "0.75rem" }}>
-                <button className="btn" type="submit" disabled={busy}>{busy ? t("common.saving") : t("common.save")}</button>
+            <div className="span2">
+                <DateFields startDate={startDate} endDate={endDate} onStart={setStartDate} onEnd={setEndDate} />
+            </div>
+            <div className="span2">
+                <ColorPicker color={color} onChange={setColor} />
+            </div>
+            <div className="span2" style={{ display: "flex", gap: "0.75rem", justifyContent: "flex-end" }}>
                 <button className="btn-ghost" type="button" onClick={onCancel}>{t("common.cancel")}</button>
+                <button className="btn" type="submit" disabled={busy}>{busy ? t("common.saving") : t("common.save")}</button>
             </div>
         </form>
     );

@@ -87,6 +87,10 @@ export function orderMilestones(milestones: import("../../types").Milestone[]): 
         list.push(m);
         byParent.set(key, list);
     }
+    // tri chronologique (startDate) dans chaque niveau, la hiérarchie parent > enfants est conservée
+    for (const list of byParent.values()) {
+        list.sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+    }
     const out: FlatMilestone[] = [];
     const stack: { id: string | null; depth: number }[] = [{ id: null, depth: 0 }];
     while (out.length < MAX_TICKS && stack.length > 0) {
@@ -101,6 +105,19 @@ export function orderMilestones(milestones: import("../../types").Milestone[]): 
         }
     }
     return out;
+}
+
+// Chemin hiérarchique racine -> jalon (breadcrumb du jalon courant), itératif borné (R1/R2)
+export function milestonePath(milestones: import("../../types").Milestone[], m: import("../../types").Milestone): import("../../types").Milestone[] {
+    const MAX_DEPTH = 10;
+    const byId = new Map(milestones.slice(0, MAX_TICKS).map((x) => [x.id, x] as const));
+    const path: import("../../types").Milestone[] = [];
+    let cur: import("../../types").Milestone | undefined = m;
+    for (let d = 0; d < MAX_DEPTH && cur !== undefined; d++) {
+        path.unshift(cur);
+        cur = cur.parentId !== null ? byId.get(cur.parentId) : undefined;
+    }
+    return path;
 }
 
 // Géométrie clampée d'une barre de jalon dans [0, 100%]
