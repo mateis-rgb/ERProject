@@ -103,15 +103,20 @@ function HeaderInfo({ project, status, milestones, onOpenMeta, collapsed, onTogg
                     </span>
                 )}
             </div>
-            {!collapsed && (
-                <>
+            {/* animation de repli via grid-template-rows (0fr replié / 1fr déplié) */}
+            <div style={{
+                display: "grid",
+                gridTemplateRows: collapsed ? "0fr" : "1fr",
+                transition: "grid-template-rows 0.25s ease",
+            }}>
+                <div style={{ overflow: "hidden", minHeight: 0 }}>
                     <p style={{ color: "var(--muted)", marginTop: "0.5rem" }}>{project.description || "Aucune description"}</p>
                     <div style={{ marginTop: "0.6rem" }}>
                         <ProgressBar value={computeProgress(project.startDate, project.endDate, milestones.map((m) => m.endDate))} width={140} />
                     </div>
                     <ProjectMetaChips project={project} milestonesCount={milestones.length} onOpen={onOpenMeta} />
-                </>
-            )}
+                </div>
+            </div>
         </div>
     );
 }
