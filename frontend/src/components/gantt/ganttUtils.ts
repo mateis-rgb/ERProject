@@ -87,9 +87,9 @@ export function orderMilestones(milestones: import("../../types").Milestone[]): 
         list.push(m);
         byParent.set(key, list);
     }
-    // tri par date de début DESC dans chaque niveau (le plus récent d'abord), hiérarchie parent > enfants conservée
+    // tri chronologique ASC (date de début, du plus ancien au plus récent) dans chaque niveau
     for (const list of byParent.values()) {
-        list.sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
+        list.sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
     }
     // Parcours pré-ordre itératif (R1/R2) : chaque parent est suivi immédiatement de ses sous-jalons
     // (ex: A, A1, A2, B avec A1/A2 enfants de A), chaque niveau trié du plus récent au plus ancien
