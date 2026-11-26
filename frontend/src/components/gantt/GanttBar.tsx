@@ -26,10 +26,10 @@ interface Props {
     isCurrent: boolean; // jalon en cours (contient aujourd'hui) -> badge clignotant dans le tooltip
 }
 
-function BarTooltip(props: { name: string; isCurrent: boolean; x: number; y: number }): JSX.Element {
-    // fixed : suit la souris et n'est jamais coupé par le scroll du gantt ; clamp dans la fenêtre
-    const left = Math.min(props.x + 12, Math.max(8, window.innerWidth - 280));
-    const top = Math.max(8, props.y - 40); // au-dessus du curseur
+function BarTooltip(props: { name: string; isCurrent: boolean; left: number; top: number }): JSX.Element {
+    // top constant (ancré au-dessus du jalon), left suit la souris en x ; clamp dans la fenêtre
+    const left = Math.min(props.left + 12, Math.max(8, window.innerWidth - 280));
+    const top = Math.max(8, props.top);
     return (
         <div style={{
             position: "fixed", left, top, zIndex: 9999, pointerEvents: "none",
@@ -61,7 +61,7 @@ function CollapseArrow(props: { collapsed: boolean; onToggle: () => void }): JSX
 export default function GanttBar(props: Props): JSX.Element {
     const { milestone, depth, pct, pctPerDay, isSel, showBorder, canEdit, onSelect, onMove, onResize, childCount, isCollapsed, hiddenCount, onToggleCollapse, isCurrent } = props;
     const laneRef = useRef<HTMLDivElement>(null);
-    const [tip, setTip] = useState<{ x: number; y: number } | null>(null);
+    const [tipX, setTipX] = useState<number | null>(null);
 
     const pxPerDay = (): number => {
         const w = laneRef.current?.getBoundingClientRect().width ?? 600;
@@ -84,11 +84,15 @@ export default function GanttBar(props: Props): JSX.Element {
             borderBottom: showBorder ? "1px solid var(--ink)" : "none",
             background: "transparent",
         }}>
-            {tip !== null && <BarTooltip name={milestone.name} isCurrent={isCurrent} x={tip.x} y={tip.y} />}
+            {tipX !== null && (() => {
+                const rect = laneRef.current?.getBoundingClientRect();
+                const top = (rect !== undefined ? rect.top : 8) - 40; // y constant, au-dessus du jalon
+                return <BarTooltip name={milestone.name} isCurrent={isCurrent} left={tipX} top={top} />;
+            })()}
             <button
                 onClick={handleClick}
-                onMouseMove={(e) => setTip({ x: e.clientX, y: e.clientY })}
-                onMouseLeave={() => setTip(null)}
+                onMouseMove={(e) => setTipX(e.clientX)}
+                onMouseLeave={() => setTipX(null)}
                 onMouseDown={canEdit ? drag.onMouseDown : undefined}
                 style={barStyle(geom, milestone.color, isSel, busy, canEdit, depth)}
             >
