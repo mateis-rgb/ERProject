@@ -35,7 +35,7 @@ export default function UserForm({ onCreated, onError }: Props): JSX.Element {
     };
 
     return (
-        <form className="card" onSubmit={submit} style={{ marginBottom: "1.5rem", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "0.75rem" }}>
+        <form onSubmit={submit} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "1.1rem" }}> // pas de sous-card : le formulaire est directement dans la modale
             <div>
                 <label className="label">{t("drive.name")}</label>
                 <input className="input" value={name} onChange={(e) => setName(e.target.value)} required placeholder="Jean Dupont" />

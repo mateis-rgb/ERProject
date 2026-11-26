@@ -26,8 +26,8 @@ const TABS: { id: ProjectTabId; key: string }[] = [
     { id: "stock", key: "projectTabs.stock" },
     { id: "planning", key: "projectTabs.planning" },
     { id: "drive", key: "projectTabs.drive" },
-    { id: "settings", key: "projectTabs.settings" },
     { id: "comments", key: "projectTabs.comments" },
+    { id: "settings", key: "projectTabs.settings" },
 ];
 
 export default function ProjectTabs({ active, onChange, showComments }: Props): JSX.Element {
