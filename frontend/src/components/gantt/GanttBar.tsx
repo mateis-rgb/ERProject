@@ -1,5 +1,5 @@
 // Barre de jalon dans le Gantt - drag + tirettes + sous-jalons indentés (Power of 10 R4)
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { FiCornerDownRight, FiChevronDown, FiChevronRight } from "react-icons/fi";
 import { Milestone } from "../../types";
 import ResizeHandle from "./ResizeHandle";
@@ -23,25 +23,6 @@ interface Props {
     isCollapsed: boolean;
     hiddenCount: number; // nb de descendants cachés quand replié (badge +N)
     onToggleCollapse: () => void;
-    isCurrent: boolean; // jalon en cours (contient aujourd'hui) -> badge clignotant dans le tooltip
-}
-
-function BarTooltip(props: { name: string; isCurrent: boolean; left: number; top: number }): JSX.Element {
-    // top constant (ancré au-dessus du jalon), left suit la souris en x ; clamp dans la fenêtre
-    const left = Math.min(props.left + 12, Math.max(8, window.innerWidth - 280));
-    const top = Math.max(8, props.top);
-    return (
-        <div style={{
-            position: "fixed", left, top, zIndex: 9999, pointerEvents: "none",
-            background: "var(--surface)", border: "2px solid var(--ink)", boxShadow: "3px 3px 0 var(--ink)",
-            padding: "0.25rem 0.5rem", display: "flex", alignItems: "center", gap: "0.4rem", maxWidth: "260px",
-        }}>
-            {props.isCurrent && <span className="rec-dot" style={{ width: "8px", height: "8px", flexShrink: 0 }} />}
-            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: "0.78rem", fontWeight: 700 }}>
-                {props.name}
-            </span>
-        </div>
-    );
 }
 
 function CollapseArrow(props: { collapsed: boolean; onToggle: () => void }): JSX.Element {
@@ -59,9 +40,8 @@ function CollapseArrow(props: { collapsed: boolean; onToggle: () => void }): JSX
 }
 
 export default function GanttBar(props: Props): JSX.Element {
-    const { milestone, depth, pct, pctPerDay, isSel, showBorder, canEdit, onSelect, onMove, onResize, childCount, isCollapsed, hiddenCount, onToggleCollapse, isCurrent } = props;
+    const { milestone, depth, pct, pctPerDay, isSel, showBorder, canEdit, onSelect, onMove, onResize, childCount, isCollapsed, hiddenCount, onToggleCollapse } = props;
     const laneRef = useRef<HTMLDivElement>(null);
-    const [tipX, setTipX] = useState<number | null>(null);
 
     const pxPerDay = (): number => {
         const w = laneRef.current?.getBoundingClientRect().width ?? 600;
@@ -84,15 +64,8 @@ export default function GanttBar(props: Props): JSX.Element {
             borderBottom: showBorder ? "1px solid var(--ink)" : "none",
             background: "transparent",
         }}>
-            {tipX !== null && (() => {
-                const rect = laneRef.current?.getBoundingClientRect();
-                const top = (rect !== undefined ? rect.top : 8) - 40; // y constant, au-dessus du jalon
-                return <BarTooltip name={milestone.name} isCurrent={isCurrent} left={tipX} top={top} />;
-            })()}
             <button
                 onClick={handleClick}
-                onMouseMove={(e) => setTipX(e.clientX)}
-                onMouseLeave={() => setTipX(null)}
                 onMouseDown={canEdit ? drag.onMouseDown : undefined}
                 style={barStyle(geom, milestone.color, isSel, busy, canEdit, depth)}
             >

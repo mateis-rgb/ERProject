@@ -5,7 +5,7 @@ import { useTranslation } from "../../i18n/I18nContext";
 import GanttBar from "./GanttBar";
 import GanttHeader from "./GanttHeader";
 import GanttToolbar from "./GanttToolbar";
-import { GanttView, buildTicks, orderMilestones, computeGanttRange, GanttRange, rootIds, childCounts, countDescendants, currentMilestone } from "./ganttUtils";
+import { GanttView, buildTicks, orderMilestones, computeGanttRange, GanttRange, rootIds, childCounts, countDescendants } from "./ganttUtils";
 import type { ResizeSide } from "../../hooks/useResizeDrag";
 
 interface Props {
@@ -49,7 +49,6 @@ export default function GanttChart(props: Props): JSX.Element {
     const rangeEnd = r.rangeStart + r.rangeMs;
     const ticks = buildTicks(r.rangeStart, rangeEnd, view);
     const todayPct = Math.min(100, Math.max(0, r.pct(Date.now())));
-    const currentId = currentMilestone(milestones, new Date())?.id ?? null;
 
     return (
         <div>
@@ -78,7 +77,6 @@ export default function GanttChart(props: Props): JSX.Element {
                                         childCount={ccounts.get(fm.m.id) ?? 0}
                                         isCollapsed={collapsed.has(fm.m.id)}
                                         hiddenCount={collapsed.has(fm.m.id) ? countDescendants(milestones, fm.m.id) : 0}
-                                        isCurrent={fm.m.id === currentId}
                                         onToggleCollapse={() => setCollapsed((prev) => {
                                             const next = new Set(prev);
                                             if (next.has(fm.m.id)) next.delete(fm.m.id); else next.add(fm.m.id);
