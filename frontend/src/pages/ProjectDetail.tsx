@@ -41,6 +41,9 @@ export default function ProjectDetail(): JSX.Element {
     // Onglet actif lu depuis l'URL ; URL sans onglet -> redirection canonique vers /dashboard
     const { enabled } = useModules();
     const tab: ProjectTabId = PROJECT_TAB_IDS.includes(tabParam as ProjectTabId) ? (tabParam as ProjectTabId) : "dashboard";
+    // détail du projet replié par défaut hors du dashboard (on ne voit que la première ligne)
+    const [headerCollapsed, setHeaderCollapsed] = useState<boolean>(tab !== "dashboard");
+    useEffect(() => { setHeaderCollapsed(tab !== "dashboard"); }, [tab]);
     useEffect(() => {
         const valid = tabParam !== undefined && PROJECT_TAB_IDS.includes(tabParam as ProjectTabId);
         const mod = valid ? tabModule(tabParam as ProjectTabId) : null;
@@ -58,7 +61,8 @@ export default function ProjectDetail(): JSX.Element {
     return (
         <div>
             <ProjectHeader project={project} milestones={milestones}
-                canEdit={user !== null && user.role !== "VIEWER"} onUpdated={loadAll} />
+                canEdit={user !== null && user.role !== "VIEWER"} onUpdated={loadAll}
+                collapsed={headerCollapsed} onToggleCollapse={() => setHeaderCollapsed((v) => !v)} />
             <div style={{ marginTop: "1.25rem" }}>
                 <ProjectTabs active={tab} onChange={(t) => navigate(`/projects/${pid}/${t}`)} />
             </div>

@@ -248,6 +248,8 @@
         "encrypted": "Encrypt the file system",
         "encryptedHint": "File/folder names and drive file contents are encrypted on disk (AES-256-GCM). Irreversible: creation only.",
         "encryptedBadge": "Encrypted drive",
+        "collapseDetail": "Collapse project details",
+        "expandDetail": "Expand project details",
         "dangerZone": "Danger zone",
         "dangerHint": "Archiving makes the project read-only in lists. Deletion is permanent (admin only).",
         "archive": "Archive project",
