@@ -5,7 +5,7 @@ import { useTranslation } from "../../i18n/I18nContext";
 import GanttBar from "./GanttBar";
 import GanttHeader from "./GanttHeader";
 import GanttToolbar from "./GanttToolbar";
-import { GanttView, buildTicks, orderMilestones, computeGanttRange, GanttRange , rootIds } from "./ganttUtils";
+import { GanttView, buildTicks, orderMilestones, computeGanttRange, GanttRange, rootIds, childCounts, countDescendants, barGeom } from "./ganttUtils";
 import type { ResizeSide } from "../../hooks/useResizeDrag";
 
 interface Props {
@@ -35,6 +35,7 @@ export default function GanttChart(props: Props): JSX.Element {
     const { milestones, selectedId, editMode, minDate, maxDate, onSelect, onMove, onResize } = props;
     const { t } = useTranslation();
     const [view, setView] = useState<GanttView>("week");
+    const [collapsed, setCollapsed] = useState<Set<string>>(new Set()); // parents dont les sous-jalons sont repliés
 
     if (milestones.length === 0) {
         return (
@@ -59,16 +60,43 @@ export default function GanttChart(props: Props): JSX.Element {
             }}>
                 <GanttHeader width={r.width} ticks={ticks} pct={r.pct} rangeEnd={rangeEnd} todayPct={todayPct} />
                 <div style={{ position: "relative", width: `${r.width}px` }}>
+                    {/* trait du jour courant sur toute la hauteur du planning (même style que le header) */}
+                    <div style={{ position: "absolute", left: `${todayPct}%`, top: 0, bottom: 0, width: "2px", background: "var(--danger)", zIndex: 4, pointerEvents: "none" }} />
                     {(() => {
-                        const flat = orderMilestones(milestones);
+                        const flat = orderMilestones(milestones, collapsed);
                         const roots = rootIds(milestones);
-                        return flat.map((fm, i, arr) => (
-                            <GanttBar key={fm.m.id} milestone={fm.m} depth={fm.depth} pct={r.pct} pctPerDay={r.pctPerDay}
-                                isSel={fm.m.id === selectedId}
-                                // pas de ligne de séparation à l'intérieur d'un groupe parent + sous-jalons (même racine)
-                                showBorder={i < arr.length - 1 && roots.get(fm.m.id) !== roots.get(arr[i + 1]?.m.id ?? "")}
-                                canEdit={editMode} onSelect={onSelect} onMove={onMove} onResize={onResize} />
-                        ));
+                        const ccounts = childCounts(milestones);
+                        return (
+                            <>
+                                {/* trait pointillé depuis la fin de chaque jalon jusqu'au header */}
+                                {flat.map((fm) => {
+                                    const g = barGeom(new Date(fm.m.startDate).getTime(), new Date(fm.m.endDate).getTime(), r.pct);
+                                    const barTop = fm.depth > 0 ? 6 : 8; // cf. barStyle
+                                    return (
+                                        <div key={`dash-${fm.m.id}`} style={{
+                                            position: "absolute", left: `${g.left + g.width}%`, top: 0, height: `${barTop}px`,
+                                            borderLeft: `2px dashed ${fm.m.color}`, zIndex: 3, pointerEvents: "none",
+                                        }} />
+                                    );
+                                })}
+                                {flat.map((fm, i, arr) => (
+                                    <GanttBar key={fm.m.id} milestone={fm.m} depth={fm.depth} pct={r.pct} pctPerDay={r.pctPerDay}
+                                        isSel={fm.m.id === selectedId}
+                                        // pas de ligne de séparation à l'intérieur d'un groupe parent + sous-jalons (même racine)
+                                        showBorder={i < arr.length - 1 && roots.get(fm.m.id) !== roots.get(arr[i + 1]?.m.id ?? "")}
+                                        canEdit={editMode} onSelect={onSelect} onMove={onMove} onResize={onResize}
+                                        childCount={ccounts.get(fm.m.id) ?? 0}
+                                        isCollapsed={collapsed.has(fm.m.id)}
+                                        hiddenCount={collapsed.has(fm.m.id) ? countDescendants(milestones, fm.m.id) : 0}
+                                        onToggleCollapse={() => setCollapsed((prev) => {
+                                            const next = new Set(prev);
+                                            if (next.has(fm.m.id)) next.delete(fm.m.id); else next.add(fm.m.id);
+                                            return next;
+                                        })}
+                                    />
+                                ))}
+                            </>
+                        );
                     })()}
                 </div>
             </div>

@@ -79,6 +79,38 @@ export function currentMilestone(milestones: import("../../types").Milestone[], 
 
 export interface FlatMilestone { m: import("../../types").Milestone; depth: number }
 
+// Nombre d'enfants directs par parent (pour la flèche de repli)
+export function childCounts(milestones: import("../../types").Milestone[]): Map<string, number> {
+    const out = new Map<string, number>();
+    for (const m of milestones.slice(0, MAX_TICKS)) {
+        if (m.parentId !== null) out.set(m.parentId, (out.get(m.parentId) ?? 0) + 1);
+    }
+    return out;
+}
+
+// Nombre total de descendants d'un jalon (pour le badge +N quand replié), borné (R2)
+export function countDescendants(milestones: import("../../types").Milestone[], id: string): number {
+    const MAX_DEPTH = 20;
+    const byParent = new Map<string, import("../../types").Milestone[]>();
+    for (const m of milestones.slice(0, MAX_TICKS)) {
+        if (m.parentId === null) continue;
+        const list = byParent.get(m.parentId) ?? [];
+        list.push(m);
+        byParent.set(m.parentId, list);
+    }
+    let count = 0;
+    const queue: string[] = [id];
+    for (let d = 0; d < MAX_DEPTH && queue.length > 0; d++) {
+        const next: string[] = [];
+        for (const pid of queue) {
+            for (const c of byParent.get(pid) ?? []) { count++; next.push(c.id); }
+        }
+        queue.length = 0;
+        queue.push(...next);
+    }
+    return count;
+}
+
 // id de l'ancêtre racine (depth 0) de chaque jalon — sert à grouper visuellement parent + sous-jalons
 export function rootIds(milestones: import("../../types").Milestone[]): Map<string, string> {
     const MAX_DEPTH = 10;
@@ -97,7 +129,7 @@ export function rootIds(milestones: import("../../types").Milestone[]): Map<stri
     }
     return roots;
 }
-export function orderMilestones(milestones: import("../../types").Milestone[]): FlatMilestone[] {
+export function orderMilestones(milestones: import("../../types").Milestone[], collapsed?: Set<string>): FlatMilestone[] {
     const MAX_DEPTH = 10;
     const byParent = new Map<string | null, import("../../types").Milestone[]>();
     for (const m of milestones.slice(0, MAX_TICKS)) {
@@ -119,6 +151,7 @@ export function orderMilestones(milestones: import("../../types").Milestone[]): 
         if (cur === undefined) break;
         if (cur.m !== null) out.push({ m: cur.m, depth: cur.depth });
         if (cur.depth >= MAX_DEPTH) continue;
+        if (cur.m !== null && collapsed !== undefined && collapsed.has(cur.m.id)) continue; // parent replié : enfants cachés
         const children = byParent.get(cur.m?.id ?? null) ?? [];
         for (let i = children.length - 1; i >= 0; i--) { // empilé à l'envers pour garder l'ordre
             const c = children[i];
