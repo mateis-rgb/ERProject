@@ -109,7 +109,11 @@ function HeaderInfo({ project, status, milestones, onOpenMeta, collapsed, onTogg
                 gridTemplateRows: collapsed ? "0fr" : "1fr",
                 transition: "grid-template-rows 0.18s steps(4, end)",
             }}>
-                <div style={{ overflow: "hidden", minHeight: 0 }}>
+                <div style={{
+                    overflow: "hidden", minHeight: 0,
+                    // fondu en steps synchronisé : les bordures des chips s'estompent au lieu d'être tronquées net
+                    opacity: collapsed ? 0 : 1, transition: "opacity 0.18s steps(4, end)",
+                }}>
                     <p style={{ color: "var(--muted)", marginTop: "0.5rem" }}>{project.description || "Aucune description"}</p>
                     <div style={{ marginTop: "0.6rem" }}>
                         <ProgressBar value={computeProgress(project.startDate, project.endDate, milestones.map((m) => m.endDate))} width={140} />

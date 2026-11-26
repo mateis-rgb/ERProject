@@ -73,11 +73,13 @@ function ShownTiles(props: { draft: string[]; kpis: DashboardKPIs; onMove: (id: 
 function KpiSearch(props: { query: string; onQuery: (q: string) => void; suggestions: KpiDef[]; onAdd: (id: string) => void }): JSX.Element {
     const { query, onQuery, suggestions, onAdd } = props;
     const { t } = useTranslation();
-    const open = query.trim() !== "";
+    const [focused, setFocused] = useState(false);
+    const open = focused; // dès le focus : on voit les KPI disponibles même champ vide
     return (
         <div>
             <label className="label" htmlFor="kpi-search">{t("dashboard.kpiSearchLabel")}</label>
             <input id="kpi-search" className="input" value={query} onChange={(e) => onQuery(e.target.value)}
+                onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
                 placeholder={t("dashboard.kpiSearchPlaceholder")} autoComplete="off" />
             {open && (
                 <div className="kpi-suggest-box">
@@ -85,7 +87,7 @@ function KpiSearch(props: { query: string; onQuery: (q: string) => void; suggest
                         <div style={{ padding: "0.5rem 0.75rem", color: "var(--muted)", fontSize: "0.85rem" }}>{t("dashboard.kpiEmpty")}</div>
                     )}
                     {suggestions.map((s) => (
-                        <button key={s.id} type="button" onClick={() => onAdd(s.id)} className="kpi-suggest"
+                        <button key={s.id} type="button" onMouseDown={(e) => { e.preventDefault(); onAdd(s.id); }} className="kpi-suggest"
                             onMouseEnter={(e) => { e.currentTarget.style.background = "var(--surface)"; }}
                             onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}>
                             <span className="ic" style={{ color: s.accent }}>{s.icon}</span>
