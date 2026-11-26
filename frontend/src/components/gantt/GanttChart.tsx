@@ -5,7 +5,7 @@ import { useTranslation } from "../../i18n/I18nContext";
 import GanttBar from "./GanttBar";
 import GanttHeader from "./GanttHeader";
 import GanttToolbar from "./GanttToolbar";
-import { GanttView, buildTicks, orderMilestones, computeGanttRange, GanttRange, rootIds, childCounts, countDescendants } from "./ganttUtils";
+import { GanttView, buildTicks, orderMilestones, computeGanttRange, GanttRange, rootIds, childCounts, countDescendants, currentMilestone } from "./ganttUtils";
 import type { ResizeSide } from "../../hooks/useResizeDrag";
 
 interface Props {
@@ -49,6 +49,7 @@ export default function GanttChart(props: Props): JSX.Element {
     const rangeEnd = r.rangeStart + r.rangeMs;
     const ticks = buildTicks(r.rangeStart, rangeEnd, view);
     const todayPct = Math.min(100, Math.max(0, r.pct(Date.now())));
+    const currentId = currentMilestone(milestones, new Date())?.id ?? null;
 
     return (
         <div>
@@ -59,7 +60,8 @@ export default function GanttChart(props: Props): JSX.Element {
                 boxShadow: "none",
             }}>
                 <GanttHeader width={r.width} ticks={ticks} pct={r.pct} rangeEnd={rangeEnd} todayPct={todayPct} />
-                <div style={{ position: "relative", width: `${r.width}px` }}>
+                {/* paddingTop 34px = place pour les tooltips au-dessus des jalons */}
+                <div style={{ position: "relative", width: `${r.width}px`, paddingTop: "34px" }}>
                     {/* trait du jour courant sur toute la hauteur du planning (même style que le header) */}
                     <div style={{ position: "absolute", left: `${todayPct}%`, top: 0, bottom: 0, width: "2px", background: "var(--danger)", zIndex: 4, pointerEvents: "none" }} />
                     {(() => {
@@ -77,6 +79,7 @@ export default function GanttChart(props: Props): JSX.Element {
                                         childCount={ccounts.get(fm.m.id) ?? 0}
                                         isCollapsed={collapsed.has(fm.m.id)}
                                         hiddenCount={collapsed.has(fm.m.id) ? countDescendants(milestones, fm.m.id) : 0}
+                                        isCurrent={fm.m.id === currentId}
                                         onToggleCollapse={() => setCollapsed((prev) => {
                                             const next = new Set(prev);
                                             if (next.has(fm.m.id)) next.delete(fm.m.id); else next.add(fm.m.id);

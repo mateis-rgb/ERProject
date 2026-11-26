@@ -1,5 +1,5 @@
 // Barre de jalon dans le Gantt - drag + tirettes + sous-jalons indentés (Power of 10 R4)
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { FiCornerDownRight, FiChevronDown, FiChevronRight } from "react-icons/fi";
 import { Milestone } from "../../types";
 import ResizeHandle from "./ResizeHandle";
@@ -23,11 +23,43 @@ interface Props {
     isCollapsed: boolean;
     hiddenCount: number; // nb de descendants cachés quand replié (badge +N)
     onToggleCollapse: () => void;
+    isCurrent: boolean; // jalon en cours (contient aujourd'hui) -> badge clignotant dans le tooltip
+}
+
+function BarTooltip(props: { name: string; isCurrent: boolean; leftPct: number }): JSX.Element {
+    return (
+        <div style={{
+            position: "absolute", bottom: "100%", left: `${props.leftPct}%`, transform: "translateX(-8px)",
+            marginBottom: "4px", zIndex: 60, pointerEvents: "none",
+            background: "var(--surface)", border: "2px solid var(--ink)", boxShadow: "3px 3px 0 var(--ink)",
+            padding: "0.25rem 0.5rem", display: "flex", alignItems: "center", gap: "0.4rem", maxWidth: "260px",
+        }}>
+            {props.isCurrent && <span className="rec-dot" style={{ width: "8px", height: "8px", flexShrink: 0 }} />}
+            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: "0.78rem", fontWeight: 700 }}>
+                {props.name}
+            </span>
+        </div>
+    );
+}
+
+function CollapseArrow(props: { collapsed: boolean; onToggle: () => void }): JSX.Element {
+    return (
+        <span
+            role="button"
+            onClick={(e) => { e.stopPropagation(); props.onToggle(); }}
+            onMouseDown={(e) => e.stopPropagation()} // ne pas declencher le drag du jalon
+            title={props.collapsed ? "Déplier les sous-jalons" : "Replier les sous-jalons"}
+            style={{ display: "flex", alignItems: "center", flexShrink: 0, cursor: "pointer", padding: "0 2px" }}
+        >
+            {props.collapsed ? <FiChevronRight size={12} /> : <FiChevronDown size={12} />}
+        </span>
+    );
 }
 
 export default function GanttBar(props: Props): JSX.Element {
-    const { milestone, depth, pct, pctPerDay, isSel, showBorder, canEdit, onSelect, onMove, onResize, childCount, isCollapsed, hiddenCount, onToggleCollapse } = props;
+    const { milestone, depth, pct, pctPerDay, isSel, showBorder, canEdit, onSelect, onMove, onResize, childCount, isCollapsed, hiddenCount, onToggleCollapse, isCurrent } = props;
     const laneRef = useRef<HTMLDivElement>(null);
+    const [hover, setHover] = useState(false);
 
     const pxPerDay = (): number => {
         const w = laneRef.current?.getBoundingClientRect().width ?? 600;
@@ -45,28 +77,19 @@ export default function GanttBar(props: Props): JSX.Element {
     };
 
     return (
-        <div ref={laneRef} style={{
+        <div ref={laneRef} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} style={{
             position: "relative", height: depth > 0 ? "32px" : "44px", // sous-jalons plus compacts (lien visuel avec le parent)
             borderBottom: showBorder ? "1px solid var(--ink)" : "none",
             background: "transparent",
         }}>
+            {hover && <BarTooltip name={milestone.name} isCurrent={isCurrent} leftPct={geom.left} />}
             <button
                 onClick={handleClick}
                 onMouseDown={canEdit ? drag.onMouseDown : undefined}
                 style={barStyle(geom, milestone.color, isSel, busy, canEdit, depth)}
             >
                 <span style={{ display: "flex", alignItems: "center", gap: "2px", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0, flex: 1 }}>
-                                        {childCount > 0 && (
-                        <span
-                            role="button"
-                            onClick={(e) => { e.stopPropagation(); onToggleCollapse(); }}
-                            onMouseDown={(e) => e.stopPropagation()} // ne pas déclencher le drag du jalon
-                            title={isCollapsed ? "Déplier les sous-jalons" : "Replier les sous-jalons"}
-                            style={{ display: "flex", alignItems: "center", flexShrink: 0, cursor: "pointer", padding: "0 2px" }}
-                        >
-                            {isCollapsed ? <FiChevronRight size={12} /> : <FiChevronDown size={12} />}
-                        </span>
-                    )}
+                                        {childCount > 0 && <CollapseArrow collapsed={isCollapsed} onToggle={onToggleCollapse} />}
                     {depth > 0 && Array.from({ length: Math.min(depth, 4) }, (_, i) => <FiCornerDownRight key={i} style={{ flexShrink: 0 }} />)}
                     <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{milestone.name}</span>
                 </span>
