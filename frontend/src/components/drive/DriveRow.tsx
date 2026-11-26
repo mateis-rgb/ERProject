@@ -8,6 +8,19 @@ import { useRowDrag } from "../../hooks/useRowDrag";
 import BrutalSelect from "../ui/BrutalSelect";
 import { isEditableFile } from "../../utils/textFiles";
 
+// Cibles de déplacement proposées : uniquement les dossiers du scope actuel,
+// en excluant l'élément lui-même et ses descendants (évite les cycles) — boucle bornée (R2)
+function moveTargets(item: Attachment, folders: Attachment[], scopeId: string | null): Attachment[] {
+    const MAX_DEPTH = 20;
+    const desc = new Set<string>([item.id]);
+    for (let d = 0; d < MAX_DEPTH && desc.size < folders.length + 1; d++) {
+        for (const f of folders) {
+            if (!desc.has(f.id) && f.parentId !== null && desc.has(f.parentId)) desc.add(f.id);
+        }
+    }
+    return folders.filter((f) => f.parentId === scopeId && !desc.has(f.id));
+}
+
 // Boutons d'action : carrés, même taille fixe pour tous (Power of 10 R4)
 const ACTION_BTN: React.CSSProperties = {
     width: "26px", height: "26px", padding: 0, flexShrink: 0,
@@ -17,6 +30,7 @@ const ACTION_BTN: React.CSSProperties = {
 interface Props {
     item: Attachment;
     folders: Attachment[];
+    scopeId: string | null; // dossier courant : seules ses sous-dossiers sont proposées comme cible
     canEdit: boolean;
     onOpen: (a: Attachment) => void;
     onEditFile: (a: Attachment) => void;
@@ -28,7 +42,7 @@ interface Props {
 }
 
 export default function DriveRow(props: Props): JSX.Element {
-    const { item, folders, canEdit, onOpen, onEditFile, onRename, onMove, onRemove, onDropFiles, onDropItem } = props;
+    const { item, folders, scopeId, canEdit, onOpen, onEditFile, onRename, onMove, onRemove, onDropFiles, onDropItem } = props;
     const { t } = useTranslation();
     const drag = useRowDrag(item, canEdit, onDropFiles, onDropItem);
     return (
@@ -67,8 +81,8 @@ export default function DriveRow(props: Props): JSX.Element {
                     <BrutalSelect value={item.parentId ?? ""} width="auto" minWidth="128px" height="30px"
                         onChange={(v) => onMove(item, v === "" ? null : v)}
                         options={[
-                            { value: "", label: t("drive.root") },
-                            ...folders.filter((f) => f.id !== item.id).map((f) => ({ value: f.id, label: f.fileName })),
+                            ...(scopeId !== null ? [{ value: "", label: t("drive.root") }] : []),
+                            ...moveTargets(item, folders, scopeId).map((f) => ({ value: f.id, label: f.fileName })),
                         ]} />
                 </div>
             )}

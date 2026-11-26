@@ -52,7 +52,7 @@ export default function DriveContent(props: Props): JSX.Element {
                 </p>
             ) : (
                 current.map((a) => (
-                    <DriveRow key={a.id} item={a} folders={folders} canEdit={canEdit}
+                    <DriveRow key={a.id} item={a} folders={folders} scopeId={parentId} canEdit={canEdit}
                         onOpen={onOpen} onEditFile={onEditFile} onRename={onRename} onMove={onMove} onRemove={onRemove}
                         onDropFiles={(f, t) => onDropFiles(f, t)} onDropItem={(id, t) => onDropItem(id, t)} />
                 ))
