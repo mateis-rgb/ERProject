@@ -1,7 +1,7 @@
 import { FiArrowRight } from "react-icons/fi";
 // Tableau des projets (Power of 10 R4)
 import { useTranslation } from "../../i18n/I18nContext";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Project } from "../../types";
 import { ProgressBar } from "../ui/ProgressBar";
 import { computeProgress } from "../../utils/progress";
@@ -20,6 +20,7 @@ interface Props {
 
 export default function ProjectTable({ projects }: Props): JSX.Element {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     return (
         <div className="card" style={{ padding: 0, overflow: "hidden" }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -36,7 +37,10 @@ export default function ProjectTable({ projects }: Props): JSX.Element {
                 </thead>
                 <tbody>
                     {projects.map((p) => (
-                        <tr key={p.id}>
+                        <tr key={p.id} onClick={() => navigate("/projects/" + p.id)}
+                            onKeyDown={(e) => { if (e.key === "Enter") navigate("/projects/" + p.id); }}
+                            tabIndex={0} role="link" aria-label={p.name}
+                            style={{ cursor: "pointer" }}>
                             <td className="table-cell" style={{ fontWeight: 600 }}>{p.name}</td>
                             <td className="table-cell">{p.client || "—"}</td>
                             <td className="table-cell">
@@ -47,10 +51,8 @@ export default function ProjectTable({ projects }: Props): JSX.Element {
                             <td className="table-cell">{p.type || "—"}</td>
                             <td className="table-cell"><ProgressBar value={computeProgress(p.startDate, p.endDate, [])} width={80} /></td>
                             <td className="table-cell">{p.budget !== null ? `${p.budget} €` : "—"}</td>
-                            <td className="table-cell">
-                                <Link to={`/projects/${p.id}`} style={{ color: "var(--accent)", textDecoration: "none" }}>
-                                    Voir <FiArrowRight />
-                                </Link>
+                            <td className="table-cell" style={{ fontWeight: 600 }}>
+                                Voir <FiArrowRight style={{ verticalAlign: "middle" }} />
                             </td>
                         </tr>
                     ))}

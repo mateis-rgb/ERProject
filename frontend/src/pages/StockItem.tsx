@@ -1,6 +1,6 @@
 // Page détail d'un article de stock - photo, infos, mouvements, réservations (Power of 10 R4)
 import { useEffect, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { FiArrowLeft, FiEdit2, FiTrash2, FiUpload } from "react-icons/fi";
 import { useTranslation } from "../i18n/I18nContext";
 import { useAuth } from "../context/AppContext";
@@ -144,6 +144,7 @@ const SECTION_H2: React.CSSProperties = { fontSize: "1.1rem", fontWeight: 700, t
 
 function MovementsCard({ movements }: { movements: StockMovementDetail[] }): JSX.Element {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     return (
         <div>
             <h2 style={SECTION_H2}>{t("stockDetail.movements")}</h2>
@@ -161,7 +162,8 @@ function MovementsCard({ movements }: { movements: StockMovementDetail[] }): JSX
                 </thead>
                 <tbody>
                     {movements.map((m) => (
-                        <tr key={m.id}>
+                        <tr key={m.id} onClick={() => { if (m.projectId !== null) navigate("/projects/" + m.projectId); }}
+                            tabIndex={0} role="link" style={{ cursor: m.projectId !== null ? "pointer" : "default" }}>
                             <td className="table-cell">{new Date(m.date).toLocaleString("fr-FR")}</td>
                             <td className="table-cell">
                                 <span className="badge" style={{ backgroundColor: TYPE_COLORS[m.type] ?? "var(--muted)" }}>
@@ -171,7 +173,7 @@ function MovementsCard({ movements }: { movements: StockMovementDetail[] }): JSX
                             <td className="table-cell">{m.quantity}</td>
                             <td className="table-cell">{m.reason || "—"}</td>
                             <td className="table-cell">
-                                {m.projectName !== null ? <Link to={`/projects/${m.projectId ?? ""}`} style={{ color: "var(--ink)" }}>{m.projectName}</Link> : "—"}
+                                {m.projectName !== null ? <span style={{ fontWeight: 600 }}>{m.projectName}</span> : "—"}
                             </td>
                             <td className="table-cell">{m.userName}</td>
                         </tr>
@@ -188,6 +190,7 @@ function MovementsCard({ movements }: { movements: StockMovementDetail[] }): JSX
 
 function ReservationsCard({ reservations }: { reservations: StockReservation[] }): JSX.Element {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     return (
         <div>
             <h2 style={SECTION_H2}>{t("stockDetail.reservations")}</h2>
@@ -205,9 +208,10 @@ function ReservationsCard({ reservations }: { reservations: StockReservation[] }
                 </thead>
                 <tbody>
                     {reservations.map((r) => (
-                        <tr key={`${r.projectId}-${r.milestoneId ?? "none"}`}>
+                        <tr key={`${r.projectId}-${r.milestoneId ?? "none"}`} onClick={() => navigate("/projects/" + r.projectId)}
+                            tabIndex={0} role="link" style={{ cursor: "pointer" }}>
                             <td className="table-cell">
-                                <Link to={`/projects/${r.projectId}`} style={{ color: "var(--ink)" }}>{r.projectName}</Link>
+                                <span style={{ fontWeight: 600 }}>{r.projectName}</span>
                             </td>
                             <td className="table-cell">{r.milestoneName ?? t("stockDetail.milestoneNone")}</td>
                             <td className="table-cell">{r.allocatedQuantity}</td>

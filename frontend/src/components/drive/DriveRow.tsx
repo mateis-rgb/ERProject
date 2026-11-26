@@ -45,8 +45,13 @@ export default function DriveRow(props: Props): JSX.Element {
     const { item, folders, scopeId, canEdit, onOpen, onEditFile, onRename, onMove, onRemove, onDropFiles, onDropItem } = props;
     const { t } = useTranslation();
     const drag = useRowDrag(item, canEdit, onDropFiles, onDropItem);
+    const rowClick = (): void => {
+        if (item.isFolder) { onOpen(item); return; }
+        if (isEditableFile(item.fileName, item.mimeType)) { onEditFile(item); return; }
+        window.location.href = "/api/attachments/download/" + item.id;
+    };
     return (
-        <div draggable={drag.draggable} onDragStart={drag.onDragStart}
+        <div draggable={drag.draggable} onDragStart={drag.onDragStart} onClick={rowClick}
             onDragOver={drag.onDragOver} onDragLeave={drag.onDragLeave} onDrop={drag.onDrop}
             title={item.isFolder && canEdit ? t("drive.dropInFolder") : undefined}
             style={{
@@ -54,30 +59,18 @@ export default function DriveRow(props: Props): JSX.Element {
                 minWidth: "550px", // force le scroll horizontal du bloc si l'écran est plus étroit que les colonnes fixes
                 borderBottom: "1px solid var(--ink)", background: drag.over ? "var(--surface-2)" : "transparent",
                 outline: drag.over ? "2px dashed var(--accent)" : "none", outlineOffset: "-2px",
-                cursor: drag.draggable ? "grab" : "default",
+                cursor: "pointer",
             }}>
             <div style={driveRowCell}>
-                {item.isFolder ? (
-                    <button className="btn-ghost" style={{ padding: "0.15rem 0.5rem", fontSize: "0.78rem" }}
-                        onClick={() => onOpen(item)}>
-                        <span className="ic"><FiFolder /> {item.fileName}</span>
-                    </button>
-                ) : isEditableFile(item.fileName, item.mimeType) ? (
-                    <button className="btn-ghost" style={{ padding: "0.15rem 0.5rem", fontSize: "0.78rem", color: "var(--accent)", fontWeight: 700 }}
-                        onClick={() => onEditFile(item)} title={item.fileName}>
-                        <span className="ic"><FiFileText /> {item.fileName}</span>
-                    </button>
-                ) : (
-                    <a href={`/api/attachments/download/${item.id}`} style={{ color: "var(--accent)", fontWeight: 700 }}>
-                        <span className="ic"><FiFileText /> {item.fileName}</span>
-                    </a>
-                )}
+                <span className="ic" style={{ fontWeight: 700, fontSize: "0.85rem" }} title={item.fileName}>
+                    {item.isFolder ? <FiFolder /> : <FiFileText />} {item.fileName}
+                </span>
             </div>
             <div style={{ ...driveRowCell }} className="mono">{item.isFolder ? "—" : formatSize(item.fileSize)}</div>
             <div style={{ ...driveRowCell, fontSize: "0.8rem" }}>{item.uploadedByName}</div>
             <div style={{ ...driveRowCell }} className="mono">{new Date(item.uploadedAt).toLocaleDateString("fr-FR")}</div>
             {canEdit && (
-                <div style={{ ...driveRowCell, paddingRight: "0.8rem" }}> {/* gap pour l'ombre du select */}
+                <div style={{ ...driveRowCell, paddingRight: "0.8rem" }} onClick={(e) => e.stopPropagation()}> {/* gap pour l'ombre du select */}
                     <BrutalSelect value={item.parentId ?? ""} width="auto" minWidth="128px" height="30px"
                         onChange={(v) => onMove(item, v === "" ? null : v)}
                         options={[
@@ -87,7 +80,7 @@ export default function DriveRow(props: Props): JSX.Element {
                 </div>
             )}
             {canEdit && (
-                <div style={{ ...driveRowCell, display: "flex", gap: "0.3rem", alignItems: "center" }}>
+                <div style={{ ...driveRowCell, display: "flex", gap: "0.3rem", alignItems: "center" }} onClick={(e) => e.stopPropagation()}>
                     <button className="btn-ghost" style={ACTION_BTN} title={t("drive.modalRename")} onClick={() => onRename(item)}>
                         <FiEdit2 size={14} />
                     </button>

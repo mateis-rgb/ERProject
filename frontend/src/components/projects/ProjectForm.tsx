@@ -48,7 +48,7 @@ function TemplatePicker({ templates, value, onChange }: { templates: ProjectTemp
 function EncryptedField({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }): JSX.Element {
     const { t } = useTranslation();
     return (
-        <div>
+        <div className="span2">
             <BrutalCheckbox checked={checked} onChange={onChange} label={t("project.encrypted")} />
             <p style={{ margin: "0 0 0 1.75rem", fontSize: "0.75rem", color: "var(--muted)" }}>{t("project.encryptedHint")}</p>
         </div>
@@ -86,22 +86,27 @@ export default function ProjectForm({ onCreated, onError }: Props): JSX.Element 
                 <label className="label">{t("project.name")}</label>
                 <input className="input" value={name} onChange={(e) => setName(e.target.value)} required />
             </div>
-            <div className="span2">
-                <label className="label">{t("project.description")}</label>
-                <textarea className="input" value={description} onChange={(e) => setDescription(e.target.value)} rows={3} />
-            </div>
-            <div>
+
+			<div>
                 <label className="label">{t("project.client")}</label>
                 <input className="input" value={client} onChange={(e) => setClient(e.target.value)} />
             </div>
+            
+			<div className="span2">
+                <label className="label">{t("project.description")}</label>
+                <textarea className="input" value={description} onChange={(e) => setDescription(e.target.value)} rows={3} />
+            </div>
+            
             <div>
                 <label className="label">{t("settings.lists.projectTypes")}</label>
-                <BrutalSelect value={type} onChange={setType}
-                    options={[{ value: "", label: "—" }, ...typeOptions.map((o) => ({ value: o, label: o }))]} />
+                <BrutalSelect value={type} onChange={setType} options={[{ value: "", label: "—" }, ...typeOptions.map((o) => ({ value: o, label: o }))]} />
             </div>
+
             {templatesOn && <TemplatePicker templates={templates} value={templateId} onChange={setTemplateId} />}
-            <EncryptedField checked={encrypted} onChange={setEncrypted} />
-            <button className="btn" type="submit" disabled={busy}>{busy ? t("common.creating") : t("projects.createProject")}</button>
+            
+			<EncryptedField checked={encrypted} onChange={setEncrypted} />
+            
+			<button className="btn" type="submit" disabled={busy}>{busy ? t("common.creating") : t("projects.createProject")}</button>
         </form>
     );
 }
