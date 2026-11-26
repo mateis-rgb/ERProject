@@ -247,7 +247,10 @@
         "kpiMilestonesTotal": "Total milestones",
         "kpiStockItems": "Stock items",
         "kpiTimeTotal": "Total time",
-        "kpiUsers": "Users"
+        "kpiUsers": "Users",
+        "kpiEditorHint": "Reorder tiles with the arrows, remove or add KPIs via the search.",
+        "kpiMoveUp": "Move up",
+        "kpiMoveDown": "Move down"
     },
     "projects": {
         "search": "Search a project...",

@@ -247,7 +247,10 @@
         "kpiMilestonesTotal": "Jalons au total",
         "kpiStockItems": "Articles en stock",
         "kpiTimeTotal": "Temps total",
-        "kpiUsers": "Utilisateurs"
+        "kpiUsers": "Utilisateurs",
+        "kpiEditorHint": "Réorganisez l'ordre des tuiles avec les flèches, retirez-en ou ajoutez-en via la recherche.",
+        "kpiMoveUp": "Monter",
+        "kpiMoveDown": "Descendre"
     },
     "projects": {
         "search": "Rechercher un projet...",

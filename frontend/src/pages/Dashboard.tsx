@@ -60,7 +60,7 @@ export default function Dashboard(): JSX.Element {
             </div>
             <KpiGrid kpis={kpis} kpiIds={kpiIds} stockEnabled={enabled("stock")} />
             {editorOpen && (
-                <DashboardKpiEditor kpiIds={kpiIds} onClose={() => setEditorOpen(false)} onSaved={setKpiIds} />
+                <DashboardKpiEditor kpis={kpis} kpiIds={kpiIds} onClose={() => setEditorOpen(false)} onSaved={setKpiIds} />
             )}
         </div>
     );

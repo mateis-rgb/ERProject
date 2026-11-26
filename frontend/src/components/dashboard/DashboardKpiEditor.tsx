@@ -1,38 +1,72 @@
-// Modale d'édition des KPI du dashboard - ajouter/retirer via recherche autocomplétée (Power of 10 R4)
+// Modale d'édition des KPI du dashboard - tuiles réorganisables (haut/bas) + recherche autocomplétée (Power of 10 R4)
 import { useState } from "react";
-import { FiPlus, FiX } from "react-icons/fi";
+import { FiArrowDown, FiArrowUp, FiPlus, FiX } from "react-icons/fi";
 import { useTranslation } from "../../i18n/I18nContext";
 import { api } from "../../services/api";
+import { DashboardKPIs } from "../../types";
 import Modal from "../ui/Modal";
 import { KPI_CATALOG, KpiDef } from "./kpiCatalog";
 
 interface Props {
+    kpis: DashboardKPIs;
     kpiIds: string[];
     onClose: () => void;
     onSaved: (ids: string[]) => void;
 }
 
-function ShownChips(props: { draft: string[]; onRemove: (id: string) => void }): JSX.Element {
-    const { draft, onRemove } = props;
+// échange deux positions dans la liste (borné, R2/R7)
+function moveItem(list: string[], id: string, dir: -1 | 1): string[] {
+    const i = list.indexOf(id);
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= list.length) return list;
+    const out = [...list];
+    const a = out[i];
+    const b = out[j];
+    if (a === undefined || b === undefined) return list;
+    out[i] = b;
+    out[j] = a;
+    return out;
+}
+
+function KpiTile(props: { def: KpiDef; kpis: DashboardKPIs; first: boolean; last: boolean; onUp: () => void; onDown: () => void; onRemove: () => void }): JSX.Element {
+    const { def, kpis, first, last, onUp, onDown, onRemove } = props;
+    const { t } = useTranslation();
+    return (
+        <div className="kpi-tile">
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.4rem" }}>
+                <span className="ic" style={{ color: def.accent, fontSize: "1.1rem" }}>{def.icon}</span>
+                <div style={{ display: "flex", gap: "2px" }}>
+                    <button type="button" className="btn-ghost kpi-tile-btn" disabled={first} onClick={onUp} title={t("dashboard.kpiMoveUp")}><FiArrowUp size={12} /></button>
+                    <button type="button" className="btn-ghost kpi-tile-btn" disabled={last} onClick={onDown} title={t("dashboard.kpiMoveDown")}><FiArrowDown size={12} /></button>
+                    <button type="button" className="btn-ghost kpi-tile-btn" onClick={onRemove} title={t("dashboard.kpiRemove")}><FiX size={12} /></button>
+                </div>
+            </div>
+            <div className="bento-value" style={{ fontSize: "1.35rem", color: def.warn !== undefined && def.warn(kpis) ? "var(--amber)" : "var(--text)" }}>
+                {def.format(kpis)}
+            </div>
+            <div className="bento-label">{t(def.labelKey)}</div>
+        </div>
+    );
+}
+
+function ShownTiles(props: { draft: string[]; kpis: DashboardKPIs; onMove: (id: string, dir: -1 | 1) => void; onRemove: (id: string) => void }): JSX.Element {
+    const { draft, kpis, onMove, onRemove } = props;
     const { t } = useTranslation();
     if (draft.length === 0) {
-        return <span style={{ color: "var(--muted)", fontSize: "0.85rem" }}>{t("dashboard.kpiNoneShown")}</span>;
+        return <p style={{ color: "var(--muted)", fontSize: "0.85rem", margin: 0 }}>{t("dashboard.kpiNoneShown")}</p>;
     }
     return (
-        <>
-            {draft.map((id) => {
+        <div className="kpi-tile-grid">
+            {draft.map((id, i) => {
                 const def = KPI_CATALOG.find((k) => k.id === id);
                 if (def === undefined) return null;
                 return (
-                    <span key={id} className="badge" style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", background: "var(--surface-2)" }}>
-                        <span className="ic" style={{ color: def.accent }}>{def.icon}</span>
-                        {t(def.labelKey)}
-                        <button type="button" className="btn-ghost" style={{ padding: "0 2px" }} title={t("dashboard.kpiRemove")}
-                            onClick={() => onRemove(id)}><FiX size={13} /></button>
-                    </span>
+                    <KpiTile key={id} def={def} kpis={kpis}
+                        first={i === 0} last={i === draft.length - 1}
+                        onUp={() => onMove(id, -1)} onDown={() => onMove(id, 1)} onRemove={() => onRemove(id)} />
                 );
             })}
-        </>
+        </div>
     );
 }
 
@@ -46,7 +80,7 @@ function KpiSearch(props: { query: string; onQuery: (q: string) => void; suggest
             <input id="kpi-search" className="input" value={query} onChange={(e) => onQuery(e.target.value)}
                 placeholder={t("dashboard.kpiSearchPlaceholder")} autoComplete="off" />
             {open && (
-                <div style={{ marginTop: "0.4rem", border: "2px solid var(--ink)", background: "var(--surface-2)" }}>
+                <div className="kpi-suggest-box">
                     {suggestions.length === 0 && (
                         <div style={{ padding: "0.5rem 0.75rem", color: "var(--muted)", fontSize: "0.85rem" }}>{t("dashboard.kpiEmpty")}</div>
                     )}
@@ -66,7 +100,7 @@ function KpiSearch(props: { query: string; onQuery: (q: string) => void; suggest
 }
 
 export default function DashboardKpiEditor(props: Props): JSX.Element {
-    const { kpiIds, onClose, onSaved } = props;
+    const { kpis, kpiIds, onClose, onSaved } = props;
     const { t } = useTranslation();
     const [draft, setDraft] = useState<string[]>(kpiIds);
     const [query, setQuery] = useState("");
@@ -92,13 +126,12 @@ export default function DashboardKpiEditor(props: Props): JSX.Element {
     };
 
     return (
-        <Modal title={t("dashboard.kpiEditorTitle")} onClose={onClose} maxWidth="620px">
+        <Modal title={t("dashboard.kpiEditorTitle")} onClose={onClose} maxWidth="680px">
             <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+                <p style={{ margin: 0, color: "var(--muted)", fontSize: "0.85rem" }}>{t("dashboard.kpiEditorHint")}</p>
                 <div>
                     <div className="label">{t("dashboard.kpiShown")}</div>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-                        <ShownChips draft={draft} onRemove={remove} />
-                    </div>
+                    <ShownTiles draft={draft} kpis={kpis} onMove={(id, dir) => setDraft((d) => moveItem(d, id, dir))} onRemove={remove} />
                 </div>
                 <KpiSearch query={query} onQuery={setQuery} suggestions={suggestions} onAdd={add} />
                 <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem" }}>
