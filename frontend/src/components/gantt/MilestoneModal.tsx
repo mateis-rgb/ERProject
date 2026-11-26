@@ -2,6 +2,7 @@
 import { Milestone, StockItem } from "../../types";
 import { useTranslation } from "../../i18n/I18nContext";
 import MilestonePanel from "./MilestonePanel";
+import CommentsSection from "../projects/CommentsSection";
 
 interface Props {
     milestone: Milestone;
@@ -27,8 +28,7 @@ export default function MilestoneModal(props: Props): JSX.Element {
             onClick={onClose}
         >
             <div
-                className="card"
-                style={{ width: "100%", maxWidth: "560px", maxHeight: "85vh", overflowY: "auto", boxShadow: "8px 8px 0 var(--ink)" }}
+                style={{ width: "100%", maxWidth: "560px", maxHeight: "85vh", overflowY: "auto" }}
                 onClick={(e) => e.stopPropagation()}
             >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
@@ -41,6 +41,7 @@ export default function MilestoneModal(props: Props): JSX.Element {
                 </div>
                 <MilestonePanel milestone={milestone} milestones={milestones} projectId={projectId} stockItems={stockItems}
                     canEdit={canEdit} onChanged={onChanged} onDelete={() => { onDelete(); onClose(); }} />
+                <CommentsSection scope={{ kind: "project", projectId, milestoneId: milestone.id }} />
             </div>
         </div>
     );

@@ -49,7 +49,7 @@ export default function ProjectDetail(): JSX.Element {
     useEffect(() => {
         const valid = tabParam !== undefined && PROJECT_TAB_IDS.includes(tabParam as ProjectTabId);
         const mod = valid ? tabModule(tabParam as ProjectTabId) : null;
-        const shared = collaboratorsCount > 1; // onglet commentaires reserve aux projets partages
+        const shared = collaboratorsCount >= 1; // le créateur + au moins 1 invité = projet partagé // onglet commentaires reserve aux projets partages
         if (!valid || (mod !== null && !enabled(mod)) || (tabParam === "comments" && !shared)) {
             navigate(`/projects/${pid}/dashboard`, { replace: true });
         }
@@ -67,7 +67,7 @@ export default function ProjectDetail(): JSX.Element {
                 canEdit={user !== null && user.role !== "VIEWER"} onUpdated={loadAll}
                 collapsed={headerCollapsed} onToggleCollapse={() => setHeaderCollapsed((v) => !v)} />
             <div style={{ marginTop: "1.25rem" }}>
-                <ProjectTabs active={tab} onChange={(t) => navigate(`/projects/${pid}/${t}`)} showComments={collaboratorsCount > 1} />
+                <ProjectTabs active={tab} onChange={(t) => navigate(`/projects/${pid}/${t}`)} showComments={collaboratorsCount >= 1} />
             </div>
             <ProjectTabsContent tab={tab} pid={pid} project={project} links={links} stockItems={stockItems}
                 stockNames={stockNames} milestones={milestones} timeEntries={timeEntries} totalHours={totalHours}
