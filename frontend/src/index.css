@@ -439,7 +439,7 @@ tbody tr:hover { background: var(--surface-2); }
 .modal-backdrop {
     position: fixed; inset: 0; z-index: 1000;
     background: rgba(0, 0, 0, 0.55);
-    display: flex; align-items: center; justify-content: center; padding: 1.5rem;
+    display: flex; align-items: flex-start; justify-content: center; padding: 6vh 1.5rem 1.5rem; /* modales en haut, pas centrées */
 }
 .modal {
     background: var(--surface); color: var(--text);

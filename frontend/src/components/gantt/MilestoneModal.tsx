@@ -23,7 +23,7 @@ export default function MilestoneModal(props: Props): JSX.Element {
             style={{
                 position: "fixed", inset: 0, zIndex: 1000,
                 background: "rgba(0,0,0,0.55)",
-                display: "flex", alignItems: "center", justifyContent: "center", padding: "1.5rem",
+                display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "6vh 1.5rem 1.5rem",
             }}
             onClick={onClose}
         >
