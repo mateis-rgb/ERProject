@@ -34,7 +34,7 @@ function SortTh(p: { label: string; k: StockSortKey; sort: StockSort; onSort: (k
             onClick={() => p.onSort(p.k)}
             title={p.label}
         >
-            <span style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem", color: active ? "var(--accent)" : undefined }}>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem" }}>
                 {p.label}
                 {active && (p.sort.dir === "asc" ? <FiChevronUp /> : <FiChevronDown />)}
             </span>

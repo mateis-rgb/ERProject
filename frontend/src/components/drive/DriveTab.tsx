@@ -21,7 +21,24 @@ interface Props {
     onChanged: () => void;
 }
 
-const MAX_CRUMB = 50; // borne du fil d'Ariane (R2)
+const MAX_CRUMB = 50;
+
+export type DriveSortKey = "fileName" | "fileSize" | "uploadedByName" | "uploadedAt";
+export interface DriveSort { key: DriveSortKey; dir: "asc" | "desc" }
+
+function cmpAttachments(a: Attachment, b: Attachment, key: DriveSortKey): number {
+    if (key === "fileName") return a.fileName.localeCompare(b.fileName);
+    if (key === "fileSize") return a.fileSize - b.fileSize;
+    if (key === "uploadedByName") return a.uploadedByName.localeCompare(b.uploadedByName);
+    return new Date(a.uploadedAt).getTime() - new Date(b.uploadedAt).getTime();
+}
+
+// dossiers d'abord, puis la colonne choisie (asc/desc)
+export function sortAttachments(list: Attachment[], sort: DriveSort): Attachment[] {
+    const sign = sort.dir === "asc" ? 1 : -1;
+    return [...list].sort((a, b) =>
+        (Number(b.isFolder) - Number(a.isFolder)) || sign * cmpAttachments(a, b, sort.key));
+} // borne du fil d'Ariane (R2)
 
 interface Crumb { id: string | null; name: string }
 
@@ -38,11 +55,12 @@ export default function DriveTab({ projectId, attachments, canEdit, onChanged }:
     const [usage, setUsage] = useState<DriveUsage | null>(null);
     const [editing, setEditing] = useState<Attachment | null>(null);
     const [pendingMove, setPendingMove] = useState<{ item: Attachment; targetId: string | null } | null>(null);
+    const [sort, setSort] = useState<DriveSort>({ key: "fileName", dir: "asc" }); // défaut: dossiers d’abord, nom A->Z
     const [newTextOpen, setNewTextOpen] = useState(false);
     const actions = useDriveActions();
 
     const parentId = path[path.length - 1]?.id ?? null;
-    const current = attachments.filter((a) => a.parentId === parentId);
+    const current = sortAttachments(attachments.filter((a) => a.parentId === parentId), sort);
     const folders = attachments.filter((a) => a.isFolder);
     const dm = useDriveModal(projectId, parentId, attachments, actions, onChanged);
 
@@ -66,7 +84,8 @@ export default function DriveTab({ projectId, attachments, canEdit, onChanged }:
                     onNewFolder={() => dm.openModal({ kind: "folder" })}
                     onNewText={() => setNewTextOpen(true)} />
             )}
-            <DriveTable current={current} folders={folders} canEdit={canEdit} parentId={parentId}
+            <DriveTable current={current} folders={folders} canEdit={canEdit} parentId={parentId} sort={sort}
+                onSort={(k) => setSort((prev) => prev.key === k ? { key: k, dir: prev.dir === "asc" ? "desc" : "asc" } : { key: k, dir: "asc" })}
                 onOpen={openFolder}
                 onEditFile={(a) => setEditing(a)}
                 onRename={(a) => dm.openModal({ kind: "rename", item: a }, a.fileName)}
