@@ -50,6 +50,9 @@ export default function ProjectTable({ projects }: Props): JSX.Element {
                             <td className="table-cell">{p.type || "—"}</td>
                             <td className="table-cell"><ProgressBar value={computeProgress(p.startDate, p.endDate, [])} width={80} /></td>
                             <td className="table-cell">{p.budget !== null ? `${p.budget} €` : "—"}</td>
+                            <td className="table-cell" style={{ fontWeight: 600 }}>
+                                Voir <FiArrowRight style={{ verticalAlign: "middle" }} />
+                            </td>
                         </tr>
                     ))}
                     {projects.length === 0 && (
