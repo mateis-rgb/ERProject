@@ -51,15 +51,13 @@ export default function DriveRow(props: Props): JSX.Element {
         window.location.href = "/api/attachments/download/" + item.id;
     };
     return (
-        <div draggable={drag.draggable} onDragStart={drag.onDragStart} onClick={rowClick}
+        <div className={drag.over ? "drive-row drag-over" : "drive-row"} draggable={drag.draggable} onDragStart={drag.onDragStart} onClick={rowClick}
             onDragOver={drag.onDragOver} onDragLeave={drag.onDragLeave} onDrop={drag.onDrop}
             title={item.isFolder && canEdit ? t("drive.dropInFolder") : undefined}
             style={{
                 display: "grid", gridTemplateColumns: driveCols(canEdit), alignItems: "center",
                 minWidth: "550px", // force le scroll horizontal du bloc si l'écran est plus étroit que les colonnes fixes
-                borderBottom: "1px solid var(--ink)", background: drag.over ? "var(--surface-2)" : "transparent",
-                outline: drag.over ? "2px dashed var(--accent)" : "none", outlineOffset: "-2px",
-                cursor: "pointer",
+                borderBottom: "1px solid var(--ink)", cursor: "pointer",
             }}>
             <div style={driveRowCell}>
                 <span className="ic" style={{ fontWeight: 700, fontSize: "0.85rem" }} title={item.fileName}>
