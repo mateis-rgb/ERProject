@@ -15,6 +15,7 @@ export default function PlanningHeader(props: Props): JSX.Element {
     const { current, canEdit, editMode, creating, onToggleEdit, onToggleCreate } = props;
     const { t } = useTranslation();
     const editing = canEdit && editMode;
+	
     return (
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", flexWrap: "wrap", gap: "0.5rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>

@@ -1,6 +1,7 @@
 // Onglet Réglages d'un projet - logique (Power of 10 R4)
 import { useTranslation } from "../../i18n/I18nContext";
 import { useEffect, useState } from "react";
+import { useConfigLists } from "../../hooks/useConfigLists";
 import { api } from "../../services/api";
 import { Project, AuthUser } from "../../types";
 import ProjectSettingsView from "./ProjectSettingsView";
@@ -62,19 +63,15 @@ export default function ProjectSettingsTab({ project, canEdit, isAdmin, onSaved 
     const { t } = useTranslation();
     const [form, setForm] = useState<ProjectFormState>(toForm(project));
     const [users, setUsers] = useState<AuthUser[]>([]);
-    const [statuses, setStatuses] = useState<string[]>([]);
-    const [types, setTypes] = useState<string[]>([]);
+    const configs = useConfigLists();
+    const statuses = configs["project_statuses"] ?? [];
+    const types = configs["project_types"] ?? [];
     const [msg, setMsg] = useState<string | null>(null);
     const [err, setErr] = useState<string | null>(null);
 
     useEffect(() => {
         api.get<AuthUser[]>("/api/users").then((r) => { if (r.success) setUsers(r.data); });
-        api.get<Record<string, string[]>>("/api/config").then((r) => {
-            if (r.success) {
-                setStatuses(r.data["project_statuses"] ?? []);
-                setTypes(r.data["project_types"] ?? []);
-            }
-        });
+        // listes gérées par useConfigLists()
     }, []);
 
     useEffect(() => setForm(toForm(project)), [project]);

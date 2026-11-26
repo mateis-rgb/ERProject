@@ -4,6 +4,7 @@ import { useEffect, useState, FormEvent } from "react";
 import { api } from "../../services/api";
 import { Project, ProjectTemplate } from "../../types";
 import { useModules } from "../../context/ModulesContext";
+import { useConfigLists } from "../../hooks/useConfigLists";
 import BrutalSelect from "../ui/BrutalSelect";
 import BrutalCheckbox from "../ui/BrutalCheckbox";
 
@@ -63,17 +64,11 @@ export default function ProjectForm({ onCreated, onError }: Props): JSX.Element 
     const [templateId, setTemplateId] = useState("");
     const [encrypted, setEncrypted] = useState(false);
     const [busy, setBusy] = useState(false);
-    const [typeOptions, setTypeOptions] = useState<string[]>([]);
+    const typeOptions = useConfigLists()["project_types"] ?? [];
     const { enabled } = useModules();
     const templatesOn = enabled("templates");
     const templates = useTemplates(templatesOn);
 
-    // Liste des types rechargée à chaque ouverture de la modale (cache frais, relié à settings/listes)
-    useEffect(() => {
-        api.get<Record<string, string[]>>("/api/config").then((r) => {
-            if (r.success) setTypeOptions(r.data["project_types"] ?? []);
-        });
-    }, []);
 
     const handleSubmit = async (e: FormEvent): Promise<void> => {
         e.preventDefault();

@@ -10,6 +10,7 @@ import AppTab from "../components/settings/AppTab";
 import AppearanceSection from "../components/settings/AppearanceSection";
 import ConfigListsSection from "../components/settings/ConfigListsSection";
 import Modal from "../components/ui/Modal";
+import { refreshConfigLists } from "../hooks/useConfigLists";
 import AccessTab from "../components/settings/AccessTab";
 import SecurityTab from "../components/settings/SecurityTab";
 import TemplatesTab from "../components/settings/TemplatesTab";
@@ -68,6 +69,7 @@ function ListsTab(): JSX.Element {
     const saveConfig = async (): Promise<void> => {
         const values = editValue.split(",").map((v) => v.trim()).filter((v) => v.length > 0);
         await api.put(`/api/config/${editKey}`, { values });
+        refreshConfigLists(); // invalide le cache partagé -> prochaine ouverture de modale = liste à jour
         const r = await api.get<Record<string, string[]>>("/api/config");
         if (r.success) setConfigs(r.data);
         setEditKey("");

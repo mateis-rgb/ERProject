@@ -14,6 +14,12 @@ function loadCache(): Promise<void> {
     return pending;
 }
 
+// Invalide le cache (appelé après modification d'une liste dans settings/listes)
+export function refreshConfigLists(): void {
+    cache = null;
+    pending = null;
+}
+
 export function useConfigLists(): Record<string, string[]> {
     const [configs, setConfigs] = useState<Record<string, string[]>>(cache ?? {});
     useEffect(() => {
