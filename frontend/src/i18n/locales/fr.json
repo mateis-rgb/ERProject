@@ -234,7 +234,20 @@
         "kpiReserved": "Articles réservés",
         "kpiValue": "Valeur stock",
         "kpiTimeMonth": "Temps ce mois-ci",
-        "noUpcoming": "Aucun à venir"
+        "noUpcoming": "Aucun à venir",
+        "editKpis": "Modifier les KPI",
+        "kpiEditorTitle": "KPI du dashboard",
+        "kpiShown": "KPI affichés",
+        "kpiNoneShown": "Aucun KPI affiché",
+        "kpiSearchLabel": "Ajouter un KPI",
+        "kpiSearchPlaceholder": "Rechercher un KPI à ajouter...",
+        "kpiEmpty": "Aucun KPI ne correspond",
+        "kpiRemove": "Retirer ce KPI",
+        "kpiArchived": "Projets archivés",
+        "kpiMilestonesTotal": "Jalons au total",
+        "kpiStockItems": "Articles en stock",
+        "kpiTimeTotal": "Temps total",
+        "kpiUsers": "Utilisateurs"
     },
     "projects": {
         "search": "Rechercher un projet...",

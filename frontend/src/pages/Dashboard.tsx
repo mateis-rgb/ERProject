@@ -1,15 +1,36 @@
-// Dashboard en bento grid style "régie" (Power of 10 R4)
-import { FiActivity, FiAlertCircle, FiAlertTriangle, FiBriefcase, FiClock, FiDollarSign, FiPackage, FiPlayCircle } from "react-icons/fi";
-import { useTranslation } from "../i18n/I18nContext";
+// Dashboard en bento grid style "régie" - KPI personnalisables par utilisateur (Power of 10 R4)
 import { useEffect, useState } from "react";
+import { FiEdit2 } from "react-icons/fi";
+import { useTranslation } from "../i18n/I18nContext";
 import { api } from "../services/api";
 import { DashboardKPIs } from "../types";
 import BentoCard from "../components/ui/BentoCard";
+import DashboardKpiEditor from "../components/dashboard/DashboardKpiEditor";
+import { ALL_KPI_IDS, KPI_CATALOG, KpiDef } from "../components/dashboard/kpiCatalog";
 import { useModules } from "../context/ModulesContext";
+
+function KpiGrid(props: { kpis: DashboardKPIs; kpiIds: string[]; stockEnabled: boolean }): JSX.Element {
+    const { kpis, kpiIds, stockEnabled } = props;
+    const { t } = useTranslation();
+    const defs = kpiIds
+        .map((id) => KPI_CATALOG.find((k) => k.id === id))
+        .filter((d): d is KpiDef => d !== undefined && (!d.needsStockModule || stockEnabled));
+    return (
+        <div className="bento">
+            {defs.map((d) => (
+                <BentoCard key={d.id} value={d.format(kpis)} label={t(d.labelKey)} icon={d.icon} accent={d.accent}
+                    warn={d.warn !== undefined ? d.warn(kpis) : false}
+                    live={d.live !== undefined ? d.live(kpis) : false} />
+            ))}
+        </div>
+    );
+}
 
 export default function Dashboard(): JSX.Element {
     const { t } = useTranslation();
     const [kpis, setKpis] = useState<DashboardKPIs | null>(null);
+    const [kpiIds, setKpiIds] = useState<string[]>(ALL_KPI_IDS);
+    const [editorOpen, setEditorOpen] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const { enabled } = useModules();
 
@@ -18,6 +39,9 @@ export default function Dashboard(): JSX.Element {
             if (res.success) setKpis(res.data);
             else setError(res.error);
         });
+        api.get<{ kpiIds: string[] }>("/api/dashboard/prefs").then((res) => {
+            if (res.success && res.data.kpiIds.length > 0) setKpiIds(res.data.kpiIds);
+        });
     }, []);
 
     if (error !== null) return <p style={{ color: "var(--tally)" }}>{error}</p>;
@@ -25,24 +49,19 @@ export default function Dashboard(): JSX.Element {
 
     return (
         <div>
-            <div style={{ marginBottom: "1.5rem" }}>
-                <h1 className="page-title">Dashboard</h1>
-                <p className="page-subtitle">{t("topbar.live")}</p>
+            <div style={{ marginBottom: "1.5rem", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem", flexWrap: "wrap" }}>
+                <div>
+                    <h1 className="page-title">Dashboard</h1>
+                    <p className="page-subtitle">{t("topbar.live")}</p>
+                </div>
+                <button className="btn" onClick={() => setEditorOpen(true)}>
+                    <span className="ic"><FiEdit2 /> {t("dashboard.editKpis")}</span>
+                </button>
             </div>
-            <div className="bento">
-                <BentoCard value={kpis.totalProjects} label={t("dashboard.kpiProjects")} icon={<FiBriefcase />} accent="var(--tally)" />
-                <BentoCard value={kpis.activeProjects} label={t("dashboard.kpiActive")} icon={<FiActivity />} accent="var(--green)" live={kpis.activeProjects > 0} />
-                <BentoCard value={kpis.milestonesOverdue} label={t("dashboard.kpiOverdue")} icon={<FiAlertCircle />} accent="var(--danger)" warn={kpis.milestonesOverdue > 0} />
-                <BentoCard value={kpis.milestonesUpcoming} label={t("dashboard.kpiUpcoming")} icon={<FiPlayCircle />} accent="var(--blue)" />
-                {enabled("stock") && (
-                    <>
-                        <BentoCard value={kpis.lowStockItems} label={t("stock.low")} icon={<FiAlertTriangle />} accent="var(--amber)" warn={kpis.lowStockItems > 0} />
-                        <BentoCard value={kpis.reservedItems} label={t("dashboard.kpiReserved")} icon={<FiPackage />} accent="var(--blue)" />
-                        <BentoCard value={`${kpis.totalStockValue.toFixed(0)} €`} label={t("dashboard.kpiValue")} icon={<FiDollarSign />} accent="var(--green)" />
-                    </>
-                )}
-                <BentoCard value={`${kpis.timeThisMonth}h`} label={t("dashboard.kpiTimeMonth")} icon={<FiClock />} accent="var(--violet)" />
-            </div>
+            <KpiGrid kpis={kpis} kpiIds={kpiIds} stockEnabled={enabled("stock")} />
+            {editorOpen && (
+                <DashboardKpiEditor kpiIds={kpiIds} onClose={() => setEditorOpen(false)} onSaved={setKpiIds} />
+            )}
         </div>
     );
 }

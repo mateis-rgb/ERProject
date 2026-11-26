@@ -234,7 +234,20 @@
         "kpiReserved": "Reserved items",
         "kpiValue": "Stock value",
         "kpiTimeMonth": "Time this month",
-        "noUpcoming": "Nothing upcoming"
+        "noUpcoming": "Nothing upcoming",
+        "editKpis": "Edit KPIs",
+        "kpiEditorTitle": "Dashboard KPIs",
+        "kpiShown": "Shown KPIs",
+        "kpiNoneShown": "No KPI shown",
+        "kpiSearchLabel": "Add a KPI",
+        "kpiSearchPlaceholder": "Search a KPI to add...",
+        "kpiEmpty": "No matching KPI",
+        "kpiRemove": "Remove this KPI",
+        "kpiArchived": "Archived projects",
+        "kpiMilestonesTotal": "Total milestones",
+        "kpiStockItems": "Stock items",
+        "kpiTimeTotal": "Total time",
+        "kpiUsers": "Users"
     },
     "projects": {
         "search": "Search a project...",

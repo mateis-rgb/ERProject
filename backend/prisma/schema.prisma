@@ -27,6 +27,7 @@ model User {
     passwordHash String
     name         String
     role         UserRole  @default(VIEWER)
+    dashboardKpis String?  // JSON array d'ids de KPI affichés sur le dashboard (null = tous)
     createdAt    DateTime  @default(now())
     updatedAt    DateTime  @updatedAt
 

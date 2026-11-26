@@ -5,6 +5,7 @@ import { boundedReduce, MAX_ITERATIONS } from "../utils/power10";
 import { DashboardKPIs } from "../types";
 
 const ACTIVE_STATUS = "En cours";
+const ARCHIVED_STATUS = "Archivé";
 const UPCOMING_DAYS = 7;
 const DAY_MS = 24 * 3600 * 1000;
 
@@ -59,24 +60,34 @@ export async function computeDashboardKPIs(): Promise<DashboardKPIs> {
     const prisma = getPrisma();
     const now = new Date();
     const in7d = new Date(now.getTime() + UPCOMING_DAYS * DAY_MS);
-    const [totalProjects, activeProjects, overdue, upcoming, low, reserved, value, timeMonth] = await Promise.all([
+    const [totalProjects, activeProjects, archived, milestonesTotal, overdue, upcoming, low, reserved, totalItems, value, timeMonth, timeTotal, usersCount] = await Promise.all([
         prisma.project.count(),
         prisma.project.count({ where: { status: ACTIVE_STATUS } }),
+        prisma.project.count({ where: { status: ARCHIVED_STATUS } }),
+        prisma.milestone.count(),
         countMilestonesBetween(prisma, new Date(0), now),
         countMilestonesBetween(prisma, now, in7d),
         countLowStock(prisma),
         countReservedItems(prisma),
+        prisma.stockItem.count(),
         sumStockValue(prisma),
         sumTimeThisMonth(prisma, now),
+        prisma.timeEntry.aggregate({ _sum: { hours: true } }).then((a) => a._sum.hours ?? 0),
+        prisma.user.count(),
     ]);
     return {
         totalProjects,
         activeProjects,
+        archivedProjects: archived,
+        milestonesTotal,
         milestonesOverdue: overdue,
         milestonesUpcoming: upcoming,
         lowStockItems: low,
         reservedItems: reserved,
+        totalStockItems: totalItems,
         totalStockValue: value,
         timeThisMonth: timeMonth,
+        timeTotal,
+        usersCount,
     };
 }

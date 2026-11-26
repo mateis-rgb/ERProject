@@ -9,6 +9,7 @@ import { z } from "zod";
 import { validateBody } from "../middleware/validation";
 import { requireDefined } from "../utils/power10";
 import { getStorageDir, getDefaultStorageDir, resolveStorageDir, migrateStorage } from "../services/storageService";
+import { getPrisma } from "../config/prisma";
 import { createNotification, updateProgress, setNotificationResult } from "../services/notificationService";
 import { checkAndNotify, getRepoInfo } from "../services/updateService";
 
@@ -26,6 +27,45 @@ miscRouter.get("/users", async (_req: Request, res: Response) => {
 miscRouter.get("/dashboard", async (_req: Request, res: Response) => {
     const kpis = await computeDashboardKPIs();
     res.json({ success: true, data: kpis });
+});
+
+// Catalogue des KPI disponibles + préférences d'affichage par utilisateur
+export const KPI_CATALOG_IDS = [
+    "totalProjects", "activeProjects", "archivedProjects",
+    "milestonesTotal", "milestonesOverdue", "milestonesUpcoming",
+    "lowStockItems", "reservedItems", "totalStockItems", "totalStockValue",
+    "timeThisMonth", "timeTotal", "usersCount",
+] as const;
+
+const prefsSchema = z.object({
+    kpiIds: z.array(z.string().min(1).max(64)).max(KPI_CATALOG_IDS.length),
+});
+
+function parseKpiPrefs(raw: string | null): string[] {
+    if (raw === null || raw === "") return [...KPI_CATALOG_IDS];
+    try {
+        const arr: unknown = JSON.parse(raw);
+        if (!Array.isArray(arr)) return [...KPI_CATALOG_IDS];
+        const valid = KPI_CATALOG_IDS as readonly string[];
+        return arr.filter((x): x is string => typeof x === "string" && valid.includes(x)).slice(0, KPI_CATALOG_IDS.length);
+    } catch {
+        return [...KPI_CATALOG_IDS];
+    }
+}
+
+miscRouter.get("/dashboard/prefs", async (req: Request, res: Response) => {
+    const auth = requireDefined(req.authUser, "authUser");
+    const user = await getPrisma().user.findUnique({ where: { id: auth.id }, select: { dashboardKpis: true } });
+    res.json({ success: true, data: { kpiIds: parseKpiPrefs(user?.dashboardKpis ?? null) } });
+});
+
+miscRouter.put("/dashboard/prefs", validateBody(prefsSchema), async (req: Request, res: Response) => {
+    const auth = requireDefined(req.authUser, "authUser");
+    const body = req.body as { kpiIds: string[] };
+    const valid = KPI_CATALOG_IDS as readonly string[];
+    const ids = body.kpiIds.filter((id) => valid.includes(id));
+    await getPrisma().user.update({ where: { id: auth.id }, data: { dashboardKpis: JSON.stringify(ids) } });
+    res.json({ success: true, data: { kpiIds: ids } });
 });
 
 // Config
