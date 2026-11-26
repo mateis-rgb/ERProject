@@ -50,28 +50,23 @@ export default function GanttBar(props: Props): JSX.Element {
             borderBottom: showBorder ? "1px solid var(--ink)" : "none",
             background: "transparent",
         }}>
-            {childCount > 0 && (
-                <button
-                    type="button"
-                    onClick={(e) => { e.stopPropagation(); onToggleCollapse(); }}
-                    title={isCollapsed ? "Déplier les sous-jalons" : "Replier les sous-jalons"}
-                    style={{
-                        position: "absolute", left: "4px", top: "50%", transform: "translateY(-50%)",
-                        width: "20px", height: "20px", padding: 0, zIndex: 5,
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        border: "2px solid var(--ink)", background: "var(--surface)", color: "var(--ink)",
-                        cursor: "pointer", boxShadow: "2px 2px 0 var(--ink)",
-                    }}
-                >
-                    {isCollapsed ? <FiChevronRight size={12} /> : <FiChevronDown size={12} />}
-                </button>
-            )}
             <button
                 onClick={handleClick}
                 onMouseDown={canEdit ? drag.onMouseDown : undefined}
                 style={barStyle(geom, milestone.color, isSel, busy, canEdit, depth)}
             >
                 <span style={{ display: "flex", alignItems: "center", gap: "2px", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0, flex: 1 }}>
+                                        {childCount > 0 && (
+                        <span
+                            role="button"
+                            onClick={(e) => { e.stopPropagation(); onToggleCollapse(); }}
+                            onMouseDown={(e) => e.stopPropagation()} // ne pas déclencher le drag du jalon
+                            title={isCollapsed ? "Déplier les sous-jalons" : "Replier les sous-jalons"}
+                            style={{ display: "flex", alignItems: "center", flexShrink: 0, cursor: "pointer", padding: "0 2px" }}
+                        >
+                            {isCollapsed ? <FiChevronRight size={12} /> : <FiChevronDown size={12} />}
+                        </span>
+                    )}
                     {depth > 0 && Array.from({ length: Math.min(depth, 4) }, (_, i) => <FiCornerDownRight key={i} style={{ flexShrink: 0 }} />)}
                     <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{milestone.name}</span>
                 </span>
