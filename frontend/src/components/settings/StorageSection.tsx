@@ -19,7 +19,7 @@ function ProgressModal({ progress, title }: { progress: number; title: string })
             <div className="modal" style={{ maxWidth: "420px" }} onClick={(e) => e.stopPropagation()}>
                 <h3 style={{ margin: "0 0 0.75rem", fontSize: "1rem", fontWeight: 700, textTransform: "uppercase" }}>{title}</h3>
                 <div style={{ height: "16px", border: "3px solid var(--ink)", background: "var(--surface)" }}>
-                    <div style={{ height: "100%", width: `${progress}%`, background: "var(--accent)", transition: "width 0.3s steps(8, end)" }} />
+                    <div style={{ height: "100%", width: `${progress}%`, background: "var(--accent)", transition: "width 0.3s ease" }} />
                 </div>
                 <p className="mono" style={{ margin: "0.5rem 0 0", fontSize: "0.75rem", color: "var(--muted)", textAlign: "right" }}>{progress}%</p>
             </div>

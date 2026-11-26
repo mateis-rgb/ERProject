@@ -40,7 +40,7 @@ export default function NotifItem({ notif, onClick, onDismiss }: Props): JSX.Ele
             {notif.message && <p style={{ margin: "0.25rem 0 0", fontSize: "0.78rem", color: "var(--muted)" }}>{notif.message}</p>}
             {notif.progress !== null && (
                 <div style={{ marginTop: "0.35rem", height: "10px", border: "2px solid var(--ink)", background: "var(--surface)" }}>
-                    <div style={{ height: "100%", width: `${notif.progress}%`, background: notif.progress >= 100 ? "var(--green)" : "var(--accent)", transition: "width 0.3s steps(8, end)" }} />
+                    <div style={{ height: "100%", width: `${notif.progress}%`, background: notif.progress >= 100 ? "var(--green)" : "var(--accent)", transition: "width 0.3s ease" }} />
                 </div>
             )}
             <span className="mono" style={{ fontSize: "0.62rem", color: "var(--muted)" }}>
