@@ -26,11 +26,13 @@ interface Props {
     isCurrent: boolean; // jalon en cours (contient aujourd'hui) -> badge clignotant dans le tooltip
 }
 
-function BarTooltip(props: { name: string; isCurrent: boolean; leftPct: number }): JSX.Element {
+function BarTooltip(props: { name: string; isCurrent: boolean; x: number; y: number }): JSX.Element {
+    // position: fixed = jamais coupé par le scroll du gantt ; clamp pour rester dans la fenêtre
+    const left = Math.min(props.x + 12, Math.max(8, window.innerWidth - 280));
+    const top = Math.max(8, props.y - 40);
     return (
         <div style={{
-            position: "absolute", bottom: "100%", left: `${props.leftPct}%`, transform: "translateX(-8px)",
-            marginBottom: "4px", zIndex: 60, pointerEvents: "none",
+            position: "fixed", left, top, zIndex: 9999, pointerEvents: "none",
             background: "var(--surface)", border: "2px solid var(--ink)", boxShadow: "3px 3px 0 var(--ink)",
             padding: "0.25rem 0.5rem", display: "flex", alignItems: "center", gap: "0.4rem", maxWidth: "260px",
         }}>
@@ -59,7 +61,7 @@ function CollapseArrow(props: { collapsed: boolean; onToggle: () => void }): JSX
 export default function GanttBar(props: Props): JSX.Element {
     const { milestone, depth, pct, pctPerDay, isSel, showBorder, canEdit, onSelect, onMove, onResize, childCount, isCollapsed, hiddenCount, onToggleCollapse, isCurrent } = props;
     const laneRef = useRef<HTMLDivElement>(null);
-    const [hover, setHover] = useState(false);
+    const [tip, setTip] = useState<{ x: number; y: number } | null>(null);
 
     const pxPerDay = (): number => {
         const w = laneRef.current?.getBoundingClientRect().width ?? 600;
@@ -77,12 +79,12 @@ export default function GanttBar(props: Props): JSX.Element {
     };
 
     return (
-        <div ref={laneRef} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} style={{
+        <div ref={laneRef} onMouseMove={(e) => setTip({ x: e.clientX, y: e.clientY })} onMouseLeave={() => setTip(null)} style={{
             position: "relative", height: depth > 0 ? "32px" : "44px", // sous-jalons plus compacts (lien visuel avec le parent)
             borderBottom: showBorder ? "1px solid var(--ink)" : "none",
             background: "transparent",
         }}>
-            {hover && <BarTooltip name={milestone.name} isCurrent={isCurrent} leftPct={geom.left} />}
+            {tip !== null && <BarTooltip name={milestone.name} isCurrent={isCurrent} x={tip.x} y={tip.y} />}
             <button
                 onClick={handleClick}
                 onMouseDown={canEdit ? drag.onMouseDown : undefined}

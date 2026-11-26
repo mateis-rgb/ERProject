@@ -60,8 +60,7 @@ export default function GanttChart(props: Props): JSX.Element {
                 boxShadow: "none",
             }}>
                 <GanttHeader width={r.width} ticks={ticks} pct={r.pct} rangeEnd={rangeEnd} todayPct={todayPct} />
-                {/* paddingTop 34px = place pour les tooltips au-dessus des jalons */}
-                <div style={{ position: "relative", width: `${r.width}px`, paddingTop: "34px" }}>
+                <div style={{ position: "relative", width: `${r.width}px` }}>
                     {/* trait du jour courant sur toute la hauteur du planning (même style que le header) */}
                     <div style={{ position: "absolute", left: `${todayPct}%`, top: 0, bottom: 0, width: "2px", background: "var(--danger)", zIndex: 4, pointerEvents: "none" }} />
                     {(() => {
