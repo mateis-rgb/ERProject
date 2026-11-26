@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AppContext";
 import { api } from "../../services/api";
+import { useTranslation } from "../../i18n/I18nContext";
+import ConfirmModal from "../ui/ConfirmModal";
 import { AuthUser } from "../../types";
 
 interface Props {
@@ -12,8 +14,11 @@ interface Props {
 export default function SessionCard({ user, onRevoked }: Props): JSX.Element {
     const { logout } = useAuth();
     const [busy, setBusy] = useState(false);
+    const [confirming, setConfirming] = useState(false);
+    const { t } = useTranslation();
 
     const revokeAll = async (): Promise<void> => {
+        setConfirming(false);
         setBusy(true);
         const res = await api.post("/api/auth/revoke-all", {});
         setBusy(false);
@@ -47,13 +52,17 @@ export default function SessionCard({ user, onRevoked }: Props): JSX.Element {
                 Révoque tous les refresh tokens de ton compte (déconnecte les autres appareils).
             </p>
             <div style={{ display: "flex", gap: "0.75rem" }}>
-                <button className="btn-danger" style={{ flex: 1 }} onClick={revokeAll} disabled={busy}>
+                <button className="btn-danger" style={{ flex: 1 }} onClick={() => setConfirming(true)} disabled={busy}>
                     {busy ? "..." : "Révoquer les autres sessions"}
                 </button>
                 <button className="btn-ghost" style={{ flex: 1 }} onClick={logout}>
                     Me déconnecter
                 </button>
             </div>
+            {confirming && (
+                <ConfirmModal danger title={t("modals.revokeTitle")} message={t("modals.revokeMsg")}
+                    busy={busy} onConfirm={() => void revokeAll()} onCancel={() => setConfirming(false)} />
+            )}
         </div>
     );
 }

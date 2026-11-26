@@ -5,6 +5,8 @@ import { useTranslation } from "../../i18n/I18nContext";
 import { useAuth } from "../../context/AppContext";
 import { useNotifications } from "../../context/NotificationContext";
 import { api } from "../../services/api";
+import Modal from "../ui/Modal";
+import ConfirmModal from "../ui/ConfirmModal";
 import { Comment, CommentScope, MentionCandidates } from "../../types";
 
 const MAX_SUGGESTIONS = 8;
@@ -47,23 +49,18 @@ interface ItemProps {
     c: Comment;
     canModerate: boolean;
     onChanged: () => void;
+    onEdit: () => void;
 }
 
-function CommentItem({ c, canModerate, onChanged }: ItemProps): JSX.Element {
+function CommentItem({ c, canModerate, onChanged, onEdit }: ItemProps): JSX.Element {
     const { t } = useTranslation();
     const { user } = useAuth();
-    const [editing, setEditing] = useState(false);
-    const [draft, setDraft] = useState(c.content);
+    const [confirming, setConfirming] = useState(false);
     const isAuthor = user !== null && user.id === c.authorId;
     const canModify = isAuthor || canModerate;
 
-    const save = (): void => {
-        if (draft.trim().length === 0) return;
-        api.patch(`/api/comments/${c.id}`, { content: draft.trim() }).then((r) => {
-            if (r.success) { setEditing(false); onChanged(); }
-        });
-    };
     const remove = (): void => {
+        setConfirming(false);
         api.delete(`/api/comments/${c.id}`).then(() => onChanged());
     };
 
@@ -76,28 +73,20 @@ function CommentItem({ c, canModerate, onChanged }: ItemProps): JSX.Element {
                     {c.updatedAt !== c.createdAt && ` · ${t("comments.edited")}`}
                 </span>
             </div>
-            {editing ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", marginTop: "0.4rem" }}>
-                    <textarea className="input" rows={3} value={draft} onChange={(e) => setDraft(e.target.value)} />
-                    <div style={{ display: "flex", gap: "0.4rem" }}>
-                        <button className="btn" style={{ padding: "0.3rem 0.7rem", fontSize: "0.75rem" }} onClick={save}>{t("comments.save")}</button>
-                        <button className="btn-ghost" style={{ padding: "0.3rem 0.7rem", fontSize: "0.75rem" }} onClick={() => { setEditing(false); setDraft(c.content); }}>
-                            {t("comments.cancel")}
-                        </button>
-                    </div>
-                </div>
-            ) : (
-                <p style={{ fontSize: "0.85rem", margin: "0.4rem 0 0", whiteSpace: "pre-wrap" }}>{renderContent(c.content)}</p>
-            )}
-            {canModify && !editing && (
+            <p style={{ fontSize: "0.85rem", margin: "0.4rem 0 0", whiteSpace: "pre-wrap" }}>{renderContent(c.content)}</p>
+            {canModify && (
                 <div style={{ display: "flex", gap: "0.4rem", marginTop: "0.5rem" }}>
-                    <button className="btn-ghost" style={{ padding: "0.2rem 0.55rem", fontSize: "0.7rem" }} onClick={() => setEditing(true)}>
+                    <button className="btn-ghost" style={{ padding: "0.2rem 0.55rem", fontSize: "0.7rem" }} onClick={onEdit}>
                         <span className="ic"><FiEdit2 /> {t("comments.edit")}</span>
                     </button>
-                    <button className="btn-danger" style={{ padding: "0.2rem 0.55rem", fontSize: "0.7rem" }} onClick={remove}>
+                    <button className="btn-danger" style={{ padding: "0.2rem 0.55rem", fontSize: "0.7rem" }} onClick={() => setConfirming(true)}>
                         <span className="ic"><FiX /> {t("comments.delete")}</span>
                     </button>
                 </div>
+            )}
+            {confirming && (
+                <ConfirmModal danger title={t("modals.deleteCommentTitle")} message={t("common.irreversible")}
+                    onConfirm={remove} onCancel={() => setConfirming(false)} />
             )}
         </div>
     );
@@ -189,7 +178,7 @@ function mentionKeyNav(
 }
 
 // État du composer : brouillon + autocomplétion @ + envoi
-function useComposer(scope: CommentScope, candidates: MentionCandidates | null, onSent: () => void): {
+function useComposer(scope: CommentScope, candidates: MentionCandidates | null, onSent: () => void, initial: string, editId: string | null): {
     draft: string; taRef: React.RefObject<HTMLTextAreaElement | null>; open: boolean;
     suggestions: Suggestion[]; active: number;
     updateDraft: (v: string, cursor: number) => void;
@@ -197,7 +186,7 @@ function useComposer(scope: CommentScope, candidates: MentionCandidates | null, 
     pick: (s: Suggestion) => void;
     send: () => void;
 } {
-    const [draft, setDraft] = useState("");
+    const [draft, setDraft] = useState(initial);
     const [mention, setMention] = useState<{ start: number; query: string } | null>(null);
     const [active, setActive] = useState(0);
     const taRef = useRef<HTMLTextAreaElement>(null);
@@ -227,6 +216,10 @@ function useComposer(scope: CommentScope, candidates: MentionCandidates | null, 
     const send = (): void => {
         const content = draft.trim();
         if (content.length === 0) return;
+        if (editId !== null) {
+            api.patch(`/api/comments/${editId}`, { content }).then((r) => { if (r.success) onSent(); });
+            return;
+        }
         const body = scope.kind === "stock" ? { content } : { content, milestoneId: scope.milestoneId };
         api.post(listUrl(scope), body).then((r) => {
             if (r.success) { setDraft(""); setMention(null); onSent(); }
@@ -244,23 +237,25 @@ function useComposer(scope: CommentScope, candidates: MentionCandidates | null, 
     return { draft, taRef, open, suggestions, active, updateDraft, onKeyDown, pick, send };
 }
 
-function CommentComposer({ scope, candidates, onSent }: ComposerProps): JSX.Element {
+function CommentComposer({ scope, candidates, onSent, onClose, title, initial, editId }: ComposerProps & { onClose: () => void; title: string; initial?: string; editId?: string | null }): JSX.Element {
     const { t } = useTranslation();
-    const c = useComposer(scope, candidates, onSent);
+    const c = useComposer(scope, candidates, onSent, initial ?? "", editId ?? null);
 
     return (
-        <div style={{ position: "relative" }}>
-            <MentionDropdown suggestions={c.open ? c.suggestions : []} active={c.active} onPick={c.pick} />
-            <textarea ref={c.taRef as React.RefObject<HTMLTextAreaElement>} className="input" rows={3} value={c.draft} placeholder={t("comments.placeholder")}
-                onChange={(e) => c.updateDraft(e.target.value, e.target.selectionStart)}
-                onKeyDown={c.onKeyDown} />
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "0.5rem", gap: "0.5rem", flexWrap: "wrap" }}>
-                <span className="mono" style={{ fontSize: "0.65rem", color: "var(--muted)" }}>{t("comments.mentionHint")}</span>
-                <button className="btn" onClick={c.send} disabled={c.draft.trim().length === 0}>
-                    <span className="ic"><FiSend /> {t("comments.send")}</span>
-                </button>
+        <Modal title={title} onClose={onClose}>
+            <div style={{ position: "relative" }}>
+                <MentionDropdown suggestions={c.open ? c.suggestions : []} active={c.active} onPick={c.pick} />
+                <textarea ref={c.taRef as React.RefObject<HTMLTextAreaElement>} className="input" rows={5} value={c.draft} placeholder={t("comments.placeholder")}
+                    onChange={(e) => c.updateDraft(e.target.value, e.target.selectionStart)}
+                    onKeyDown={c.onKeyDown} autoFocus />
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "0.5rem", gap: "0.5rem", flexWrap: "wrap" }}>
+                    <span className="mono" style={{ fontSize: "0.65rem", color: "var(--muted)" }}>{t("comments.mentionHint")}</span>
+                    <button className="btn" onClick={c.send} disabled={c.draft.trim().length === 0}>
+                        <span className="ic"><FiSend /> {t("comments.send")}</span>
+                    </button>
+                </div>
             </div>
-        </div>
+        </Modal>
     );
 }
 
@@ -270,6 +265,7 @@ export default function CommentsSection({ scope }: { scope: CommentScope }): JSX
     const { socket } = useNotifications();
     const [comments, setComments] = useState<Comment[]>([]);
     const [candidates, setCandidates] = useState<MentionCandidates | null>(null);
+    const [composer, setComposer] = useState<{ mode: "new" } | { mode: "edit"; c: Comment } | null>(null);
     const canComment = user !== null && user.role !== "VIEWER";
     const canModerate = user !== null && user.role === "ADMIN";
 
@@ -303,9 +299,19 @@ export default function CommentsSection({ scope }: { scope: CommentScope }): JSX
             </h2>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", marginBottom: "0.9rem" }}>
                 {comments.length === 0 && <p style={{ color: "var(--muted)", fontSize: "0.85rem", margin: 0 }}>{t("comments.none")}</p>}
-                {comments.map((c) => <CommentItem key={c.id} c={c} canModerate={canModerate} onChanged={load} />)}
+                {comments.map((c) => <CommentItem key={c.id} c={c} canModerate={canModerate} onChanged={load}
+                    onEdit={() => setComposer({ mode: "edit", c })} />)}
             </div>
-            {canComment && <CommentComposer scope={scope} candidates={candidates} onSent={load} />}
+            {canComment && (
+                <button className="btn" onClick={() => setComposer({ mode: "new" })}>+ {t("modals.addCommentTitle")}</button>
+            )}
+            {composer !== null && (
+                <CommentComposer scope={scope} candidates={candidates} onClose={() => setComposer(null)}
+                    onSent={() => { load(); setComposer(null); }}
+                    title={composer.mode === "new" ? t("modals.addCommentTitle") : t("modals.editCommentTitle")}
+                    initial={composer.mode === "edit" ? composer.c.content : ""}
+                    editId={composer.mode === "edit" ? composer.c.id : null} />
+            )}
         </div>
     );
 }

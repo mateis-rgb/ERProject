@@ -11,6 +11,7 @@ import { ProgressBar } from "../ui/ProgressBar";
 import BrutalSelect from "../ui/BrutalSelect";
 import { computeProgress } from "../../utils/progress";
 import { useModules } from "../../context/ModulesContext";
+import ConfirmModal from "../ui/ConfirmModal";
 
 interface Props {
     project: Project;
@@ -45,7 +46,10 @@ export default function ProjectHeader(props: Props): JSX.Element {
         }
     }, [metaKind, collaborators, project.id]);
 
+    const [pendingStatus, setPendingStatus] = useState<string | null>(null);
+
     const changeStatus = async (newStatus: string): Promise<void> => {
+        setPendingStatus(null);
         setStatus(newStatus);
         await api.patch(`/api/projects/${project.id}`, { status: newStatus });
         onUpdated();
@@ -54,28 +58,10 @@ export default function ProjectHeader(props: Props): JSX.Element {
     return (
         <div className="card">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem", flexWrap: "wrap" }}>
-                <div style={{ minWidth: 0, flex: 1 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
-                        <h1 style={{ fontSize: "1.875rem", fontWeight: 700, margin: 0 }}>{project.name}</h1>
-                        <span className="badge" style={{ backgroundColor: STATUS_COLORS[status] ?? "var(--muted)" }}>
-                            {status}
-                        </span>
-                        {project.encrypted && (
-                            <span className="badge" title={t("project.encryptedBadge")}
-                                style={{ color: "var(--accent)", borderColor: "var(--accent)", background: "transparent" }}>
-                                <span className="ic"><FiLock /> {t("project.encryptedBadge")}</span>
-                            </span>
-                        )}
-                    </div>
-                    <p style={{ color: "var(--muted)", marginTop: "0.5rem" }}>{project.description || "Aucune description"}</p>
-                    <div style={{ marginTop: "0.6rem" }}>
-                        <ProgressBar value={computeProgress(project.startDate, project.endDate, milestones.map((m) => m.endDate))} width={140} />
-                    </div>
-                    <ProjectMetaChips project={project} milestonesCount={milestones.length} onOpen={setMetaKind} />
-                </div>
+                <HeaderInfo project={project} status={status} milestones={milestones} onOpenMeta={setMetaKind} />
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "flex-end" }}>
                     {canEdit && (
-                        <BrutalSelect value={status} onChange={(v) => void changeStatus(v)} width="auto" minWidth="140px"
+                        <BrutalSelect value={status} onChange={setPendingStatus} width="auto" minWidth="140px"
                             options={STATUSES.map((s) => ({ value: s, label: s }))} />
                     )}
                     {exportEnabled && <ProjectExport projectId={project.id} />}
@@ -85,6 +71,36 @@ export default function ProjectHeader(props: Props): JSX.Element {
                 <ProjectMetaModal kind={metaKind} project={project} collaborators={collaborators}
                     milestones={milestones} onClose={() => setMetaKind(null)} />
             )}
+            {pendingStatus !== null && pendingStatus !== status && (
+                <ConfirmModal title={t("modals.changeStatusTitle")}
+                    message={`${project.name} - ${pendingStatus}`}
+                    onConfirm={() => void changeStatus(pendingStatus)} onCancel={() => setPendingStatus(null)} />
+            )}
+        </div>
+    );
+}
+
+function HeaderInfo({ project, status, milestones, onOpenMeta }: { project: Project; status: string; milestones: Milestone[]; onOpenMeta: (k: MetaKind) => void }): JSX.Element {
+    const { t } = useTranslation();
+    return (
+        <div style={{ minWidth: 0, flex: 1 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
+                <h1 style={{ fontSize: "1.875rem", fontWeight: 700, margin: 0 }}>{project.name}</h1>
+                <span className="badge" style={{ backgroundColor: STATUS_COLORS[status] ?? "var(--muted)" }}>
+                    {status}
+                </span>
+                {project.encrypted && (
+                    <span className="badge" title={t("project.encryptedBadge")}
+                        style={{ color: "var(--accent)", borderColor: "var(--accent)", background: "transparent" }}>
+                        <span className="ic"><FiLock /> {t("project.encryptedBadge")}</span>
+                    </span>
+                )}
+            </div>
+            <p style={{ color: "var(--muted)", marginTop: "0.5rem" }}>{project.description || "Aucune description"}</p>
+            <div style={{ marginTop: "0.6rem" }}>
+                <ProgressBar value={computeProgress(project.startDate, project.endDate, milestones.map((m) => m.endDate))} width={140} />
+            </div>
+            <ProjectMetaChips project={project} milestonesCount={milestones.length} onOpen={onOpenMeta} />
         </div>
     );
 }

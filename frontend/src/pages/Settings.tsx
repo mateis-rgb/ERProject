@@ -9,6 +9,7 @@ import SettingsTabs, { TabId, SETTINGS_TAB_IDS } from "../components/settings/Se
 import AppTab from "../components/settings/AppTab";
 import AppearanceSection from "../components/settings/AppearanceSection";
 import ConfigListsSection from "../components/settings/ConfigListsSection";
+import Modal from "../components/ui/Modal";
 import AccessTab from "../components/settings/AccessTab";
 import SecurityTab from "../components/settings/SecurityTab";
 import TemplatesTab from "../components/settings/TemplatesTab";
@@ -55,6 +56,7 @@ export default function Settings(): JSX.Element {
 }
 
 function ListsTab(): JSX.Element {
+    const { t } = useTranslation();
     const [configs, setConfigs] = useState<Record<string, string[]>>({});
     const [editKey, setEditKey] = useState("");
     const [editValue, setEditValue] = useState("");
@@ -72,12 +74,26 @@ function ListsTab(): JSX.Element {
     };
 
     return (
+        <>
         <ConfigListsSection
             configs={configs}
-            editKey={editKey}
+            editKey=""
             editValue={editValue}
             onEdit={(k, v) => { setEditKey(k); setEditValue(v); }}
             onSave={saveConfig}
         />
+        {editKey !== "" && (
+            <Modal title={t("modals.editListTitle")} onClose={() => setEditKey("")}>
+                <form onSubmit={(e) => { e.preventDefault(); void saveConfig(); }}>
+                    <label className="label">{t("project.tagsHint")}</label>
+                    <input className="input" value={editValue} onChange={(e) => setEditValue(e.target.value)} autoFocus />
+                    <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", marginTop: "1rem" }}>
+                        <button type="button" className="btn-ghost" onClick={() => setEditKey("")}>{t("common.cancel")}</button>
+                        <button type="submit" className="btn">{t("common.save")}</button>
+                    </div>
+                </form>
+            </Modal>
+        )}
+        </>
     );
 }

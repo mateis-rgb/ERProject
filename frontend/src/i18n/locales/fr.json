@@ -279,7 +279,8 @@
         "datesHint": "Le planning (Gantt) est borné aux dates limites du projet. Définis-les pour verrouiller la plage.",
         "datesRequired": "Les deux dates sont requises.",
         "datesOrder": "La date de début doit être avant la fin.",
-        "template": "Modèle"
+        "template": "Modèle",
+        "timeHours": "Heures"
     },
     "stock": {
         "category": "Catégorie",
@@ -291,7 +292,6 @@
         "quantity": "Quantité",
         "low": "Stock faible",
         "deleteConfirm": "Supprimer cet article ?",
-        "addPlaceholder": "Ajouter du matériel...",
         "wholeProject": "Projet entier",
         "searchArticle": "Rechercher un article...",
         "allocated": "Alloué (réservé)",
@@ -325,7 +325,8 @@
         "iconPreview": "Icône",
         "chooseIcon": "Choisir une icône...",
         "iconAuto": "Auto",
-        "iconSearch": "Filtrer les icônes..."
+        "iconSearch": "Filtrer les icônes...",
+        "affectProject": "Projet (général)"
     },
     "movement": {
         "in": "Entrée",
@@ -486,8 +487,6 @@
         "send": "Envoyer",
         "edit": "Modifier",
         "delete": "Supprimer",
-        "save": "Enregistrer",
-        "cancel": "Annuler",
         "edited": "modifié",
         "mentionHint": "Astuce : @nom notifie l'utilisateur correspondant",
         "allUsers": "tous les utilisateurs"
@@ -529,5 +528,26 @@
     "activity": {
         "title": "Journal d'activité",
         "none": "Aucune activité"
+    },
+    "modals": {
+        "changeRoleTitle": "Changer le rôle ?",
+        "changeStatusTitle": "Changer le statut du projet ?",
+        "toggleModuleTitle": "Activer / désactiver ce module ?",
+        "mentionsSaveTitle": "Enregistrer les portées de mention ?",
+        "revokeTitle": "Révoquer toutes les sessions ?",
+        "revokeMsg": "Toutes les sessions actives seront fermées, la tienne comprise.",
+        "deleteAttachmentTitle": "Supprimer ce fichier ?",
+        "addStockLinkTitle": "Engager du stock",
+        "removeLinkTitle": "Retirer ce stock du projet ?",
+        "affectTitle": "Changer l affectation ?",
+        "addCommentTitle": "Nouveau commentaire",
+        "editCommentTitle": "Modifier le commentaire",
+        "deleteCommentTitle": "Supprimer ce commentaire ?",
+        "addTimeTitle": "Ajouter du temps",
+        "addMovementTitle": "Nouveau mouvement de stock",
+        "newMilestoneTitle": "Nouveau jalon",
+        "editMilestoneTitle": "Modifier le jalon",
+        "newUserTitle": "Nouvel utilisateur",
+        "editListTitle": "Modifier la liste"
     }
 }

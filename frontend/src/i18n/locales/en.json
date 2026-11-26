@@ -279,7 +279,8 @@
         "datesHint": "The planning (Gantt) is bounded by the project's start/end dates. Set them to lock the range.",
         "datesRequired": "Both dates are required.",
         "datesOrder": "Start date must be before end date.",
-        "template": "Template"
+        "template": "Template",
+        "timeHours": "Hours"
     },
     "stock": {
         "category": "Category",
@@ -291,7 +292,6 @@
         "quantity": "Quantity",
         "low": "Low stock",
         "deleteConfirm": "Delete this item?",
-        "addPlaceholder": "Add equipment...",
         "wholeProject": "Whole project",
         "searchArticle": "Search an item...",
         "allocated": "Allocated (reserved)",
@@ -325,7 +325,8 @@
         "iconPreview": "Icon",
         "chooseIcon": "Choose an icon...",
         "iconAuto": "Auto",
-        "iconSearch": "Filter icons..."
+        "iconSearch": "Filter icons...",
+        "affectProject": "Project (general)"
     },
     "movement": {
         "in": "In",
@@ -486,8 +487,6 @@
         "send": "Send",
         "edit": "Edit",
         "delete": "Delete",
-        "save": "Save",
-        "cancel": "Cancel",
         "edited": "edited",
         "mentionHint": "Tip: @name notifies the matching user",
         "allUsers": "all users"
@@ -529,5 +528,26 @@
     "activity": {
         "title": "Activity log",
         "none": "No activity"
+    },
+    "modals": {
+        "changeRoleTitle": "Change role?",
+        "changeStatusTitle": "Change project status?",
+        "toggleModuleTitle": "Enable / disable this module?",
+        "mentionsSaveTitle": "Save mention scopes?",
+        "revokeTitle": "Revoke all sessions?",
+        "revokeMsg": "All active sessions will be closed, including yours.",
+        "deleteAttachmentTitle": "Delete this file?",
+        "addStockLinkTitle": "Commit stock",
+        "removeLinkTitle": "Remove this stock from the project?",
+        "affectTitle": "Change assignment?",
+        "addCommentTitle": "New comment",
+        "editCommentTitle": "Edit comment",
+        "deleteCommentTitle": "Delete this comment?",
+        "addTimeTitle": "Add time",
+        "addMovementTitle": "New stock movement",
+        "newMilestoneTitle": "New milestone",
+        "editMilestoneTitle": "Edit milestone",
+        "newUserTitle": "New user",
+        "editListTitle": "Edit list"
     }
 }

@@ -4,6 +4,7 @@ import { useTranslation } from "../../i18n/I18nContext";
 import GanttChart from "./GanttChart";
 import PlanningHeader from "./PlanningHeader";
 import MilestoneForm from "./MilestoneForm";
+import Modal from "../ui/Modal";
 import MilestoneModal from "./MilestoneModal";
 import ProjectDatesModal from "../projects/ProjectDatesModal";
 import type { ResizeSide } from "../../hooks/useResizeDrag";
@@ -48,10 +49,10 @@ export default function PlanningView(props: Props): JSX.Element {
                 <PlanningHeader current={current} canEdit={canEdit} editMode={editMode}
                     creating={creating} onToggleEdit={onToggleEdit} onToggleCreate={onToggleCreate} />
                 {creating && editing && (
-                    <div style={{ marginBottom: "1rem" }}>
+                    <Modal title={t("modals.newMilestoneTitle")} onClose={onCancelCreate} wide>
                         <MilestoneForm projectId={projectId} milestone={null} milestones={milestones}
                             onSaved={onSaved} onCancel={onCancelCreate} />
-                    </div>
+                    </Modal>
                 )}
                 {noDates && !showDatesModal ? (
                     <div style={{ border: "2px dashed var(--ink)", padding: "3rem 1.5rem", textAlign: "center" }}>

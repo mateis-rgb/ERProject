@@ -1,5 +1,6 @@
 // Onglet Drive d'un projet - header (titre/quota/breadcrumb/toolbar) + bloc header/content façon Gantt + modales (Power of 10 R4)
 import { useEffect, useState } from "react";
+import { useTranslation } from "../../i18n/I18nContext";
 import { api } from "../../services/api";
 import { Attachment, DriveUsage } from "../../types";
 import QuotaBar from "../projects/QuotaBar";
@@ -9,6 +10,7 @@ import DriveTable from "./DriveTable";
 import DriveModal from "./DriveModal";
 import TextEditorModal from "./TextEditorModal";
 import NewTextFileModal from "./NewTextFileModal";
+import ConfirmModal from "../ui/ConfirmModal";
 import { useDriveActions } from "./driveActions";
 import { useDriveModal } from "../../hooks/useDriveModal";
 
@@ -31,9 +33,11 @@ export function formatSize(bytes: number): string {
 }
 
 export default function DriveTab({ projectId, attachments, canEdit, onChanged }: Props): JSX.Element {
+    const { t } = useTranslation();
     const [path, setPath] = useState<Crumb[]>([{ id: null, name: "Racine" }]);
     const [usage, setUsage] = useState<DriveUsage | null>(null);
     const [editing, setEditing] = useState<Attachment | null>(null);
+    const [pendingMove, setPendingMove] = useState<{ item: Attachment; targetId: string | null } | null>(null);
     const [newTextOpen, setNewTextOpen] = useState(false);
     const actions = useDriveActions();
 
@@ -66,7 +70,7 @@ export default function DriveTab({ projectId, attachments, canEdit, onChanged }:
                 onOpen={openFolder}
                 onEditFile={(a) => setEditing(a)}
                 onRename={(a) => dm.openModal({ kind: "rename", item: a }, a.fileName)}
-                onMove={(a, t) => actions.moveTo(a, t).then(onChanged)}
+                onMove={(a, t) => setPendingMove({ item: a, targetId: t })}
                 onRemove={(a) => dm.openModal({ kind: "delete", item: a })}
                 onDropFiles={dm.onDropFiles} onDropItem={dm.onDropItem} />
             {dm.modal !== null && (
@@ -76,6 +80,12 @@ export default function DriveTab({ projectId, attachments, canEdit, onChanged }:
             {editing !== null && (
                 <TextEditorModal attachment={editing} canEdit={canEdit}
                     onClose={() => setEditing(null)} onSaved={onChanged} />
+            )}
+            {pendingMove !== null && (
+                <ConfirmModal title={t("modals.affectTitle")}
+                    message={`${pendingMove.item.fileName} - ${pendingMove.targetId === null ? t("drive.root") : (attachments.find((a) => a.id === pendingMove.targetId)?.fileName ?? "")}`}
+                    onConfirm={() => { void actions.moveTo(pendingMove.item, pendingMove.targetId).then(() => { setPendingMove(null); onChanged(); }); }}
+                    onCancel={() => setPendingMove(null)} />
             )}
             {newTextOpen && (
                 <NewTextFileModal projectId={projectId} parentId={parentId}

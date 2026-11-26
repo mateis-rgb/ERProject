@@ -3,6 +3,7 @@ import { FiFileText, FiX } from "react-icons/fi";
 import { useTranslation } from "../../i18n/I18nContext";
 import { useState, useRef } from "react";
 import { api } from "../../services/api";
+import ConfirmModal from "../ui/ConfirmModal";
 import { Attachment } from "../../types";
 
 interface Props {
@@ -37,7 +38,10 @@ export default function AttachmentsSection({ projectId, attachments, onChanged }
         if (res.ok) onChanged();
     };
 
+    const [pendingDelete, setPendingDelete] = useState<string | null>(null);
+
     const remove = async (id: string): Promise<void> => {
+        setPendingDelete(null);
         await api.delete(`/api/attachments/${id}`);
         onChanged();
     };
@@ -58,10 +62,14 @@ export default function AttachmentsSection({ projectId, attachments, onChanged }
                             <a href={`/api/attachments/download/${a.id}`} style={{ color: "var(--accent)", textDecoration: "none" }}>
                                 <span className="ic"><FiFileText /> {a.fileName}</span> <span style={{ color: "var(--muted)" }}>({formatSize(a.fileSize)})</span>
                             </a>
-                            <button className="btn-danger" style={{ padding: "0.125rem 0.5rem", fontSize: "0.75rem" }} onClick={() => remove(a.id)}><FiX /></button>
+                            <button className="btn-danger" style={{ padding: "0.125rem 0.5rem", fontSize: "0.75rem" }} onClick={() => setPendingDelete(a.id)}><FiX /></button>
                         </div>
                     ))}
                 </div>
+            )}
+            {pendingDelete !== null && (
+                <ConfirmModal danger title={t("modals.deleteAttachmentTitle")} message={t("common.irreversible")}
+                    onConfirm={() => void remove(pendingDelete)} onCancel={() => setPendingDelete(null)} />
             )}
         </div>
     );

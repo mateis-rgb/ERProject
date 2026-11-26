@@ -1,8 +1,10 @@
 import { FiArrowRight } from "react-icons/fi";
 // Panneau détail d'un jalon (Power of 10 R4)
 import { useState } from "react";
+import { useTranslation } from "../../i18n/I18nContext";
 import { Milestone, StockItem } from "../../types";
 import MilestoneForm from "./MilestoneForm";
+import Modal from "../ui/Modal";
 import MilestoneStockList from "./MilestoneStockList";
 import CommentsSection from "../projects/CommentsSection";
 
@@ -17,11 +19,16 @@ interface Props {
 }
 
 export default function MilestonePanel({ milestone, milestones, projectId, stockItems, canEdit, onChanged, onDelete }: Props): JSX.Element {
+    const { t } = useTranslation();
     const [editing, setEditing] = useState(false);
 
     if (editing) {
-        return <MilestoneForm projectId={projectId} milestone={milestone} milestones={milestones}
-            onSaved={() => { setEditing(false); onChanged(); }} onCancel={() => setEditing(false)} />;
+        return (
+            <Modal title={t("modals.editMilestoneTitle")} onClose={() => setEditing(false)} wide>
+                <MilestoneForm projectId={projectId} milestone={milestone} milestones={milestones}
+                    onSaved={() => { setEditing(false); onChanged(); }} onCancel={() => setEditing(false)} />
+            </Modal>
+        );
     }
 
     return (

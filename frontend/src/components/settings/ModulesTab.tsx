@@ -5,6 +5,7 @@ import { useState } from "react";
 import { api } from "../../services/api";
 import { useTranslation } from "../../i18n/I18nContext";
 import { useModules } from "../../context/ModulesContext";
+import ConfirmModal from "../ui/ConfirmModal";
 
 interface ModuleDef { id: string; nameKey: string; descKey: string; icon: ReactNode }
 
@@ -49,10 +50,12 @@ export default function ModulesTab(): JSX.Element {
     const { list, refresh } = useModules();
     const enabled = list as string[];
     const [view, setView] = useState<ViewMode>("list");
+    const [pendingModule, setPendingModule] = useState<string | null>(null);
 
     const toggle = (id: string): void => {
         const next = enabled.includes(id) ? enabled.filter((x) => x !== id) : [...enabled, id];
         void api.put("/api/config/enabled_modules", { values: next }).then(() => refresh());
+        setPendingModule(null);
     };
 
     const grid = view === "grid";
@@ -72,9 +75,14 @@ export default function ModulesTab(): JSX.Element {
                 ? { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "1rem" }
                 : { display: "flex", flexDirection: "column", gap: "1rem" }}>
                 {MODULES.map((m) => (
-                    <ModuleCard key={m.id} m={m} on={enabled.includes(m.id)} grid={grid} onToggle={toggle} label={t} />
+                    <ModuleCard key={m.id} m={m} on={enabled.includes(m.id)} grid={grid} onToggle={setPendingModule} label={t} />
                 ))}
             </div>
+            {pendingModule !== null && (
+                <ConfirmModal title={t("modals.toggleModuleTitle")}
+                    message={t(MODULES.find((m) => m.id === pendingModule)?.nameKey ?? "")}
+                    onConfirm={() => toggle(pendingModule)} onCancel={() => setPendingModule(null)} />
+            )}
         </div>
     );
 }

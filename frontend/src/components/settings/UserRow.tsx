@@ -20,28 +20,34 @@ const ROLE_COLORS: Record<UserRole, string> = {
     VIEWER: "var(--blue)",
 };
 
-export default function UserRow({ user, isSelf, onChanged }: Props): JSX.Element {
+function DeleteUserModal({ name, busy, onConfirm, onCancel }: { name: string; busy: boolean; onConfirm: () => void; onCancel: () => void }): JSX.Element {
     const { t } = useTranslation();
-    const [busy, setBusy] = useState(false);
-    const [confirming, setConfirming] = useState(false);
-
-    const changeRole = async (role: UserRole): Promise<void> => {
-        setBusy(true);
-        await api.patch(`/api/admin/users/${user.id}`, { role });
-        setBusy(false);
-        onChanged();
-    };
-
-    const doRemove = async (): Promise<void> => {
-        setConfirming(false);
-        setBusy(true);
-        await api.delete(`/api/admin/users/${user.id}`);
-        setBusy(false);
-        onChanged();
-    };
-
     return (
-        <>
+        <ConfirmModal danger busy={busy} title={`${t("common.delete")} ${name}`} message={t("common.irreversible")}
+            onConfirm={onConfirm} onCancel={onCancel} />
+    );
+}
+
+function ChangeRoleModal({ name, role, busy, onConfirm, onCancel }: { name: string; role: string; busy: boolean; onConfirm: () => void; onCancel: () => void }): JSX.Element {
+    const { t } = useTranslation();
+    return (
+        <ConfirmModal title={t("modals.changeRoleTitle")} busy={busy}
+            message={`${name} - ${role}`} confirmLabel={t("common.confirm")}
+            onConfirm={onConfirm} onCancel={onCancel} />
+    );
+}
+
+interface RowProps {
+    user: AuthUser;
+    isSelf: boolean;
+    busy: boolean;
+    onAskRole: (r: UserRole) => void;
+    onAskDelete: () => void;
+}
+
+function RowCells({ user, isSelf, busy, onAskRole, onAskDelete }: RowProps): JSX.Element {
+    const { t } = useTranslation();
+    return (
         <tr>
             <td className="table-cell">
                 <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
@@ -60,7 +66,7 @@ export default function UserRow({ user, isSelf, onChanged }: Props): JSX.Element
             </td>
             <td className="table-cell">
                 <BrutalSelect value={user.role} disabled={busy || isSelf} width="auto" minWidth="110px" height="32px"
-                    onChange={(v) => changeRole(v as UserRole)}
+                    onChange={(v) => onAskRole(v as UserRole)}
                     options={[
                         { value: "ADMIN", label: t("roles.admin") },
                         { value: "EDITOR", label: t("roles.editor") },
@@ -68,14 +74,45 @@ export default function UserRow({ user, isSelf, onChanged }: Props): JSX.Element
                     ]} />
             </td>
             <td className="table-cell">
-                {!isSelf && <button className="btn-danger" onClick={() => setConfirming(true)} disabled={busy}><FiX /></button>}
+                {!isSelf && <button className="btn-danger" onClick={onAskDelete} disabled={busy}><FiX /></button>}
             </td>
         </tr>
+    );
+}
+
+export default function UserRow({ user, isSelf, onChanged }: Props): JSX.Element {
+    const { t } = useTranslation();
+    const [busy, setBusy] = useState(false);
+    const [confirming, setConfirming] = useState(false);
+    const [pendingRole, setPendingRole] = useState<UserRole | null>(null);
+
+    const changeRole = async (role: UserRole): Promise<void> => {
+        setPendingRole(null);
+        setBusy(true);
+        await api.patch(`/api/admin/users/${user.id}`, { role });
+        setBusy(false);
+        onChanged();
+    };
+
+    const doRemove = async (): Promise<void> => {
+        setConfirming(false);
+        setBusy(true);
+        await api.delete(`/api/admin/users/${user.id}`);
+        setBusy(false);
+        onChanged();
+    };
+
+    return (
+        <>
+        <RowCells user={user} isSelf={isSelf} busy={busy}
+            onAskRole={setPendingRole} onAskDelete={() => setConfirming(true)} />
         {confirming && (
-            <ConfirmModal danger busy={busy}
-                title={`${t("common.delete")} ${user.name}`}
-                message={t("common.irreversible")}
+            <DeleteUserModal name={user.name} busy={busy}
                 onConfirm={() => void doRemove()} onCancel={() => setConfirming(false)} />
+        )}
+        {pendingRole !== null && (
+            <ChangeRoleModal name={user.name} role={t(`roles.${pendingRole.toLowerCase()}`)} busy={busy}
+                onConfirm={() => void changeRole(pendingRole)} onCancel={() => setPendingRole(null)} />
         )}
         </>
     );

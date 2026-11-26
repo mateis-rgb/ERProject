@@ -4,7 +4,8 @@ import { useTranslation } from "../../i18n/I18nContext";
 import { useEffect, useState } from "react";
 import { api } from "../../services/api";
 import { MilestoneStockLink, StockItem } from "../../types";
-import StockAutocomplete from "../stock/StockAutocomplete";
+import LinkStockModal from "../stock/LinkStockModal";
+import ConfirmModal from "../ui/ConfirmModal";
 
 interface Props {
     milestoneId: string;
@@ -16,8 +17,8 @@ interface Props {
 export default function MilestoneStockList({ milestoneId, stockItems, canEdit, onChanged }: Props): JSX.Element {
     const { t } = useTranslation();
     const [links, setLinks] = useState<MilestoneStockLink[]>([]);
-    const [selectedItem, setSelectedItem] = useState<StockItem | null>(null);
-    const [qty, setQty] = useState("1");
+    const [linkOpen, setLinkOpen] = useState(false);
+    const [pendingRemove, setPendingRemove] = useState<string | null>(null);
 
     const load = (): void => {
         api.get<MilestoneStockLink[]>(`/api/milestones/${milestoneId}/stock`).then((r) => {
@@ -27,15 +28,8 @@ export default function MilestoneStockList({ milestoneId, stockItems, canEdit, o
 
     useEffect(load, [milestoneId]);
 
-    const addStock = async (): Promise<void> => {
-        if (selectedItem === null) return;
-        const res = await api.post(`/api/milestones/${milestoneId}/stock`, {
-            stockItemId: selectedItem.id, quantity: parseFloat(qty),
-        });
-        if (res.success) { setSelectedItem(null); setQty("1"); load(); onChanged(); }
-    };
-
     const removeStock = async (sid: string): Promise<void> => {
+        setPendingRemove(null);
         await api.delete(`/api/milestones/${milestoneId}/stock/${sid}`);
         load();
     };
@@ -55,7 +49,7 @@ export default function MilestoneStockList({ milestoneId, stockItems, canEdit, o
                                 <span className="mono" style={{ fontWeight: 700 }}>{l.quantity}</span>
                                 {canEdit && (
                                     <button className="btn-danger" style={{ padding: "0.1rem 0.4rem", boxShadow: "2px 2px 0 var(--danger)" }}
-                                        onClick={() => removeStock(l.stockItemId)}><FiX /></button>
+                                        onClick={() => setPendingRemove(l.stockItemId)}><FiX /></button>
                                 )}
                             </span>
                         </div>
@@ -63,12 +57,15 @@ export default function MilestoneStockList({ milestoneId, stockItems, canEdit, o
                 </div>
             )}
             {canEdit && (
-                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                    <StockAutocomplete items={stockItems} onSelect={setSelectedItem} placeholder={t("stock.addPlaceholder")} />
-                    <input className="input" type="number" step="0.5" min="0" value={qty} onChange={(e) => setQty(e.target.value)}
-                        style={{ width: "80px" }} />
-                    <button className="btn" onClick={addStock} disabled={selectedItem === null}>+</button>
-                </div>
+                <button className="btn" onClick={() => setLinkOpen(true)}>+ {t("modals.addStockLinkTitle")}</button>
+            )}
+            {linkOpen && (
+                <LinkStockModal projectId="" fixedMilestoneId={milestoneId} stockItems={stockItems}
+                    onClose={() => setLinkOpen(false)} onSaved={() => { load(); onChanged(); }} />
+            )}
+            {pendingRemove !== null && (
+                <ConfirmModal danger title={t("modals.removeLinkTitle")} message={t("common.irreversible")}
+                    onConfirm={() => void removeStock(pendingRemove)} onCancel={() => setPendingRemove(null)} />
             )}
         </div>
     );

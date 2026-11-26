@@ -4,10 +4,13 @@ import { useEffect, useState } from "react";
 import { api } from "../../services/api";
 import { AuthUser } from "../../types";
 import UserForm from "./UserForm";
+import Modal from "../ui/Modal";
+import { useTranslation } from "../../i18n/I18nContext";
 import UserTable from "./UserTable";
 import AuditLog from "./AuditLog";
 
 export default function AccessTab(): JSX.Element {
+    const { t } = useTranslation();
     const [users, setUsers] = useState<AuthUser[]>([]);
     const [showForm, setShowForm] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -37,7 +40,11 @@ export default function AccessTab(): JSX.Element {
                     <span className="ic"><FiAlertTriangle /> {error}</span>
                 </p>
             )}
-            {showForm && <UserForm onCreated={() => { setShowForm(false); load(); }} onError={setError} />}
+            {showForm && (
+                <Modal title={t("modals.newUserTitle")} onClose={() => setShowForm(false)} wide>
+                    <UserForm onCreated={() => { setShowForm(false); load(); }} onError={setError} />
+                </Modal>
+            )}
             <UserTable users={users} onChanged={load} />
             <AuditLog />
         </div>

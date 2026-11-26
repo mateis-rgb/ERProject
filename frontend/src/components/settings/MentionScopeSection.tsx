@@ -5,6 +5,7 @@ import { useTranslation } from "../../i18n/I18nContext";
 import { api } from "../../services/api";
 import { useConfigLists } from "../../hooks/useConfigLists";
 import BrutalSelect from "../ui/BrutalSelect";
+import ConfirmModal from "../ui/ConfirmModal";
 
 const PROJECT_KEY = "mention_scope_project";
 const STOCK_KEY = "mention_scope_stock";
@@ -33,11 +34,13 @@ export default function MentionScopeSection(): JSX.Element {
     const [projectScope, setProjectScope] = useState<string | null>(null);
     const [stockScope, setStockScope] = useState<string | null>(null);
     const [saved, setSaved] = useState(false);
+    const [confirming, setConfirming] = useState(false);
 
     const curProject = projectScope ?? (configs[PROJECT_KEY]?.[0] ?? "collaborators");
     const curStock = stockScope ?? (configs[STOCK_KEY]?.[0] ?? "all");
 
     const save = (): void => {
+        setConfirming(false);
         Promise.all([
             api.put(`/api/config/${PROJECT_KEY}`, { values: [curProject] }),
             api.put(`/api/config/${STOCK_KEY}`, { values: [curStock] }),
@@ -61,9 +64,14 @@ export default function MentionScopeSection(): JSX.Element {
                     { v: "none", key: "app.mentionNone" },
                 ]} />
             <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-                <button className="btn" onClick={save}>{t("common.save")}</button>
+                <button className="btn" onClick={() => setConfirming(true)}>{t("common.save")}</button>
                 {saved && <span style={{ color: "var(--green)", fontSize: "0.8rem", fontWeight: 700 }}>{t("app.mentionsSaved")}</span>}
             </div>
+            {confirming && (
+                <ConfirmModal title={t("modals.mentionsSaveTitle")}
+                    message={`${t("app.mentionProject")}: ${curProject} · ${t("app.mentionStock")}: ${curStock}`}
+                    onConfirm={save} onCancel={() => setConfirming(false)} />
+            )}
         </div>
     );
 }
