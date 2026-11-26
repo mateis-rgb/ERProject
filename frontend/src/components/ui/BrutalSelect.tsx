@@ -86,7 +86,7 @@ function SelectButton(p: {
             }}
         >
             <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.label}</span>
-            <FiChevronDown size={18} style={{ flexShrink: 0, transform: p.open ? "rotate(180deg)" : undefined, transition: "transform 0.15s ease" }} />
+            <FiChevronDown size={18} style={{ flexShrink: 0, transform: p.open ? "rotate(180deg)" : undefined, transition: "transform var(--dur-old) var(--ease-old)" }} />
         </button>
     );
 }

@@ -28,6 +28,9 @@
     --shadow-btn: 4px 4px 0 var(--ink);
     --font-ui: "Space Grotesk", system-ui, sans-serif;
     --font-mono: "JetBrains Mono", monospace;
+    /* animations old-gen : courtes et saccadées (steps), style 8-bit */
+    --dur-old: 0.12s;
+    --ease-old: steps(3, end);
 }
 
 /* Palettes vives */
@@ -94,7 +97,7 @@ body::before {
     color: var(--accent-ink);
     box-shadow: var(--shadow-btn);
     cursor: pointer;
-    transition: transform 0.08s, box-shadow 0.08s;
+    transition: transform var(--dur-old) var(--ease-old), box-shadow var(--dur-old) var(--ease-old);
     user-select: none;
 }
 .btn:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink); }
@@ -119,7 +122,7 @@ body::before {
     color: var(--text);
     box-shadow: var(--shadow-btn);
     cursor: pointer;
-    transition: transform 0.08s, box-shadow 0.08s;
+    transition: transform var(--dur-old) var(--ease-old), box-shadow var(--dur-old) var(--ease-old);
 }
 .btn-ghost:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink); background: var(--surface-2); }
 .btn-ghost:active { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--ink); }
@@ -141,7 +144,7 @@ body::before {
     color: var(--danger);
     box-shadow: 3px 3px 0 var(--danger);
     cursor: pointer;
-    transition: transform 0.08s, box-shadow 0.08s;
+    transition: transform var(--dur-old) var(--ease-old), box-shadow var(--dur-old) var(--ease-old);
 }
 .btn-danger:hover { background: var(--danger); color: #fff; transform: translate(1px,1px); box-shadow: 2px 2px 0 var(--danger); }
 
@@ -256,7 +259,7 @@ tbody tr:hover { background: var(--surface-2); }
     border: var(--border-w) solid var(--ink);
     box-shadow: var(--shadow);
     padding: 1.25rem;
-    transition: transform 0.08s, box-shadow 0.08s;
+    transition: transform var(--dur-old) var(--ease-old), box-shadow var(--dur-old) var(--ease-old);
 }
 .bento-item:hover { transform: translate(3px, 3px); box-shadow: 3px 3px 0 var(--ink); }
 .bento-value {
@@ -362,7 +365,7 @@ tbody tr:hover { background: var(--surface-2); }
     letter-spacing: 0.04em;
     color: var(--text);
     background: var(--surface-2);
-    transition: transform 0.08s, box-shadow 0.08s, background 0.08s;
+    transition: transform var(--dur-old) var(--ease-old), box-shadow var(--dur-old) var(--ease-old), background var(--dur-old) var(--ease-old);
 }
 .nav-link:hover {
     transform: translate(2px, 2px);
@@ -394,7 +397,7 @@ tbody tr:hover { background: var(--surface-2); }
     color: var(--text);
     font-family: var(--font-ui);
     text-align: left;
-    transition: transform 0.08s, box-shadow 0.08s, background 0.08s;
+    transition: transform var(--dur-old) var(--ease-old), box-shadow var(--dur-old) var(--ease-old), background var(--dur-old) var(--ease-old);
 }
 .user-card-btn:hover {
     transform: translate(2px, 2px);

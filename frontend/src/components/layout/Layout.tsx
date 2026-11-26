@@ -49,12 +49,12 @@ export default function Layout({ children }: { children: ReactNode }): JSX.Eleme
             <div style={{
                 position: "fixed", left: 0, top: 0, bottom: 0,
                 width: `${sidebarW}px`, height: "100vh", zIndex: 50,
-                transition: "width 0.15s",
+                transition: "width var(--dur-old) var(--ease-old)",
             }}>
                 <Sidebar user={user} collapsed={collapsed} onLogout={handleLogout} />
             </div>
             {/* Contenu décalé à droite de la sidebar */}
-            <div style={{ marginLeft: `${sidebarW}px`, transition: "margin-left 0.15s", display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+            <div style={{ marginLeft: `${sidebarW}px`, transition: "margin-left var(--dur-old) var(--ease-old)", display: "flex", flexDirection: "column", minHeight: "100vh" }}>
                 <TopBar onOpenPalette={() => setPaletteOpen(true)} collapsed={collapsed} onToggleSidebar={toggleSidebar} />
                 <main className="fade-up" style={{ flex: 1, padding: "1.75rem 2rem" }}>
                     {children}

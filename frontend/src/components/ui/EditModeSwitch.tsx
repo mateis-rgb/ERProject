@@ -14,17 +14,17 @@ export default function EditModeSwitch({ edit, onToggle }: Props): JSX.Element {
                 display: "flex", alignItems: "center", gap: "0.6rem", padding: "0.4rem 0.8rem",
                 background: edit ? "var(--accent)" : "var(--surface)",
                 color: edit ? "var(--accent-ink)" : "var(--text)",
-                transition: "background 0.15s ease, color 0.15s ease",
+                transition: "background var(--dur-old) var(--ease-old), color var(--dur-old) var(--ease-old)",
             }}>
             <span style={{
                 width: "36px", height: "20px", border: "2px solid var(--ink)", position: "relative",
                 display: "inline-block", flexShrink: 0, borderRadius: 0,
-                background: edit ? "var(--accent)" : "var(--surface)", transition: "background 0.15s ease",
+                background: edit ? "var(--accent)" : "var(--surface)", transition: "background var(--dur-old) var(--ease-old)",
             }}>
                 <span style={{
                     position: "absolute", top: "1px", left: edit ? "17px" : "1px",
                     width: "14px", height: "14px", background: "var(--ink)", borderRadius: 0,
-                    transition: "left 0.15s ease",
+                    transition: "left var(--dur-old) var(--ease-old)",
                 }} />
             </span>
             <span className="mono" style={{ fontSize: "0.68rem", textTransform: "uppercase", fontWeight: 700 }}>

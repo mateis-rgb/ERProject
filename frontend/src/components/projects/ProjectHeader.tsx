@@ -107,7 +107,7 @@ function HeaderInfo({ project, status, milestones, onOpenMeta, collapsed, onTogg
             <div style={{
                 display: "grid",
                 gridTemplateRows: collapsed ? "0fr" : "1fr",
-                transition: "grid-template-rows 0.25s ease",
+                transition: "grid-template-rows 0.18s steps(4, end)",
             }}>
                 <div style={{ overflow: "hidden", minHeight: 0 }}>
                     <p style={{ color: "var(--muted)", marginTop: "0.5rem" }}>{project.description || "Aucune description"}</p>

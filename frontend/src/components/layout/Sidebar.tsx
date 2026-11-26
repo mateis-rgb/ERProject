@@ -30,7 +30,7 @@ export default function Sidebar({ user, collapsed, onLogout }: Props): JSX.Eleme
             width: "100%", height: "100%", background: "var(--surface)",
             borderRight: "3px solid var(--ink)", display: "flex", flexDirection: "column",
             padding: collapsed ? "1rem 0.5rem" : "1.25rem 1rem", overflow: "hidden",
-            transition: "padding 0.15s",
+            transition: "padding var(--dur-old) var(--ease-old)",
         }}>
             {/* Header : logo - hauteur fixe identique en mode étendu et rétracté */}
             <div style={{
