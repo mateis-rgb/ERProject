@@ -81,7 +81,7 @@ export default function DriveRow(props: Props): JSX.Element {
                     <BrutalSelect value={item.parentId ?? ""} width="auto" minWidth="128px" height="30px"
                         onChange={(v) => onMove(item, v === "" ? null : v)}
                         options={[
-                            ...(scopeId !== null ? [{ value: "", label: t("drive.root") }] : []),
+                            { value: "", label: t("drive.root") }, // toujours proposée, valeur par défaut si rien n'est choisi
                             ...moveTargets(item, folders, scopeId).map((f) => ({ value: f.id, label: f.fileName })),
                         ]} />
                 </div>
