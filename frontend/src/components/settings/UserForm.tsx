@@ -35,7 +35,7 @@ export default function UserForm({ onCreated, onError }: Props): JSX.Element {
     };
 
     return (
-        <form onSubmit={submit} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "1.1rem" }}>
+        <form className="form-grid" onSubmit={submit}>
             <div>
                 <label className="label">{t("drive.name")}</label>
                 <input className="input" value={name} onChange={(e) => setName(e.target.value)} required placeholder="Jean Dupont" />
