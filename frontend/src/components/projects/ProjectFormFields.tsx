@@ -20,9 +20,16 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
     );
 }
 
+// La valeur courante est toujours proposée même si absente de la liste (édition, chargement async)
+function withCurrent(value: string, options: string[]): string[] {
+    return value !== "" && !options.includes(value) ? [value, ...options] : options;
+}
+
 export default function ProjectFormFields({ form, statuses, types, canEdit, onChange }: Props): JSX.Element {
     const { t } = useTranslation();
     const dis = !canEdit;
+    const statusOpts = withCurrent(form.status, statuses);
+    const typeOpts = withCurrent(form.type, types);
     return (
         <>
             <Field label={t("project.name")}>
@@ -35,14 +42,14 @@ export default function ProjectFormFields({ form, statuses, types, canEdit, onCh
             </Field>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                 <Field label={t("project.status")}>
-                    <BrutalSelect value={form.status} disabled={dis}
+                    <BrutalSelect value={form.status} disabled={dis} width="100%" minWidth="100%"
                         onChange={(v) => onChange("status", v)}
-                        options={statuses.map((s) => ({ value: s, label: s }))} />
+                        options={statusOpts.map((s) => ({ value: s, label: s }))} />
                 </Field>
                 <Field label={t("project.type")}>
-                    <BrutalSelect value={form.type} disabled={dis}
+                    <BrutalSelect value={form.type} disabled={dis} width="100%" minWidth="100%"
                         onChange={(v) => onChange("type", v)}
-                        options={[{ value: "", label: "—" }, ...types.map((x) => ({ value: x, label: x }))]} />
+                        options={[{ value: "", label: "—" }, ...typeOpts.map((x) => ({ value: x, label: x }))]} />
                 </Field>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
