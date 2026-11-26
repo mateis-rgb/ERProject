@@ -42,7 +42,7 @@ export default function GanttBar(props: Props): JSX.Element {
 
     return (
         <div ref={laneRef} style={{
-            position: "relative", height: "44px",
+            position: "relative", height: depth > 0 ? "32px" : "44px", // sous-jalons plus compacts (lien visuel avec le parent)
             borderBottom: showBorder ? "1px solid var(--ink)" : "none",
             background: depth > 0 ? "var(--surface-2)" : "transparent",
         }}>

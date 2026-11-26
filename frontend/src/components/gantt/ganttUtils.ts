@@ -154,7 +154,7 @@ const HATCH = "repeating-linear-gradient(45deg, rgba(0,0,0,0.30) 0px, rgba(0,0,0
 // Style néo-brutaliste de la barre de jalon - pleine couleur en lecture, couleur + hachures en édition
 export function barStyle(geom: { left: number; width: number }, color: string, isSel: boolean, busy: boolean, canEdit: boolean, depth = 0): React.CSSProperties {
     return {
-        position: "absolute", left: `${geom.left}%`, width: `${geom.width}%`, top: depth > 0 ? "12px" : "8px", height: depth > 0 ? "22px" : "28px",
+        position: "absolute", left: `${geom.left}%`, width: `${geom.width}%`, top: depth > 0 ? "6px" : "8px", height: depth > 0 ? "20px" : "28px",
         backgroundColor: color,
         backgroundImage: canEdit ? HATCH : "none",
         border: isSel ? "3px solid var(--ink)" : "2px solid var(--ink)",
