@@ -111,6 +111,7 @@ function HeaderInfo({ project, status, milestones, onOpenMeta, collapsed, onTogg
             }}>
                 <div style={{
                     overflow: "hidden", minHeight: 0,
+					paddingBottom: "4px",
                     // fondu directionnel old-gen : au repli le contenu disparaît d'un coup (start),
                     // au dépli il réapparaît à la fin (end) — aucune bordure de chip jamais tronquée par le overflow
                     opacity: collapsed ? 0 : 1,
