@@ -33,12 +33,13 @@ function cmpAttachments(a: Attachment, b: Attachment, key: DriveSortKey): number
     return new Date(a.uploadedAt).getTime() - new Date(b.uploadedAt).getTime();
 }
 
-// dossiers d'abord, puis la colonne choisie (asc/desc)
+// Tri par défaut (colonne "nom") : répertoires d'abord, puis nom A->Z.
+// Sur les autres colonnes (modifié, taille, par) : tri pur, dossiers et fichiers mélangés.
 export function sortAttachments(list: Attachment[], sort: DriveSort): Attachment[] {
     const sign = sort.dir === "asc" ? 1 : -1;
     return [...list].sort((a, b) =>
-        (Number(b.isFolder) - Number(a.isFolder)) || sign * cmpAttachments(a, b, sort.key));
-} // borne du fil d'Ariane (R2)
+        (sort.key === "fileName" ? (Number(b.isFolder) - Number(a.isFolder)) : 0) || sign * cmpAttachments(a, b, sort.key));
+}
 
 interface Crumb { id: string | null; name: string }
 
