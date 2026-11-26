@@ -20,6 +20,7 @@ export interface Project {
     tags: string[];
     type: string;
     quotaBytes: number | null;
+    encrypted: boolean; // drive chiffré at-rest (fixé à la création)
     createdById: string;
     createdAt: string;
     updatedAt: string;

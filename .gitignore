@@ -10,3 +10,4 @@ backups/
 cspell.json
 .dev/
 graphify-out/
+.master-key

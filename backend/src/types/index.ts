@@ -20,6 +20,7 @@ export interface ProjectDTO {
     tags: string[];
     type: string;
     quotaBytes: number | null;
+    encrypted: boolean; // drive chiffré at-rest (défini à la création uniquement)
     createdById: string;
     createdAt: Date;
     updatedAt: Date;

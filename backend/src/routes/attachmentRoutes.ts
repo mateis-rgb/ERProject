@@ -2,7 +2,7 @@
 import { Router, Request, Response } from "express";
 import multer from "multer";
 import {
-    saveAttachment, listAttachments, getAttachmentPath, deleteAttachment,
+    saveAttachment, listAttachments, readAttachmentFile, deleteAttachment,
     createFolder, updateAttachment, getProjectUsage, readTextContent, writeTextContent,
 } from "../services/attachmentService";
 import { requireAuth, requireRole } from "../middleware/auth";
@@ -121,12 +121,14 @@ attachmentRouter.put("/content/:id", requireRole("EDITOR"), validateBody(attachm
 
 attachmentRouter.get("/download/:id", async (req: Request, res: Response) => {
     const id = req.params.id ?? "";
-    const filePath = await getAttachmentPath(id);
-    if (filePath === null) {
+    const file = await readAttachmentFile(id); // déchiffre si le projet est chiffré
+    if (file === null) {
         res.status(404).json({ success: false, error: "Fichier non trouvé" });
         return;
     }
-    res.download(filePath);
+    res.setHeader("Content-Type", file.mimeType !== "" ? file.mimeType : "application/octet-stream");
+    res.setHeader("Content-Disposition", `attachment; filename="${encodeURIComponent(file.fileName)}"`);
+    res.send(file.data);
 });
 
 attachmentRouter.delete("/:id", requireRole("EDITOR"), async (req: Request, res: Response) => {

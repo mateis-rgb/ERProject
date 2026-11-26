@@ -51,7 +51,7 @@ projectRouter.post("/", requireRole("EDITOR"), validateBody(projectCreateSchema)
         name: string; description: string; status: string;
         startDate?: string | null; endDate?: string | null;
         budget?: number | null; client: string; tags: string[]; type: string;
-        quotaBytes?: number | null;
+        quotaBytes?: number | null; encrypted?: boolean;
         collaboratorIds: string[];
     };
     const project = await createProject({
@@ -65,6 +65,7 @@ projectRouter.post("/", requireRole("EDITOR"), validateBody(projectCreateSchema)
         tags: body.tags,
         type: body.type,
         quotaBytes: body.quotaBytes ?? null,
+        encrypted: body.encrypted === true,
         collaboratorIds: body.collaboratorIds,
     }, user.id);
     // Applique le template demandé (jalons + dossiers + collaborateurs)

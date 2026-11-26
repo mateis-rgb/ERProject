@@ -17,6 +17,7 @@ interface AppConfig {
     sslKeyPath: string | null;
     sslCertPath: string | null;
     corsOrigin: string | null;
+    storageMasterKey: string | null; // STORAGE_MASTER_KEY (64 hex) - chiffrement at-rest des drives chiffrés
 }
 
 const DEFAULT_SESSION_SECRET = "change-this-secret-min-16-chars";
@@ -85,6 +86,7 @@ function loadConfig(): AppConfig {
         sslKeyPath,
         sslCertPath,
         corsOrigin: process.env.CORS_ORIGIN ?? null,
+        storageMasterKey: process.env.STORAGE_MASTER_KEY ?? null,
     };
 }
 

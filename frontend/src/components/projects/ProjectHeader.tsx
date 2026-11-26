@@ -1,6 +1,8 @@
 // En-tête du projet - statut, métadonnées, chips quantifiables (modale détail), export PDF (Power of 10 R4)
 import { useEffect, useState } from "react";
+import { FiLock } from "react-icons/fi";
 import { api } from "../../services/api";
+import { useTranslation } from "../../i18n/I18nContext";
 import { Milestone, Project, ProjectCollaborator } from "../../types";
 import ProjectMetaChips from "./ProjectMetaChips";
 import ProjectMetaModal, { MetaKind } from "./ProjectMetaModal";
@@ -29,6 +31,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default function ProjectHeader(props: Props): JSX.Element {
     const { project, milestones, canEdit, onUpdated } = props;
+    const { t } = useTranslation();
     const { enabled } = useModules();
     const exportEnabled = enabled("export_pdf");
     const [status, setStatus] = useState(project.status);
@@ -57,6 +60,12 @@ export default function ProjectHeader(props: Props): JSX.Element {
                         <span className="badge" style={{ backgroundColor: STATUS_COLORS[status] ?? "var(--muted)" }}>
                             {status}
                         </span>
+                        {project.encrypted && (
+                            <span className="badge" title={t("project.encryptedBadge")}
+                                style={{ color: "var(--accent)", borderColor: "var(--accent)", background: "transparent" }}>
+                                <span className="ic"><FiLock /> {t("project.encryptedBadge")}</span>
+                            </span>
+                        )}
                     </div>
                     <p style={{ color: "var(--muted)", marginTop: "0.5rem" }}>{project.description || "Aucune description"}</p>
                     <div style={{ marginTop: "0.6rem" }}>

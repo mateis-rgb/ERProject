@@ -30,11 +30,13 @@ export const projectCreateSchema = z.object({
     tags: z.array(z.string().max(50)).max(20).optional().default([]),
     type: z.string().max(100).optional().default(""),
     quotaBytes: z.number().nonnegative().optional().nullable(), // admin only (vérifié côté route)
+    encrypted: z.boolean().optional().default(false), // chiffrement at-rest du drive, création uniquement
     collaboratorIds: z.array(z.string().min(1)).max(50).optional().default([]),
     templateId: z.string().min(1).optional().nullable(), // applique un template à la création
 });
 
-export const projectUpdateSchema = projectCreateSchema.partial();
+// encrypted est volontairement omis : le chiffrement se décide à la création uniquement
+export const projectUpdateSchema = projectCreateSchema.omit({ encrypted: true }).partial();
 
 export const stockItemCreateSchema = z.object({
     name: z.string().min(1, "Nom requis").max(200),

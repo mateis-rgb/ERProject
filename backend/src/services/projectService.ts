@@ -3,6 +3,7 @@ import { getPrisma } from "../config/prisma";
 import { assert, boundedForEach } from "../utils/power10";
 import { ProjectDTO } from "../types";
 import { logActivity } from "./activityService";
+import { generateDataKey, encryptDataKey } from "./cryptoService";
 
 interface ProjectCreateInput {
     name: string;
@@ -15,6 +16,7 @@ interface ProjectCreateInput {
     tags: string[];
     type: string;
     quotaBytes: number | null;
+    encrypted: boolean; // chiffrement at-rest du drive, fixé à la création uniquement
     collaboratorIds: string[];
 }
 
@@ -22,7 +24,7 @@ function toProjectDTO(
     p: {
         id: string; name: string; description: string; status: string;
         startDate: Date | null; endDate: Date | null; budget: number | null;
-        client: string; tags: string[]; type: string; quotaBytes: number | null; createdById: string;
+        client: string; tags: string[]; type: string; quotaBytes: number | null; encrypted: boolean; createdById: string;
         createdAt: Date; updatedAt: Date;
         collaborators: { userId: string }[];
     }
@@ -39,6 +41,7 @@ function toProjectDTO(
         tags: p.tags,
         type: p.type,
         quotaBytes: p.quotaBytes,
+        encrypted: p.encrypted,
         createdById: p.createdById,
         createdAt: p.createdAt,
         updatedAt: p.updatedAt,
@@ -54,6 +57,9 @@ export async function createProject(
     assert(userId.length > 0, "createProject: invalid userId");
     const prisma = getPrisma();
 
+    // Projet chiffré : data key aléatoire, stockée en BDD chiffrée avec la master key (jamais en clair)
+    const dataKey = input.encrypted ? generateDataKey() : null;
+
     const project = await prisma.project.create({
         data: {
             name: input.name,
@@ -66,6 +72,8 @@ export async function createProject(
             tags: input.tags,
             type: input.type,
             quotaBytes: input.quotaBytes,
+            encrypted: input.encrypted,
+            encryptionKey: dataKey !== null ? encryptDataKey(dataKey) : null,
             createdById: userId,
             collaborators: {
                 create: input.collaboratorIds.map((uid) => ({ userId: uid })),
@@ -133,6 +141,7 @@ export async function updateProject(
 
     const data: Record<string, unknown> = { ...input };
     delete data.collaboratorIds;
+    delete data.encrypted; // le chiffrement se fixe à la création uniquement, jamais modifiable après
 
     const project = await prisma.project.update({
         where: { id },

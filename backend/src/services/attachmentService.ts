@@ -7,6 +7,7 @@ import path from "path";
 import fs from "fs";
 import { config } from "../config";
 import { getStorageDir } from "./storageService";
+import { decryptDataKey, encryptBuffer, decryptBuffer, nameHash } from "./cryptoService";
 
 const ALLOWED_MIME_PREFIXES = ["image/", "video/", "audio/", "application/pdf", "text/", "application/zip", "application/json"];
 const MAX_FILE_SIZE = config.maxUploadSize;
@@ -24,11 +25,25 @@ export function isTextEditableFile(fileName: string, mimeType: string): boolean 
     return mimeType.startsWith("text/");
 }
 
-function resolveSafeFilePath(filePath: string): string | null {
+// Data key d'un projet chiffré (null si le projet est en clair ou introuvable)
+async function projectKeyOf(projectId: string): Promise<Buffer | null> {
+    const p = await getPrisma().project.findUnique({
+        where: { id: projectId },
+        select: { encrypted: true, encryptionKey: true },
+    });
+    if (p === null || !p.encrypted || p.encryptionKey === null) return null;
+    return decryptDataKey(p.encryptionKey);
+}
+
+// Chemin disque effectif : anti-traversal, puis si le projet est chiffré chaque segment du chemin
+// logique est remplacé par son empreinte HMAC (noms de répertoires/fichiers illisibles sur le disque)
+function resolveDiskPath(relPath: string, key: Buffer | null): string | null {
     const root = path.resolve(getStorageDir());
-    const full = path.resolve(root, filePath);
+    const full = path.resolve(root, relPath);
     if (!full.startsWith(root + path.sep) && full !== root) return null;
-    return full;
+    if (key === null) return full;
+    const segs = relPath.split(/[\\/]/).filter((s) => s.length > 0);
+    return path.join(root, ...segs.map((s) => nameHash(key, s)));
 }
 
 export interface AttachmentDTO {
@@ -109,10 +124,13 @@ export async function saveAttachment(
     const safeName = fileName.replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 200);
     const stamp = Date.now();
     const storedName = `${projectId}_${stamp}_${safeName}`;
-    const uploadDir = path.join(getStorageDir(), `project_${projectId}`);
-    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-    const filePath = path.join(uploadDir, storedName);
-    fs.writeFileSync(filePath, buffer);
+    // filePath en BDD = chemin logique (métadonnée) ; sur le disque chaque segment est chiffré si le projet est chiffré
+    const logicalRel = path.join(`project_${projectId}`, storedName);
+    const key = await projectKeyOf(projectId);
+    const diskFull = resolveDiskPath(logicalRel, key);
+    if (diskFull === null) throw new Error("Chemin invalide");
+    fs.mkdirSync(path.dirname(diskFull), { recursive: true });
+    fs.writeFileSync(diskFull, key !== null ? encryptBuffer(key, buffer) : buffer);
 
     const att = await prisma.attachment.create({
         data: {
@@ -120,7 +138,7 @@ export async function saveAttachment(
             parentId,
             isFolder: false,
             fileName: safeName,
-            filePath: path.relative(getStorageDir(), filePath),
+            filePath: logicalRel,
             fileSize: buffer.length,
             mimeType,
             uploadedBy: userId,
@@ -184,10 +202,17 @@ export async function updateAttachment(
     return toDTO(updated);
 }
 
-export function getAttachmentPath(attachmentId: string): Promise<string | null> {
+// Lit le contenu d'un fichier, déchiffré si le projet est chiffré
+export async function readAttachmentFile(attachmentId: string): Promise<{ data: Buffer; fileName: string; mimeType: string } | null> {
+    assert(attachmentId.length > 0, "readAttachmentFile: invalid id");
     const prisma = getPrisma();
-    return prisma.attachment.findUnique({ where: { id: attachmentId } })
-        .then((a) => (a === null || a.isFolder) ? null : path.resolve(getStorageDir(), a.filePath));
+    const att = await prisma.attachment.findUnique({ where: { id: attachmentId } });
+    if (att === null || att.isFolder) return null;
+    const key = await projectKeyOf(att.projectId);
+    const full = resolveDiskPath(att.filePath, key);
+    if (full === null || !fs.existsSync(full)) return null;
+    const raw = fs.readFileSync(full);
+    return { data: key !== null ? decryptBuffer(key, raw) : raw, fileName: att.fileName, mimeType: att.mimeType };
 }
 
 // Lecture du contenu texte d'un fichier éditable (null si dossier/non texte/trop gros/inexistant)
@@ -198,9 +223,12 @@ export async function readTextContent(attachmentId: string): Promise<{ content: 
     if (att === null || att.isFolder) return null;
     if (!isTextEditableFile(att.fileName, att.mimeType)) return null;
     if (att.fileSize > MAX_TEXT_EDIT_SIZE) return null;
-    const full = resolveSafeFilePath(att.filePath);
+    const key = await projectKeyOf(att.projectId);
+    const full = resolveDiskPath(att.filePath, key);
     if (full === null || !fs.existsSync(full)) return null;
-    return { content: fs.readFileSync(full, "utf8"), fileName: att.fileName, mimeType: att.mimeType };
+    const raw = fs.readFileSync(full);
+    const content = (key !== null ? decryptBuffer(key, raw) : raw).toString("utf8");
+    return { content, fileName: att.fileName, mimeType: att.mimeType };
 }
 
 // Écriture du contenu texte (vérifie le quota si le fichier grossit, log + websocket)
@@ -217,9 +245,10 @@ export async function writeTextContent(attachmentId: string, userId: string, con
     if (!isTextEditableFile(att.fileName, att.mimeType)) throw new Error("Fichier non éditable en tant que texte");
     const buffer = Buffer.from(content, "utf8");
     if (buffer.length > att.fileSize) await assertQuotaOk(att.projectId, buffer.length - att.fileSize);
-    const full = resolveSafeFilePath(att.filePath);
+    const key = await projectKeyOf(att.projectId);
+    const full = resolveDiskPath(att.filePath, key);
     if (full === null) throw new Error("Chemin invalide");
-    fs.writeFileSync(full, buffer);
+    fs.writeFileSync(full, key !== null ? encryptBuffer(key, buffer) : buffer);
     const updated = await prisma.attachment.update({
         where: { id: attachmentId },
         data: { fileSize: buffer.length, mimeType: "text/plain" },
@@ -257,10 +286,11 @@ export async function deleteAttachment(attachmentId: string, userId: string): Pr
         take: 1000,
     });
     await prisma.attachment.deleteMany({ where: { id: { in: idsToDelete } } });
+    const key = await projectKeyOf(att.projectId);
     for (const f of files) {
         try {
-            const fullPath = path.resolve(getStorageDir(), f.filePath);
-            if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
+            const fullPath = resolveDiskPath(f.filePath, key);
+            if (fullPath !== null && fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
         } catch { /* ignore */ }
     }
     await logActivity(userId, "drive.deleted", { attachmentId }, att.projectId);

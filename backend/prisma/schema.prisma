@@ -58,6 +58,8 @@ model Project {
     tags        String[]  @default([])
     type        String    @default("")
     quotaBytes  Float?    // quota drive du projet (octets), null = illimité
+    encrypted      Boolean @default(false) // drive chiffré at-rest (noms + contenu)
+    encryptionKey  String?               // data key du projet, chiffrée avec la master key (hex iv+tag+ct)
     createdById String
     createdAt   DateTime  @default(now())
     updatedAt   DateTime  @updatedAt
