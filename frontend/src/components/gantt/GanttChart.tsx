@@ -5,7 +5,7 @@ import { useTranslation } from "../../i18n/I18nContext";
 import GanttBar from "./GanttBar";
 import GanttHeader from "./GanttHeader";
 import GanttToolbar from "./GanttToolbar";
-import { GanttView, buildTicks, orderMilestones, computeGanttRange, GanttRange, rootIds, childCounts, countDescendants, barGeom } from "./ganttUtils";
+import { GanttView, buildTicks, orderMilestones, computeGanttRange, GanttRange, rootIds, childCounts, countDescendants } from "./ganttUtils";
 import type { ResizeSide } from "../../hooks/useResizeDrag";
 
 interface Props {
@@ -68,18 +68,6 @@ export default function GanttChart(props: Props): JSX.Element {
                         const ccounts = childCounts(milestones);
                         return (
                             <>
-                                {/* trait pointillé depuis la fin de chaque jalon jusqu'au header */}
-                                {flat.map((fm) => {
-                                    const g = barGeom(new Date(fm.m.startDate).getTime(), new Date(fm.m.endDate).getTime(), r.pct);
-                                    const barTop = fm.depth > 0 ? 6 : 8; // cf. barStyle
-                                    const barH = fm.depth > 0 ? 20 : 28; // hauteur de la barre (barStyle)
-                                    return (
-                                        <div key={`dash-${fm.m.id}`} style={{
-                                            position: "absolute", left: `${g.left + g.width}%`, top: 0, height: `${barTop + barH}px`, // descend jusqu'au bas de la barre du jalon
-                                            borderLeft: `2px dashed ${fm.m.color}`, zIndex: 3, pointerEvents: "none",
-                                        }} />
-                                    );
-                                })}
                                 {flat.map((fm, i, arr) => (
                                     <GanttBar key={fm.m.id} milestone={fm.m} depth={fm.depth} pct={r.pct} pctPerDay={r.pctPerDay}
                                         isSel={fm.m.id === selectedId}
