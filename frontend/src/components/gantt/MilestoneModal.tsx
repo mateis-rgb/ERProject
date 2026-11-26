@@ -28,7 +28,8 @@ export default function MilestoneModal(props: Props): JSX.Element {
             onClick={onClose}
         >
             <div
-                style={{ width: "100%", maxWidth: "560px", maxHeight: "85vh", overflowY: "auto" }}
+                className="card"
+                style={{ width: "100%", maxWidth: "640px", maxHeight: "85vh", overflowY: "auto", boxShadow: "8px 8px 0 var(--ink)" }}
                 onClick={(e) => e.stopPropagation()}
             >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
