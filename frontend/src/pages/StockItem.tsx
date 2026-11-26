@@ -277,7 +277,7 @@ export default function StockItemPage(): JSX.Element {
                 </div>
             </div>
             {editing && (
-                <Modal title={t("stockDetail.editTitle")} onClose={() => setEditing(false)} maxWidth="640px">
+                <Modal title={t("stockDetail.editTitle")} onClose={() => setEditing(false)} wide>
                     <StockForm initial={details.item} onSaved={() => { setEditing(false); reload(); }} />
                 </Modal>
             )}

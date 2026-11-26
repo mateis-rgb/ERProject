@@ -118,26 +118,26 @@ export default function TemplateForm({ initial, users, onSave, onCancel }: Props
     };
 
     return (
-        <div>
-            <h2 style={{ margin: "0 0 1rem", fontSize: "1.1rem", fontWeight: 700, textTransform: "uppercase" }}>
+        <div className="form-grid">
+            <h2 className="span2" style={{ margin: "0 0 1rem", fontSize: "1.1rem", fontWeight: 700, textTransform: "uppercase" }}>
                 {initial === null ? t("templates.new") : t("templates.edit")}
             </h2>
             <div style={{ marginBottom: "0.6rem" }}>
                 <label className="label">{t("templates.name")}</label>
                 <input className="input" value={name} onChange={(e) => setName(e.target.value)} />
             </div>
-            <div style={{ marginBottom: "0.9rem" }}>
+            <div className="span2" style={{ marginBottom: "0.9rem" }}>
                 <label className="label">{t("templates.description")}</label>
                 <textarea className="input" value={description} onChange={(e) => setDescription(e.target.value)} rows={2} />
             </div>
-            <MilestonesEditor milestones={milestones} onChange={setMilestone} onRemove={removeMilestone} onAdd={addMilestone} />
-            <div style={{ marginBottom: "0.9rem" }}>
+            <div className="span2"><MilestonesEditor milestones={milestones} onChange={setMilestone} onRemove={removeMilestone} onAdd={addMilestone} /></div>
+            <div className="span2" style={{ marginBottom: "0.9rem" }}>
                 <label className="label">{t("templates.folders")} ({t("templates.foldersHint")})</label>
                 <textarea className="input mono" value={foldersText} onChange={(e) => setFoldersText(e.target.value)} rows={5}
                     placeholder={"01_Admin\n03_Tournage/Rushes"} style={{ fontSize: "0.78rem" }} />
             </div>
-            <CollabPicker users={users} selected={collabIds} onToggle={toggleCollab} />
-            <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
+            <div className="span2"><CollabPicker users={users} selected={collabIds} onToggle={toggleCollab} /></div>
+            <div className="span2" style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
                 <button className="btn-ghost" onClick={onCancel}>{t("common.cancel")}</button>
                 <button className="btn" disabled={name.trim() === ""} onClick={submit}>{t("common.save")}</button>
             </div>

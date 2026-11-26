@@ -441,8 +441,25 @@ tbody tr:hover { background: var(--surface-2); }
 .modal {
     background: var(--surface); color: var(--text);
     border: 3px solid var(--ink); box-shadow: 8px 8px 0 var(--ink);
-    padding: 1.5rem; width: 100%; max-width: 520px;
+    padding: 1.75rem; width: 100%; max-width: 520px;
     max-height: 85vh; overflow-y: auto;
+}
+/* Champs des modales plus aérés (s'ajoute au gap inline des forms) */
+.modal form > * + * { margin-top: 0.4rem; }
+.modal .label { margin-bottom: 0.45rem; }
+.modal form { gap: 1.1rem; }
+/* Modale large : formulaire sur 2 colonnes pour tout voir d'un coup */
+.modal.modal-wide { max-width: 940px; }
+.modal.modal-wide form,
+.modal.modal-wide .form-grid {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 1.5rem; row-gap: 1.1rem; align-items: start;
+}
+.modal.modal-wide form > .span2,
+.modal.modal-wide .form-grid > .span2,
+.modal.modal-wide form > button[type="submit"] { grid-column: 1 / -1; }
+@media (max-width: 780px) {
+    .modal.modal-wide form, .modal.modal-wide .form-grid { grid-template-columns: 1fr; }
 }
 
 /* ===== Icônes react-icons : alignement et taille cohérents ===== */

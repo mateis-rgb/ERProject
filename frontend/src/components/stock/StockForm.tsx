@@ -1,9 +1,8 @@
 // Formulaire création/édition article de stock (dans modale) - labels au-dessus des champs (Power of 10 R4)
 import { useTranslation } from "../../i18n/I18nContext";
-import { useState, FormEvent, ReactNode } from "react";
+import { useEffect, useState, FormEvent, ReactNode } from "react";
 import { api } from "../../services/api";
 import { StockItem } from "../../types";
-import { useConfigLists } from "../../hooks/useConfigLists";
 import BrutalSelect from "../ui/BrutalSelect";
 import StockIcon from "./StockIcon";
 import IconPickerModal from "./IconPickerModal";
@@ -98,7 +97,7 @@ function FormFields({ form, busy, editing, configs, icon, onOpenPicker, onSet, o
 }): JSX.Element {
     const { t } = useTranslation();
     return (
-        <form onSubmit={onSubmit} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "0.75rem" }}>
+        <form onSubmit={onSubmit}>
             <Field label={t("common.nameRequired")}>
                 <input className="input" value={form.name} onChange={(e) => onSet("name", e.target.value)} required />
             </Field>
@@ -136,7 +135,11 @@ export default function StockForm({ initial = null, onSaved }: Props): JSX.Eleme
     const [icon, setIcon] = useState<string | null>(initial?.icon ?? null);
     const [pickerOpen, setPickerOpen] = useState(false);
     const [busy, setBusy] = useState(false);
-    const configs = useConfigLists();
+    // Listes rechargées à chaque ouverture de la modale (reliées à settings/listes, pas de cache)
+    const [configs, setConfigs] = useState<Record<string, string[]>>({});
+    useEffect(() => {
+        api.get<Record<string, string[]>>("/api/config").then((r) => { if (r.success) setConfigs(r.data); });
+    }, []);
 
     const set = (k: string, v: string): void => setForm((f) => ({ ...f, [k]: v }));
 

@@ -47,7 +47,7 @@ export default function Projects(): JSX.Element {
             </div>
             {error !== null && <p style={{ color: "var(--danger)", marginBottom: "1rem" }}>{error}</p>}
             {showForm && canEdit && (
-                <Modal title={t("projects.newProject")} onClose={() => setShowForm(false)} maxWidth="520px">
+                <Modal title={t("projects.newProject")} onClose={() => setShowForm(false)} wide>
                     <ProjectForm onCreated={handleCreated} onError={setError} />
                 </Modal>
             )}

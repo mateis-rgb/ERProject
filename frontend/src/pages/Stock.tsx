@@ -67,14 +67,14 @@ function StockModals(p: {
     const { t } = useTranslation();
     if (p.showForm && p.canEdit) {
         return (
-            <Modal title={t("stock.newArticle")} onClose={p.onCloseForm} maxWidth="640px">
+            <Modal title={t("stock.newArticle")} onClose={p.onCloseForm} wide>
                 <StockForm onSaved={p.onSaved} />
             </Modal>
         );
     }
     if (p.editing !== null) {
         return (
-            <Modal title={t("stock.editArticle")} onClose={p.onCloseEdit} maxWidth="640px">
+            <Modal title={t("stock.editArticle")} onClose={p.onCloseEdit} wide>
                 <StockForm initial={p.editing} onSaved={p.onSaved} />
             </Modal>
         );

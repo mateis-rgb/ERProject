@@ -43,7 +43,7 @@ export default function TemplatesTab(): JSX.Element {
             </div>
             {editing !== null && (
                 <div className="modal-backdrop" onClick={() => setEditing(null)}>
-                    <div className="modal" style={{ maxWidth: "760px" }} onClick={(e) => e.stopPropagation()}>
+                    <div className="modal modal-wide" onClick={(e) => e.stopPropagation()}>
                         <TemplateForm initial={initial} users={users} onSave={save} onCancel={() => setEditing(null)} />
                     </div>
                 </div>

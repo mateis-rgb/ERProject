@@ -7,14 +7,15 @@ interface Props {
     title: string;
     onClose: () => void;
     maxWidth?: string;
+    wide?: boolean; // formulaire en 2 colonnes (grands formulaires)
     children: ReactNode;
 }
 
-export default function Modal({ title, onClose, maxWidth = "560px", children }: Props): JSX.Element {
+export default function Modal({ title, onClose, maxWidth, wide = false, children }: Props): JSX.Element {
     const { t } = useTranslation();
     return (
         <div className="modal-backdrop" onClick={onClose}>
-            <div className="modal" style={{ maxWidth }} onClick={(e) => e.stopPropagation()}>
+            <div className={wide ? "modal modal-wide" : "modal"} style={wide ? undefined : { maxWidth: maxWidth ?? "560px" }} onClick={(e) => e.stopPropagation()}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", gap: "1rem" }}>
                     <h3 style={{ margin: 0, fontSize: "1rem", fontWeight: 700, textTransform: "uppercase" }}>{title}</h3>
                     <button className="btn-ghost" onClick={onClose} aria-label={t("common.close")}><FiX /></button>
