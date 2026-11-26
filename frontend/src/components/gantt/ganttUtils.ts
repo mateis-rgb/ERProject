@@ -78,6 +78,25 @@ export function currentMilestone(milestones: import("../../types").Milestone[], 
 }
 
 export interface FlatMilestone { m: import("../../types").Milestone; depth: number }
+
+// id de l'ancêtre racine (depth 0) de chaque jalon — sert à grouper visuellement parent + sous-jalons
+export function rootIds(milestones: import("../../types").Milestone[]): Map<string, string> {
+    const MAX_DEPTH = 10;
+    const byId = new Map(milestones.slice(0, MAX_TICKS).map((x) => [x.id, x] as const));
+    const roots = new Map<string, string>();
+    for (const m of milestones.slice(0, MAX_TICKS)) {
+        let cur: import("../../types").Milestone | undefined = m;
+        let root = m.id;
+        for (let d = 0; d < MAX_DEPTH && cur !== undefined && cur.parentId !== null; d++) {
+            const parent = byId.get(cur.parentId);
+            if (parent === undefined) break;
+            root = parent.id;
+            cur = parent;
+        }
+        roots.set(m.id, root);
+    }
+    return roots;
+}
 export function orderMilestones(milestones: import("../../types").Milestone[]): FlatMilestone[] {
     const MAX_DEPTH = 10;
     const byParent = new Map<string | null, import("../../types").Milestone[]>();

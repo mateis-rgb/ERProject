@@ -5,7 +5,7 @@ import { useTranslation } from "../../i18n/I18nContext";
 import GanttBar from "./GanttBar";
 import GanttHeader from "./GanttHeader";
 import GanttToolbar from "./GanttToolbar";
-import { GanttView, buildTicks, orderMilestones, computeGanttRange, GanttRange } from "./ganttUtils";
+import { GanttView, buildTicks, orderMilestones, computeGanttRange, GanttRange , rootIds } from "./ganttUtils";
 import type { ResizeSide } from "../../hooks/useResizeDrag";
 
 interface Props {
@@ -59,11 +59,17 @@ export default function GanttChart(props: Props): JSX.Element {
             }}>
                 <GanttHeader width={r.width} ticks={ticks} pct={r.pct} rangeEnd={rangeEnd} todayPct={todayPct} />
                 <div style={{ position: "relative", width: `${r.width}px` }}>
-                    {orderMilestones(milestones).map((fm, i, arr) => (
-                        <GanttBar key={fm.m.id} milestone={fm.m} depth={fm.depth} pct={r.pct} pctPerDay={r.pctPerDay}
-                            isSel={fm.m.id === selectedId} showBorder={i < arr.length - 1}
-                            canEdit={editMode} onSelect={onSelect} onMove={onMove} onResize={onResize} />
-                    ))}
+                    {(() => {
+                        const flat = orderMilestones(milestones);
+                        const roots = rootIds(milestones);
+                        return flat.map((fm, i, arr) => (
+                            <GanttBar key={fm.m.id} milestone={fm.m} depth={fm.depth} pct={r.pct} pctPerDay={r.pctPerDay}
+                                isSel={fm.m.id === selectedId}
+                                // pas de ligne de séparation à l'intérieur d'un groupe parent + sous-jalons (même racine)
+                                showBorder={i < arr.length - 1 && roots.get(fm.m.id) !== roots.get(arr[i + 1]?.m.id ?? "")}
+                                canEdit={editMode} onSelect={onSelect} onMove={onMove} onResize={onResize} />
+                        ));
+                    })()}
                 </div>
             </div>
         </div>
