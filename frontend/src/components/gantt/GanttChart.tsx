@@ -75,7 +75,7 @@ export default function GanttChart(props: Props): JSX.Element {
                                     const barH = fm.depth > 0 ? 20 : 28; // hauteur de la barre (barStyle)
                                     return (
                                         <div key={`dash-${fm.m.id}`} style={{
-                                            position: "absolute", left: `${g.left + g.width}%`, top: 0, height: `${barTop + barH / 2}px`, // s'arrête au niveau (centre) du jalon
+                                            position: "absolute", left: `${g.left + g.width}%`, top: 0, height: `${barTop + barH}px`, // descend jusqu'au bas de la barre du jalon
                                             borderLeft: `2px dashed ${fm.m.color}`, zIndex: 3, pointerEvents: "none",
                                         }} />
                                     );
