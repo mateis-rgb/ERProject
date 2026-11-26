@@ -77,7 +77,7 @@ export default function GanttBar(props: Props): JSX.Element {
     };
 
     return (
-        <div ref={laneRef} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} style={{
+        <div ref={laneRef} style={{
             position: "relative", height: depth > 0 ? "32px" : "44px", // sous-jalons plus compacts (lien visuel avec le parent)
             borderBottom: showBorder ? "1px solid var(--ink)" : "none",
             background: "transparent",
@@ -85,6 +85,8 @@ export default function GanttBar(props: Props): JSX.Element {
             {hover && <BarTooltip name={milestone.name} isCurrent={isCurrent} leftPct={geom.left} />}
             <button
                 onClick={handleClick}
+                onMouseEnter={() => setHover(true)}
+                onMouseLeave={() => setHover(false)}
                 onMouseDown={canEdit ? drag.onMouseDown : undefined}
                 style={barStyle(geom, milestone.color, isSel, busy, canEdit, depth)}
             >
