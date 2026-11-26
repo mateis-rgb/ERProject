@@ -476,6 +476,7 @@ svg { vertical-align: middle; }
 /* Icône + texte collés (l'icône ne passe jamais à la ligne seule) */
 .kpi-tile-grid {
     display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.75rem;
+    max-height: 216px; overflow-y: auto; padding-right: 4px; /* 2 lignes de tuiles visibles, scroll au-delà */
 }
 .kpi-tile {
     border: 2px solid var(--ink); background: var(--surface-2);
@@ -485,7 +486,10 @@ svg { vertical-align: middle; }
 .kpi-tile-btn { padding: 2px 4px; box-shadow: none; line-height: 0; }
 .kpi-tile-btn:disabled { opacity: 0.3; cursor: default; }
 .kpi-tile-btn:disabled:hover { transform: none; box-shadow: none; background: transparent; }
-.kpi-suggest-box { margin-top: 0.4rem; border: 2px solid var(--ink); background: var(--surface-2); box-shadow: 4px 4px 0 var(--ink); }
+.kpi-suggest-box {
+    margin-top: 0.4rem; border: 2px solid var(--ink); background: var(--surface-2);
+    box-shadow: 4px 4px 0 var(--ink); max-height: 190px; overflow-y: auto; /* ~5 suggestions visibles, scroll au-delà */
+}
 .kpi-suggest {
     display: flex; width: 100%; align-items: center; gap: 0.5rem;
     padding: 0.45rem 0.75rem; background: transparent; border: none;
