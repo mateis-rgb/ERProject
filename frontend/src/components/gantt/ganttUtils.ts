@@ -87,9 +87,9 @@ export function orderMilestones(milestones: import("../../types").Milestone[]): 
         list.push(m);
         byParent.set(key, list);
     }
-    // tri chronologique (startDate) dans chaque niveau, la hiérarchie parent > enfants est conservée
+    // tri par date de début DESC dans chaque niveau (le plus récent d'abord), hiérarchie parent > enfants conservée
     for (const list of byParent.values()) {
-        list.sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+        list.sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
     }
     const out: FlatMilestone[] = [];
     const stack: { id: string | null; depth: number }[] = [{ id: null, depth: 0 }];
