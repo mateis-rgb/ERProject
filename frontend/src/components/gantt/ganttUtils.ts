@@ -91,17 +91,19 @@ export function orderMilestones(milestones: import("../../types").Milestone[]): 
     for (const list of byParent.values()) {
         list.sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
     }
+    // Parcours pré-ordre itératif (R1/R2) : chaque parent est suivi immédiatement de ses sous-jalons
+    // (ex: A, A1, A2, B avec A1/A2 enfants de A), chaque niveau trié du plus récent au plus ancien
     const out: FlatMilestone[] = [];
-    const stack: { id: string | null; depth: number }[] = [{ id: null, depth: 0 }];
+    const stack: { m: import("../../types").Milestone | null; depth: number }[] = [{ m: null, depth: -1 }];
     while (out.length < MAX_TICKS && stack.length > 0) {
         const cur = stack.pop();
         if (cur === undefined) break;
-        const children = byParent.get(cur.id) ?? [];
+        if (cur.m !== null) out.push({ m: cur.m, depth: cur.depth });
+        if (cur.depth >= MAX_DEPTH) continue;
+        const children = byParent.get(cur.m?.id ?? null) ?? [];
         for (let i = children.length - 1; i >= 0; i--) { // empilé à l'envers pour garder l'ordre
             const c = children[i];
-            if (c === undefined) continue;
-            out.push({ m: c, depth: cur.depth });
-            if (cur.depth < MAX_DEPTH) stack.push({ id: c.id, depth: cur.depth + 1 });
+            if (c !== undefined) stack.push({ m: c, depth: cur.depth + 1 });
         }
     }
     return out;
