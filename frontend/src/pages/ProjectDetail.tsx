@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { api } from "../services/api";
-import { Project, ProjectStockLink, StockItem, TimeEntry, ActivityLog, Attachment, Milestone } from "../types";
+import { Project, ProjectStockLink, StockItem, TimeEntry, ActivityLog, Attachment, Milestone, ProjectCollaborator } from "../types";
 import { useAuth } from "../context/AppContext";
 import ProjectTabs, { ProjectTabId, PROJECT_TAB_IDS, tabModule } from "../components/projects/ProjectTabs";
 import { useModules } from "../context/ModulesContext";
@@ -22,6 +22,7 @@ export default function ProjectDetail(): JSX.Element {
     const [attachments, setAttachments] = useState<Attachment[]>([]);
     const [stockItems, setStockItems] = useState<StockItem[]>([]);
     const [milestones, setMilestones] = useState<Milestone[]>([]);
+    const [collaboratorsCount, setCollaboratorsCount] = useState(0);
     const [error, setError] = useState<string | null>(null);
 
     const loadAll = (): void => {
@@ -34,6 +35,7 @@ export default function ProjectDetail(): JSX.Element {
         api.get<Attachment[]>(`/api/attachments/project/${pid}`).then((r) => { if (r.success) setAttachments(r.data); });
         api.get<StockItem[]>("/api/stock?limit=500").then((r) => { if (r.success) setStockItems(r.data); });
         api.get<Milestone[]>(`/api/projects/${pid}/milestones`).then((r) => { if (r.success) setMilestones(r.data); });
+        api.get<ProjectCollaborator[]>("/api/projects/" + pid + "/collaborators").then((r) => { if (r.success) setCollaboratorsCount(r.data.length); });
     };
 
     useEffect(loadAll, [pid]);
@@ -47,10 +49,11 @@ export default function ProjectDetail(): JSX.Element {
     useEffect(() => {
         const valid = tabParam !== undefined && PROJECT_TAB_IDS.includes(tabParam as ProjectTabId);
         const mod = valid ? tabModule(tabParam as ProjectTabId) : null;
-        if (!valid || (mod !== null && !enabled(mod))) {
+        const shared = collaboratorsCount > 1; // onglet commentaires reserve aux projets partages
+        if (!valid || (mod !== null && !enabled(mod)) || (tabParam === "comments" && !shared)) {
             navigate(`/projects/${pid}/dashboard`, { replace: true });
         }
-    }, [tabParam, pid, navigate, enabled]);
+    }, [tabParam, pid, navigate, enabled, collaboratorsCount]);
 
     if (error !== null) return <p style={{ color: "var(--danger)" }}>{error}</p>;
     if (project === null) return <p>Chargement...</p>;
@@ -64,7 +67,7 @@ export default function ProjectDetail(): JSX.Element {
                 canEdit={user !== null && user.role !== "VIEWER"} onUpdated={loadAll}
                 collapsed={headerCollapsed} onToggleCollapse={() => setHeaderCollapsed((v) => !v)} />
             <div style={{ marginTop: "1.25rem" }}>
-                <ProjectTabs active={tab} onChange={(t) => navigate(`/projects/${pid}/${t}`)} />
+                <ProjectTabs active={tab} onChange={(t) => navigate(`/projects/${pid}/${t}`)} showComments={collaboratorsCount > 1} />
             </div>
             <ProjectTabsContent tab={tab} pid={pid} project={project} links={links} stockItems={stockItems}
                 stockNames={stockNames} milestones={milestones} timeEntries={timeEntries} totalHours={totalHours}

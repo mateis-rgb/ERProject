@@ -85,6 +85,18 @@ export interface DashboardKPIs {
     usersCount: number;
 }
 
+export interface KpiDetailItem {
+    id: string;
+    title: string;
+    subtitle: string;
+    href: string;
+}
+
+export interface KpiDetail {
+    id: string;
+    items: KpiDetailItem[];
+}
+
 export interface TimeEntry {
     id: string;
     userId: string;

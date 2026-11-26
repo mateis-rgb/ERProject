@@ -1,9 +1,9 @@
 // Onglets de la page projet - pilotés par l'URL /projects/:id/:tab (Power of 10 R4)
 import { useTranslation } from "../../i18n/I18nContext";
 import { useModules, ModuleId } from "../../context/ModulesContext";
-export type ProjectTabId = "dashboard" | "stock" | "planning" | "drive" | "settings";
+export type ProjectTabId = "dashboard" | "stock" | "planning" | "drive" | "settings" | "comments";
 
-export const PROJECT_TAB_IDS: ProjectTabId[] = ["dashboard", "stock", "planning", "drive", "settings"];
+export const PROJECT_TAB_IDS: ProjectTabId[] = ["dashboard", "stock", "planning", "drive", "settings", "comments"];
 
 const TAB_MODULES: Partial<Record<ProjectTabId, ModuleId>> = {
     stock: "stock",
@@ -18,6 +18,7 @@ export function tabModule(tab: ProjectTabId): ModuleId | null {
 interface Props {
     active: ProjectTabId;
     onChange: (t: ProjectTabId) => void;
+    showComments: boolean; // onglet commentaires visible seulement si projet partage (>1 collaborateur)
 }
 
 const TABS: { id: ProjectTabId; key: string }[] = [
@@ -26,12 +27,14 @@ const TABS: { id: ProjectTabId; key: string }[] = [
     { id: "planning", key: "projectTabs.planning" },
     { id: "drive", key: "projectTabs.drive" },
     { id: "settings", key: "projectTabs.settings" },
+    { id: "comments", key: "projectTabs.comments" },
 ];
 
-export default function ProjectTabs({ active, onChange }: Props): JSX.Element {
+export default function ProjectTabs({ active, onChange, showComments }: Props): JSX.Element {
     const { t: tt } = useTranslation();
     const { enabled } = useModules();
     const visible = TABS.filter((tab) => {
+        if (tab.id === "comments" && !showComments) return false;
         const mod = tabModule(tab.id);
         return mod === null || enabled(mod);
     });

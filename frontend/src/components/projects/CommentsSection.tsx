@@ -259,7 +259,7 @@ function CommentComposer({ scope, candidates, onSent, onClose, title, initial, e
     );
 }
 
-export default function CommentsSection({ scope }: { scope: CommentScope }): JSX.Element {
+export default function CommentsSection({ scope, embedded = false }: { scope: CommentScope; embedded?: boolean }): JSX.Element {
     const { t } = useTranslation();
     const { user } = useAuth();
     const { socket } = useNotifications();
@@ -292,8 +292,11 @@ export default function CommentsSection({ scope }: { scope: CommentScope }): JSX
         };
     }, [socket, scope.kind, JSON.stringify(scope)]);
 
+    const wrap = embedded
+        ? { style: { marginTop: "1.25rem", borderTop: "2px solid var(--ink)", paddingTop: "1rem" } as React.CSSProperties, cls: "" }
+        : { style: { marginTop: "1.25rem" } as React.CSSProperties, cls: "card" };
     return (
-        <div className="card" style={{ marginTop: "1.25rem" }}>
+        <div className={wrap.cls} style={wrap.style}>
             <h2 style={SECTION_H2}>
                 {t("comments.title")} ({comments.length})
             </h2>

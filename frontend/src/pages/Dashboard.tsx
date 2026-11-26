@@ -6,11 +6,12 @@ import { api } from "../services/api";
 import { DashboardKPIs } from "../types";
 import BentoCard from "../components/ui/BentoCard";
 import DashboardKpiEditor from "../components/dashboard/DashboardKpiEditor";
+import KpiDetailModal from "../components/dashboard/KpiDetailModal";
 import { ALL_KPI_IDS, KPI_CATALOG, KpiDef } from "../components/dashboard/kpiCatalog";
 import { useModules } from "../context/ModulesContext";
 
-function KpiGrid(props: { kpis: DashboardKPIs; kpiIds: string[]; stockEnabled: boolean }): JSX.Element {
-    const { kpis, kpiIds, stockEnabled } = props;
+function KpiGrid(props: { kpis: DashboardKPIs; kpiIds: string[]; stockEnabled: boolean; onOpen: (id: string) => void }): JSX.Element {
+    const { kpis, kpiIds, stockEnabled, onOpen } = props;
     const { t } = useTranslation();
     const defs = kpiIds
         .map((id) => KPI_CATALOG.find((k) => k.id === id))
@@ -20,7 +21,8 @@ function KpiGrid(props: { kpis: DashboardKPIs; kpiIds: string[]; stockEnabled: b
             {defs.map((d) => (
                 <BentoCard key={d.id} value={d.format(kpis)} label={t(d.labelKey)} icon={d.icon} accent={d.accent}
                     warn={d.warn !== undefined ? d.warn(kpis) : false}
-                    live={d.live !== undefined ? d.live(kpis) : false} />
+                    live={d.live !== undefined ? d.live(kpis) : false}
+                    onClick={() => onOpen(d.id)} />
             ))}
         </div>
     );
@@ -31,6 +33,7 @@ export default function Dashboard(): JSX.Element {
     const [kpis, setKpis] = useState<DashboardKPIs | null>(null);
     const [kpiIds, setKpiIds] = useState<string[]>(ALL_KPI_IDS);
     const [editorOpen, setEditorOpen] = useState(false);
+    const [detailId, setDetailId] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const { enabled } = useModules();
 
@@ -58,9 +61,12 @@ export default function Dashboard(): JSX.Element {
                     <span className="ic"><FiEdit2 /> {t("dashboard.editKpis")}</span>
                 </button>
             </div>
-            <KpiGrid kpis={kpis} kpiIds={kpiIds} stockEnabled={enabled("stock")} />
+            <KpiGrid kpis={kpis} kpiIds={kpiIds} stockEnabled={enabled("stock")} onOpen={setDetailId} />
             {editorOpen && (
                 <DashboardKpiEditor kpis={kpis} kpiIds={kpiIds} onClose={() => setEditorOpen(false)} onSaved={setKpiIds} />
+            )}
+            {detailId !== null && (
+                <KpiDetailModal kpiId={detailId} kpis={kpis} onClose={() => setDetailId(null)} />
             )}
         </div>
     );

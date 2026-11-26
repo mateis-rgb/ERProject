@@ -1,6 +1,6 @@
 // Routes Dashboard, Config, Activity, Attachments
 import { Router, Request, Response } from "express";
-import { computeDashboardKPIs } from "../services/dashboardService";
+import { computeDashboardKPIs, kpiDetail } from "../services/dashboardService";
 import { getAllConfigs, getConfigValue, setConfigValue, CONFIG_KEYS } from "../services/configService";
 import { getActivityLogs } from "../services/activityService";
 import { listUsers } from "../services/authService";
@@ -52,6 +52,20 @@ function parseKpiPrefs(raw: string | null): string[] {
         return [...KPI_CATALOG_IDS];
     }
 }
+
+miscRouter.get("/dashboard/kpi/:id", async (req: Request, res: Response) => {
+    const id = req.params.id ?? "";
+    if (!(KPI_CATALOG_IDS as readonly string[]).includes(id)) {
+        res.status(400).json({ success: false, error: "KPI inconnu" });
+        return;
+    }
+    const detail = await kpiDetail(id);
+    if (detail === null) {
+        res.status(404).json({ success: false, error: "KPI inconnu" });
+        return;
+    }
+    res.json({ success: true, data: detail });
+});
 
 miscRouter.get("/dashboard/prefs", async (req: Request, res: Response) => {
     const auth = requireDefined(req.authUser, "authUser");

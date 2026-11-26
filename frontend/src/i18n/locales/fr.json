@@ -42,7 +42,8 @@
         "stock": "Stock engagé",
         "planning": "Planning (Gantt)",
         "drive": "Drive",
-        "settings": "Réglages"
+        "settings": "Réglages",
+        "comments": "Commentaires"
     },
     "projectHeader": {
         "meta": {
@@ -250,7 +251,8 @@
         "kpiUsers": "Utilisateurs",
         "kpiEditorHint": "Réorganisez l'ordre des tuiles avec les flèches, retirez-en ou ajoutez-en via la recherche.",
         "kpiMoveUp": "Monter",
-        "kpiMoveDown": "Descendre"
+        "kpiMoveDown": "Descendre",
+        "kpiDetailEmpty": "Aucun élément pour ce KPI"
     },
     "projects": {
         "search": "Rechercher un projet...",

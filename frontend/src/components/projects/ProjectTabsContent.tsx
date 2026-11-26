@@ -5,6 +5,7 @@ import StockTab from "../stock/StockTab";
 import PlanningTab from "../gantt/PlanningTab";
 import DriveTab from "../drive/DriveTab";
 import ProjectSettingsTab from "./ProjectSettingsTab";
+import CommentsSection from "./CommentsSection";
 import type { ProjectTabId } from "./ProjectTabs";
 
 interface Props {
@@ -41,6 +42,13 @@ export default function ProjectTabsContent(props: Props): JSX.Element {
     }
     if (tab === "drive") {
         return <DriveTab projectId={pid} attachments={attachments} canEdit={canEdit} onChanged={onChanged} />;
+    }
+    if (tab === "comments") {
+        return (
+            <div style={{ marginTop: "1.25rem", maxWidth: "760px" }}>
+                <CommentsSection scope={{ kind: "project", projectId: pid, milestoneId: null }} />
+            </div>
+        );
     }
     return <ProjectSettingsTab project={project} canEdit={canEdit} isAdmin={isAdmin} onSaved={onChanged} />;
 }

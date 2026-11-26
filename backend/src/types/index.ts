@@ -176,6 +176,18 @@ export interface DashboardKPIs {
     usersCount: number;
 }
 
+export interface KpiDetailItem {
+    id: string;
+    title: string;
+    subtitle: string;
+    href: string; // "" = pas de lien
+}
+
+export interface KpiDetail {
+    id: string;
+    items: KpiDetailItem[];
+}
+
 export type ApiResponse<T> =
     | { success: true; data: T }
     | { success: false; error: string };

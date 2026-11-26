@@ -33,7 +33,7 @@ export default function MilestonePanel({ milestone, milestones, projectId, stock
     }
 
     return (
-        <div className="card">
+        <div>
             <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
                 <span style={{ width: "16px", height: "16px", background: milestone.color, border: "2px solid var(--ink)" }} />
                 <h3 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 700, textTransform: "uppercase" }}>{milestone.name}</h3>
@@ -46,7 +46,7 @@ export default function MilestonePanel({ milestone, milestones, projectId, stock
             </p>
             {milestone.description && <p style={{ fontSize: "0.85rem", color: "var(--muted)" }}>{milestone.description}</p>}
             <MilestoneStockList milestoneId={milestone.id} stockItems={stockItems} canEdit={canEdit} onChanged={onChanged} />
-            <CommentsSection scope={{ kind: "project", projectId, milestoneId: milestone.id }} />
+            <CommentsSection scope={{ kind: "project", projectId, milestoneId: milestone.id }} embedded />
             {canEdit && (
                 <div style={{ display: "flex", gap: "0.5rem", marginTop: "1rem" }}>
                     <button className="btn-ghost" onClick={() => setEditing(true)}>Modifier</button>

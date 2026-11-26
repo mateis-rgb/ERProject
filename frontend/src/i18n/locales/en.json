@@ -42,7 +42,8 @@
         "stock": "Committed stock",
         "planning": "Planning (Gantt)",
         "drive": "Drive",
-        "settings": "Settings"
+        "settings": "Settings",
+        "comments": "Comments"
     },
     "projectHeader": {
         "meta": {
@@ -250,7 +251,8 @@
         "kpiUsers": "Users",
         "kpiEditorHint": "Reorder tiles with the arrows, remove or add KPIs via the search.",
         "kpiMoveUp": "Move up",
-        "kpiMoveDown": "Move down"
+        "kpiMoveDown": "Move down",
+        "kpiDetailEmpty": "No items for this KPI"
     },
     "projects": {
         "search": "Search a project...",
