@@ -487,8 +487,8 @@ svg { vertical-align: middle; }
 .kpi-tile-btn:disabled { opacity: 0.3; cursor: default; }
 .kpi-tile-btn:disabled:hover { transform: none; box-shadow: none; background: transparent; }
 .kpi-suggest-box {
-    margin-top: 0.4rem; border: 2px solid var(--ink); background: var(--surface-2);
-    box-shadow: 4px 4px 0 var(--ink); max-height: 190px; overflow-y: auto; /* ~5 suggestions visibles, scroll au-delà */
+    border: 2px solid var(--ink); background: var(--surface-2);
+    box-shadow: 4px 4px 0 var(--ink); max-height: 190px; overflow-y: auto; /* ~5 suggestions visibles, scroll au-delà, s'ouvre vers le haut */
 }
 .kpi-suggest {
     display: flex; width: 100%; align-items: center; gap: 0.5rem;

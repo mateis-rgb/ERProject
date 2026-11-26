@@ -78,11 +78,12 @@ function KpiSearch(props: { query: string; onQuery: (q: string) => void; suggest
     return (
         <div>
             <label className="label" htmlFor="kpi-search">{t("dashboard.kpiSearchLabel")}</label>
-            <input id="kpi-search" className="input" value={query} onChange={(e) => onQuery(e.target.value)}
-                onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
-                placeholder={t("dashboard.kpiSearchPlaceholder")} autoComplete="off" />
-            {open && (
-                <div className="kpi-suggest-box">
+            <div style={{ position: "relative" }}>
+                <input id="kpi-search" className="input" value={query} onChange={(e) => onQuery(e.target.value)}
+                    onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
+                    placeholder={t("dashboard.kpiSearchPlaceholder")} autoComplete="off" />
+                {open && (
+                <div className="kpi-suggest-box" style={{ position: "absolute", left: 0, right: 0, bottom: "calc(100% + 6px)", zIndex: 20 }}>
                     {suggestions.length === 0 && (
                         <div style={{ padding: "0.5rem 0.75rem", color: "var(--muted)", fontSize: "0.85rem" }}>{t("dashboard.kpiEmpty")}</div>
                     )}
@@ -96,7 +97,8 @@ function KpiSearch(props: { query: string; onQuery: (q: string) => void; suggest
                         </button>
                     ))}
                 </div>
-            )}
+                )}
+            </div>
         </div>
     );
 }

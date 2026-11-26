@@ -111,8 +111,10 @@ function HeaderInfo({ project, status, milestones, onOpenMeta, collapsed, onTogg
             }}>
                 <div style={{
                     overflow: "hidden", minHeight: 0,
-                    // fondu en steps synchronisé : les bordures des chips s'estompent au lieu d'être tronquées net
-                    opacity: collapsed ? 0 : 1, transition: "opacity 0.18s steps(4, end)",
+                    // fondu directionnel old-gen : au repli le contenu disparaît d'un coup (start),
+                    // au dépli il réapparaît à la fin (end) — aucune bordure de chip jamais tronquée par le overflow
+                    opacity: collapsed ? 0 : 1,
+                    transition: collapsed ? "opacity 0.18s steps(1, start)" : "opacity 0.18s steps(1, end)",
                 }}>
                     <p style={{ color: "var(--muted)", marginTop: "0.5rem" }}>{project.description || "Aucune description"}</p>
                     <div style={{ marginTop: "0.6rem" }}>
